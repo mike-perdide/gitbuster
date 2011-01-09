@@ -1,5 +1,15 @@
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel
+from time import struct_time, strftime
 from git import Repo
+
+AVAILABLE = {'actor':'Actor', 'author':'Author',
+             'authored_date':'Authored Date', 'committed_date':'Committed Date',
+             'committer':'Committer', 'count':'Count', 'diff':'Diff',
+             'diffs':'Diffs', 'find_all':'Find All', 'id':'Id',
+             'id_abbrev':'Id Abbrev', 'lazy_properties':'Lazy Properties',
+             'list_from_string':'List From String', 'message':'Message',
+             'parents':'Parents', 'repo':'Repo', 'stats':'Stats',
+             'summary':'Summary', 'tree':'Tree'}
 
 class GitModel(QAbstractTableModel):
 
@@ -9,6 +19,7 @@ class GitModel(QAbstractTableModel):
         #    data
         self._repo = Repo(".")
         self._dirty = False
+        self._columns = []
         self.populate()
 
     def populate(self):
@@ -20,20 +31,13 @@ class GitModel(QAbstractTableModel):
 
     def parent(self, index):
         #returns the parent of the model item with the given index.
-        print "Asking for parent"
         return QModelIndex()
 
     def rowCount(self, parent=QModelIndex()):
         return len(self._commits)
 
     def columnCount(self, parent=QModelIndex()):
-        #'actor', 'author', 'authored_date', 'committed_date', 'committer',
-        #'count', 'diff', 'diffs', 'find_all', 'id', 'id_abbrev',
-        #'lazy_properties', 'list_from_string', 'message', 'parents', 'repo',
-        #'stats', 'summary', 'tree'
-
-        #id_abbrev, authored_date, committed_date, committer, summary
-        return 5
+        return len(self._columns)
 
     def data(self, index, role):
         if not index.isValid() or not (0 <= index.row() < len(self._commits)):
@@ -43,20 +47,21 @@ class GitModel(QAbstractTableModel):
         column = index.column()
 
         if role == Qt.DisplayRole:
-            if column == 0:
-                return QVariant(commit.id_abbrev)
-            elif column == 1:
-                return QVariant(commit.authored_date)
-            elif column == 2:
-                return QVariant(commit.committed_date)
-            elif column == 3:
-                return QVariant(commit.committer)
-            elif column == 4:
-                return QVariant(commit.summary)
+            value = eval("commit."+self._columns[column])
+            if isinstance(value, struct_time):
+                return QVariant(strftime("%d/%m/%Y %H:%M:%S %Z", value))
+            return QVariant(str(value))
         elif role == Qt.EditRole:
             return commit
 
         return QVariant()
+
+    def setColumns(self, list):
+        self._columns = []
+        for item in list:
+            if item in AVAILABLE:
+                self._columns.append(item)
+
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
@@ -67,14 +72,9 @@ class GitModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return QVariant()
         if orientation == Qt.Horizontal:
-            if section == 0:
-                return QVariant("Name")
-            elif section == 1:
-                return QVariant("Delta")
-            elif section == 2:
-                return QVariant("Next")
+            return QVariant(AVAILABLE[self._columns[section]])
 
-            return QVariant(int(section + 1))
+        return QVariant(int(section + 1))
 
     def setData(self, index, value, role=Qt.EditRole):
         #PyQt4.QtCore.Qt.EditRole
