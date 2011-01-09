@@ -58,7 +58,7 @@ class GitModel:
         commit = self._commits[index.row()]
         column = index.column()
 
-        if self.modified(index):
+        if self.is_modified(index):
             value = self._modified[commit][field_name]
         else:
             value = eval("commit."+self._columns[column])
