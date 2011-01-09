@@ -5,7 +5,7 @@
 from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, QSizePolicy, QPushButton
 from PyQt4.QtCore import SIGNAL
 from qGitFilter.main_window_ui import Ui_MainWindow
-from qGitFilter.git_model import GitModel
+from qGitFilter.q_git_model import QGitModel
 
 import sys
 
@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        self._ui.tableView.setModel(GitModel())
+        self._ui.tableView.setModel(QGitModel())
         self._ui.tableView.verticalHeader().hide()
         self._ui.tableView.resizeColumnsToContents()
 

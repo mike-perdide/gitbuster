@@ -1,6 +1,4 @@
-from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel
-from PyQt4.QtGui import QColor
-from time import struct_time, strftime
+from time import struct_time
 from git import Repo
 
 AVAILABLE = {'actor':'Actor', 'author':'Author',
@@ -14,12 +12,22 @@ AVAILABLE = {'actor':'Actor', 'author':'Author',
 TEXT_FIELDS = ['author', 'committer', 'id', 'id_abbrev', 'message', 'summary']
 TIME_FIELDS = ['authored_date', 'committed_date']
 
-class GitModel(QAbstractTableModel):
+class Index:
+
+    def __init__(self, row=0, column=0):
+        self.row = row
+        self.column = column
+
+    def row(self):
+        return self.row
+
+    def column(self):
+        return self.column
+
+
+class GitModel:
 
     def __init__(self):
-        QAbstractTableModel.__init__(self, None)
-        #XXX self.dirty can be removed safely if not used to consolidate model
-        #    data
         self._repo = Repo(".")
         self._modified = {}
         self._dirty = False
@@ -31,85 +39,48 @@ class GitModel(QAbstractTableModel):
         for commit in self._repo.commits(max_count=self._repo.commit_count()):
             self._commits.append(commit)
 
-        self.reset()
+    def get_commits(self):
+        return self._commits
 
-    def parent(self, index):
-        #returns the parent of the model item with the given index.
-        return QModelIndex()
+    def get_modifed(self):
+        return self._modified
 
-    def rowCount(self, parent=QModelIndex()):
+    def get_columns(self):
+        return self._columns
+
+    def row_count(self):
         return len(self._commits)
 
-    def columnCount(self, parent=QModelIndex()):
+    def column_count(self):
         return len(self._columns)
 
-    def data(self, index, role):
-        if not index.isValid() or not (0 <= index.row() < len(self._commits)):
-            return QVariant()
-
+    def data(self, index):
         commit = self._commits[index.row()]
         column = index.column()
 
-        if role == Qt.DisplayRole:
-            value = eval("commit."+self._columns[column])
-            if isinstance(value, struct_time):
-                return QVariant(strftime("%d/%m/%Y %H:%M:%S %Z", value))
-            return QVariant(str(value))
-        elif role == Qt.EditRole:
-            return commit
-        elif role == Qt.BackgroundColorRole:
-            if commit in self._modified and column in self._modified[commit]:
-                return QVariant(QColor(Qt.yellow))
+        value = eval("commit."+self._columns[column])
+        return value
 
-        return QVariant()
-
-    def setColumns(self, list):
+    def set_columns(self, list):
         self._columns = []
         for item in list:
             if item in AVAILABLE:
                 self._columns.append(item)
 
+    def set_data(self, index, value):
+        commit = self._commits[index.row()]
+        column = index.column()
+        field_name = self._columns[column]
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight|Qt.AlignVCenter))
-
-        if role != Qt.DisplayRole:
-            return QVariant()
-        if orientation == Qt.Horizontal:
-            return QVariant(AVAILABLE[self._columns[section]])
-
-        return QVariant(int(section + 1))
-
-    def setData(self, index, value, role=Qt.EditRole):
-        if index.isValid() and 0 <= index.row() < len(self._commits):
-            commit = self._commits[index.row()]
-            column = index.column()
-            field_name = self._columns[column]
-
-            if commit not in self._modified:
-                self._modified[commit] = {}
-            
-            if field_name in TEXT_FIELDS: 
-                self._modified[commit][field_name] = value.toString()
-            elif field_name in TIME_FIELDS:
-                #do something
-                pass
-            self.dirty = True
-            #emit dataChanged
-            self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"),
-                      index, index)
-            return True
-        return False
-
-
-    def insertRows(self, position, rows=1, index=QModelIndex()):
-        print "Inserting rows"
-
-    def removeRows(self, position, rows=1, index=QModelIndex()):
-        print "Removing rows"
-        return True
-
+        if commit not in self._modified:
+            self._modified[commit] = {}
+        
+        if field_name in TEXT_FIELDS: 
+            self._modified[commit][field_name] = value
+        elif field_name in TIME_FIELDS:
+            time_value = struct_time(value)
+            self._modified[commit][field_name] = time_value
+        else:
+            return
+        self.dirty = True
 
