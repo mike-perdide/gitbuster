@@ -58,7 +58,10 @@ class GitModel:
         commit = self._commits[index.row()]
         column = index.column()
 
-        value = eval("commit."+self._columns[column])
+        if self.modified(index):
+            value = self._modified[commit][field_name]
+        else:
+            value = eval("commit."+self._columns[column])
         return value
 
     def set_columns(self, list):
@@ -83,4 +86,21 @@ class GitModel:
         else:
             return
         self.dirty = True
+
+    def is_modified(self, index):
+        commit = self._commits[index.row()]
+        column = index.column()
+        field_name = self._columns[column]
+
+        if commit in self._modified and field_name in self._modified[commit]:
+            return True
+        return False
+
+    def original_data(self, index):
+        commit = self._commits[index.row()]
+        column = index.column()
+        field_name = self._columns[column]
+
+        value = eval("commit."+self._columns[column])
+        return value
 
