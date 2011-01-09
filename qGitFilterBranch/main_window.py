@@ -19,6 +19,8 @@ class MainWindow(QMainWindow):
         self._ui.setupUi(self)
 
         self._ui.tableView.setModel(GitModel())
+        self._ui.tableView.verticalHeader().hide()
+        self._ui.tableView.resizeColumnsToContents()
 
         self.connect_slots()
 
