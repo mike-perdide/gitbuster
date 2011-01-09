@@ -65,8 +65,8 @@ class MainWindow(QMainWindow):
         self._ui.tableView.resizeColumnsToContents()
 
     def connect_slots(self):
-        # connect the tester page and testcace page to methods
-        pass
+        self.connect(self._ui.cancelButton, SIGNAL("clicked()"),
+                     self.close)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
