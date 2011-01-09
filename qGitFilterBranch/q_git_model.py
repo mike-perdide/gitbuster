@@ -49,6 +49,8 @@ class QGitModel(QAbstractTableModel):
             value = self.git_model.data(index)
             if isinstance(value, struct_time):
                 return QVariant(strftime("%d/%m/%Y %H:%M:%S %Z", value))
+            if field_name == "author" or field_name == "committer":
+                return QVariant("%s <%s>" % (value.name, value.email))
             return QVariant(str(value))
         elif role == Qt.EditRole:
             return commit
