@@ -11,6 +11,8 @@ AVAILABLE = {'actor':'Actor', 'author':'Author',
              'list_from_string':'List From String', 'message':'Message',
              'parents':'Parents', 'repo':'Repo', 'stats':'Stats',
              'summary':'Summary', 'tree':'Tree'}
+TEXT_FIELDS = ['author', 'committer', 'id', 'id_abbrev', 'message', 'summary']
+TIME_FIELDS = ['authored_date', 'committed_date']
 
 class GitModel(QAbstractTableModel):
 
@@ -82,17 +84,24 @@ class GitModel(QAbstractTableModel):
         return QVariant(int(section + 1))
 
     def setData(self, index, value, role=Qt.EditRole):
-        #PyQt4.QtCore.Qt.EditRole
-#        if index.isValid() and 0 <= index.row() < len(self.testers):
-#            tester = self.testers[index.row()]
-#            column = index.column()
-#            if column == 0:
-#                tester.set_name(value.toString())
-#            self.dirty = True
-#            #emit dataChanged
-#            self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"),
-#                      index, index)
-#            return True
+        if index.isValid() and 0 <= index.row() < len(self._commits):
+            commit = self._commits[index.row()]
+            column = index.column()
+            field_name = self._columns[column]
+
+            if commit not in self._modified:
+                self._modified[commit] = {}
+            
+            if field_name in TEXT_FIELDS: 
+                self._modified[commit][field_name] = value.toString()
+            elif field_name in TIME_FIELDS:
+                #do something
+                pass
+            self.dirty = True
+            #emit dataChanged
+            self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"),
+                      index, index)
+            return True
         return False
 
 
