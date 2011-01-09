@@ -1,4 +1,5 @@
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel
+from PyQt4.QtGui import QColor
 from time import struct_time, strftime
 from git import Repo
 
@@ -18,6 +19,7 @@ class GitModel(QAbstractTableModel):
         #XXX self.dirty can be removed safely if not used to consolidate model
         #    data
         self._repo = Repo(".")
+        self._modified = {}
         self._dirty = False
         self._columns = []
         self.populate()
@@ -53,6 +55,9 @@ class GitModel(QAbstractTableModel):
             return QVariant(str(value))
         elif role == Qt.EditRole:
             return commit
+        elif role == Qt.BackgroundColorRole:
+            if commit in self._modified and column in self._modified[commit]:
+                return QVariant(QColor(Qt.yellow))
 
         return QVariant()
 
