@@ -2,18 +2,7 @@
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, SIGNAL
 from PyQt4.QtGui import QColor
 from time import struct_time, strftime
-from qGitFilter.git_model import GitModel
-
-AVAILABLE = {'actor':'Actor', 'author':'Author',
-             'authored_date':'Authored Date', 'committed_date':'Committed Date',
-             'committer':'Committer', 'count':'Count', 'diff':'Diff',
-             'diffs':'Diffs', 'find_all':'Find All', 'id':'Id',
-             'id_abbrev':'Id Abbrev', 'lazy_properties':'Lazy Properties',
-             'list_from_string':'List From String', 'message':'Message',
-             'parents':'Parents', 'repo':'Repo', 'stats':'Stats',
-             'summary':'Summary', 'tree':'Tree'}
-TEXT_FIELDS = ['author', 'committer', 'id', 'id_abbrev', 'message', 'summary']
-TIME_FIELDS = ['authored_date', 'committed_date']
+from qGitFilter.git_model import GitModel, AVAILABLE, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS
 
 class QGitModel(QAbstractTableModel):
 
