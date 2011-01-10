@@ -11,6 +11,9 @@ class QGitModel(QAbstractTableModel):
         self.git_model = GitModel()
         self.populate()
 
+    def get_git_model(self):
+        return self.git_model
+
     def populate(self):
         self.git_model.populate()
         self.reset()
