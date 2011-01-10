@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, QSizePolicy, QPushButton
-from PyQt4.QtCore import SIGNAL
+from PyQt4.QtCore import SIGNAL, Qt
 from qGitFilter.main_window_ui import Ui_MainWindow
 from qGitFilter.q_git_model import QGitModel, NAMES
 from qGitFilter.q_git_delegate import QGitDelegate
@@ -43,6 +43,8 @@ class MainWindow(QMainWindow):
             checkbox.setText(QApplication.translate("MainWindow",
                                                     NAMES[checkbox_name], None,
                                                     QApplication.UnicodeUTF8))
+            if checkbox_name in PRE_CHOICE:
+                checkbox.setCheckState(Qt.Checked)
             iter += 1
 
         refreshButton = QPushButton(self._ui.centralwidget)
@@ -57,6 +59,7 @@ class MainWindow(QMainWindow):
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding,
                                  QSizePolicy.Minimum)
         self._ui.checkboxLayout.addItem(spacerItem, 0, iter, 1, 1)
+        self.refreshCheckboxes()
 
     def refreshCheckboxes(self):
         choices = []
