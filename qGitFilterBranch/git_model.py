@@ -80,7 +80,19 @@ class GitModel:
         column = index.column()
 
         if self.is_modified(index):
-            value = self._modified[commit][field_name]
+            modified = self._modified[commit]
+            if field in TIME_FIELDS:
+                if field == 'authored_date':
+                    _timestamp = modified[field]
+                    _offset = altz_to_utctz_str(commit.author_tz_offset)
+                    _tz = Timezone(_offset)
+                elif field == 'committed_date':
+                    _timestamp = modified[field]
+                    _offset = altz_to_utctz_str(commit.committer_tz_offset)
+                    _tz = Timezone(_offset)
+                value = (_timestamp, _tz)
+            else:
+                value = modified[field]
         else:
             if field in TIME_FIELDS:
                 if field == 'authored_date':
