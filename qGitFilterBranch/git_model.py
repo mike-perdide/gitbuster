@@ -78,6 +78,7 @@ class GitModel:
     def data(self, index):
         commit = self._commits[index.row()]
         column = index.column()
+        field = self._columns[column]
 
         if self.is_modified(index):
             modified = self._modified[commit]
