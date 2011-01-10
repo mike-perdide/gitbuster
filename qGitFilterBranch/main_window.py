@@ -13,7 +13,7 @@ import sys
 AVAILABLE_CHOICES = ['id', 'id_abbrev',
                      'authored_date', 'committed_date',
                      'author', 'committer',
-                     'message', 'summary']
+                     'message']
 
 class MainWindow(QMainWindow):
 
