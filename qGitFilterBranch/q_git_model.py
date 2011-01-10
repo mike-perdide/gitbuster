@@ -86,4 +86,16 @@ class QGitModel(QAbstractTableModel):
         print "Removing rows"
         return True
 
+    def flags(self, index):
+        if not index.isValid():
+            return Qt.ItemIsEnabled
+
+        column = index.column()
+        field_name = self.git_model.get_columns()[column]
+
+        if field_name in NOT_EDITABLE_FIELDS:
+            return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
+                                Qt.NoItemFlags)
+        return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
+                            Qt.ItemIsEditable)
 
