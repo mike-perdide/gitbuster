@@ -2,7 +2,7 @@
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, SIGNAL
 from PyQt4.QtGui import QColor
 from time import struct_time, strftime
-from qGitFilter.git_model import GitModel, AVAILABLE, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, ACTOR_FIELDS
+from qGitFilter.git_model import GitModel, NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, ACTOR_FIELDS
 
 class QGitModel(QAbstractTableModel):
 
@@ -71,7 +71,7 @@ class QGitModel(QAbstractTableModel):
             return QVariant()
         if orientation == Qt.Horizontal:
             field_name = self.git_model.get_columns()[section]
-            return QVariant(AVAILABLE[field_name])
+            return QVariant(NAMES[field_name])
 
         return QVariant(int(section + 1))
 

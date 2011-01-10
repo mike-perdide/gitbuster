@@ -10,7 +10,7 @@ from qGitFilter.q_git_delegate import QGitDelegate
 
 import sys
 
-AVAILABLE_CHOICES = ['id', 'id_abbrev',
+AVAILABLE_CHOICES = ['hexsha',
                      'authored_date', 'committed_date',
                      'author', 'committer',
                      'message']

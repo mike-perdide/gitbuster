@@ -1,18 +1,18 @@
 from time import struct_time
 from git import Repo
 
-AVAILABLE = {'actor':'Actor', 'author':'Author',
+NAMES = {'actor':'Actor', 'author':'Author',
              'authored_date':'Authored Date', 'committed_date':'Committed Date',
              'committer':'Committer', 'count':'Count', 'diff':'Diff',
-             'diffs':'Diffs', 'find_all':'Find All', 'id':'Id',
-             'id_abbrev':'Id Abbrev', 'lazy_properties':'Lazy Properties',
+             'diffs':'Diffs', 'find_all':'Find All', 'hexsha':'Id',
+             'lazy_properties':'Lazy Properties',
              'list_from_string':'List From String', 'message':'Message',
              'parents':'Parents', 'repo':'Repo', 'stats':'Stats',
              'summary':'Summary', 'tree':'Tree'}
-TEXT_FIELDS = ['id', 'id_abbrev', 'message', 'summary']
+TEXT_FIELDS = ['hexsha', 'message', 'summary']
 ACTOR_FIELDS = ['author', 'committer']
 TIME_FIELDS = ['authored_date', 'committed_date']
-NOT_EDITABLE_FIELDS = ['id', 'id_abbrev']
+NOT_EDITABLE_FIELDS = ['hexsha']
 
 class Index:
 
@@ -35,10 +35,11 @@ class GitModel:
         self._dirty = False
         self._columns = []
         self.populate()
+        self._did = False
 
     def populate(self):
         self._commits = []
-        for commit in self._repo.commits(max_count=self._repo.commit_count()):
+        for commit in self._repo.iter_commits():
             self._commits.append(commit)
 
     def get_commits(self):
@@ -69,7 +70,7 @@ class GitModel:
     def set_columns(self, list):
         self._columns = []
         for item in list:
-            if item in AVAILABLE:
+            if item in NAMES:
                 self._columns.append(item)
 
     def set_data(self, index, value):
