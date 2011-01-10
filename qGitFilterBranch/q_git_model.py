@@ -43,9 +43,14 @@ class QGitModel(QAbstractTableModel):
                 return QVariant(strftime("%d/%m/%Y %H:%M:%S %Z", value))
             elif field_name in ACTOR_FIELDS:
                 return QVariant("%s <%s>" % (value.name, value.email))
+            elif field_name == "message":
+                return QVariant(value.split("\n")[0])
             return QVariant(str(value))
         elif role == Qt.EditRole:
-            return commit
+            value = self.git_model.data(index)
+            if field_name == "message":
+                return QVariant(value)
+            return self.data(index, Qt.DisplayRole)
         elif role == Qt.BackgroundColorRole:
             modified = self.git_model.get_modifed()
             if commit in modified and field_name in modified[commit]:
