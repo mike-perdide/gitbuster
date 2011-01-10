@@ -76,7 +76,7 @@ class QGitModel(QAbstractTableModel):
         return QVariant(int(section + 1))
 
     def setData(self, index, value, role=Qt.EditRole):
-        if index.isValid() and 0 <= index.row() < len(self._commits):
+        if index.isValid() and 0 <= index.row() < self.rowCount():
             self.git_model.set_data(index, value)
 
             self.dirty = True
