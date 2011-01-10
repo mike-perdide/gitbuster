@@ -53,6 +53,8 @@ class QGitModel(QAbstractTableModel):
             value = self.git_model.data(index)
             if field_name == "message":
                 return QVariant(value)
+            elif field_name in TIME_FIELDS:
+                return value
             return self.data(index, Qt.DisplayRole)
         elif role == Qt.BackgroundColorRole:
             modified = self.git_model.get_modifed()
