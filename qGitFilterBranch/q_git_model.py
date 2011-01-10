@@ -2,7 +2,7 @@
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, SIGNAL
 from PyQt4.QtGui import QColor
 from time import struct_time, strftime
-from qGitFilter.git_model import GitModel, AVAILABLE, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS
+from qGitFilter.git_model import GitModel, AVAILABLE, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, ACTOR_FIELDS
 
 class QGitModel(QAbstractTableModel):
 
@@ -38,7 +38,7 @@ class QGitModel(QAbstractTableModel):
             value = self.git_model.data(index)
             if isinstance(value, struct_time):
                 return QVariant(strftime("%d/%m/%Y %H:%M:%S %Z", value))
-            if field_name == "author" or field_name == "committer":
+            elif field_name in ACTOR_FIELDS:
                 return QVariant("%s <%s>" % (value.name, value.email))
             return QVariant(str(value))
         elif role == Qt.EditRole:
