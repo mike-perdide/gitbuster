@@ -5,7 +5,7 @@
 from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, QSizePolicy, QPushButton
 from PyQt4.QtCore import SIGNAL
 from qGitFilter.main_window_ui import Ui_MainWindow
-from qGitFilter.q_git_model import QGitModel
+from qGitFilter.q_git_model import QGitModel, NAMES
 from qGitFilter.q_git_delegate import QGitDelegate
 
 import sys
@@ -40,8 +40,9 @@ class MainWindow(QMainWindow):
             checkbox = QCheckBox(self._ui.centralwidget)
             self._ui.checkboxLayout.addWidget(checkbox, 0, iter, 1, 1)
             self._checkboxes[checkbox_name] = checkbox
-            checkbox.setText(QApplication.translate("MainWindow", checkbox_name,
-                                        None, QApplication.UnicodeUTF8))
+            checkbox.setText(QApplication.translate("MainWindow",
+                                                    NAMES[checkbox_name], None,
+                                                    QApplication.UnicodeUTF8))
             iter += 1
 
         refreshButton = QPushButton(self._ui.centralwidget)
