@@ -17,14 +17,14 @@ NOT_EDITABLE_FIELDS = ['id', 'id_abbrev']
 class Index:
 
     def __init__(self, row=0, column=0):
-        self.row = row
-        self.column = column
+        self._row = row
+        self._column = column
 
     def row(self):
-        return self.row
+        return self._row
 
     def column(self):
-        return self.column
+        return self._column
 
 
 class GitModel:
