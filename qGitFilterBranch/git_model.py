@@ -12,6 +12,7 @@ AVAILABLE = {'actor':'Actor', 'author':'Author',
 TEXT_FIELDS = ['id', 'id_abbrev', 'message', 'summary']
 ACTOR_FIELDS = ['author', 'committer']
 TIME_FIELDS = ['authored_date', 'committed_date']
+NOT_EDITABLE_FIELDS = ['id', 'id_abbrev']
 
 class Index:
 
