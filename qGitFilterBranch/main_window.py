@@ -6,6 +6,7 @@ from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, QSize
 from PyQt4.QtCore import SIGNAL
 from qGitFilter.main_window_ui import Ui_MainWindow
 from qGitFilter.q_git_model import QGitModel
+from qGitFilter.delegate import GitDelegate
 
 import sys
 
@@ -25,6 +26,7 @@ class MainWindow(QMainWindow):
         self._ui.tableView.setModel(QGitModel())
         self._ui.tableView.verticalHeader().hide()
         self._ui.tableView.resizeColumnsToContents()
+        self._ui.tableView.setItemDelegate(GitDelegate())
 
         self.connect_slots()
 
