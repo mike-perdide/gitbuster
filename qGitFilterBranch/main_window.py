@@ -14,6 +14,7 @@ AVAILABLE_CHOICES = ['id', 'id_abbrev',
                      'authored_date', 'committed_date',
                      'author', 'committer',
                      'message']
+PRE_CHOICE = ['id_abbrev', 'committed_date', 'committer', 'message']
 
 class MainWindow(QMainWindow):
 
