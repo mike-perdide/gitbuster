@@ -30,7 +30,6 @@ class QGitDelegate(QItemDelegate):
             self.emit(SIGNAL("closeEditor(QWidget*)"), editor)
 
     def setEditorData(self, editor, index):
-        print "Setting editor data"
         columns = index.model().get_git_model().get_columns()
         field_name = columns[index.column()]
 
