@@ -109,7 +109,7 @@ class GitModel:
                 actor = eval("commit." + field)
                 value = "%s <%s>" % (actor.name, actor.email)
             else:
-                value = eval("commit."+self._columns[column])
+                value = eval("commit." + field)
         return value
 
     def set_columns(self, list):
