@@ -110,13 +110,7 @@ class GitModel:
         if commit not in self._modified:
             self._modified[commit] = {}
         
-        if field_name in TEXT_FIELDS: 
-            self._modified[commit][field_name] = value
-        elif field_name in TIME_FIELDS:
-            time_value = struct_time(value)
-            self._modified[commit][field_name] = time_value
-        else:
-            return
+        self._modified[commit][field_name] = value
         self.dirty = True
 
     def is_modified(self, index):

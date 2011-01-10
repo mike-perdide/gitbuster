@@ -114,3 +114,5 @@ class QGitModel(QAbstractTableModel):
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.ItemIsEditable)
 
+    def setData(self, index, value):
+        self.git_model.set_data(index, value)

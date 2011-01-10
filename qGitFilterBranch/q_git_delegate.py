@@ -44,5 +44,11 @@ class QGitDelegate(QItemDelegate):
             editor.setDateTime(_q_datetime)
 
     def setModelData(self, editor, model, index):
-        pass
+        model = index.model()
+        columns = model.get_git_model().get_columns()
+        field_name = columns[index.column()]
 
+        if field_name in TEXT_FIELDS:
+            model.setData(index, QVariant(editor.currentText()))
+        elif field_name in TIME_FIELDS:
+            model.setData(index, editor.dateTime().toTime_t())
