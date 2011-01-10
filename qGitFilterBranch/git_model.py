@@ -105,6 +105,9 @@ class GitModel:
                     _utc_offset = altz_to_utctz_str(commit.committer_tz_offset)
                     _tz = Timezone(_utc_offset)
                 value = (_timestamp, _tz)
+            elif field in ACTOR_FIELDS:
+                actor = eval("commit." + field)
+                value = "%s <%s>" % (actor.name, actor.email)
             else:
                 value = eval("commit."+self._columns[column])
         return value

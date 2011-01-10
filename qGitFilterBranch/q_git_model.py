@@ -44,8 +44,6 @@ class QGitModel(QAbstractTableModel):
                 _tmstmp, _tz = value
                 _datetime = datetime.fromtimestamp(_tmstmp).replace(tzinfo=_tz)
                 return QVariant(_datetime.strftime("%d/%m/%Y %H:%M:%S %Z"))
-            elif field_name in ACTOR_FIELDS:
-                return QVariant("%s <%s>" % (value.name, value.email))
             elif field_name == "message":
                 return QVariant(value.split("\n")[0])
             return QVariant(str(value))
