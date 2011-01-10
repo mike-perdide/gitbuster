@@ -71,6 +71,11 @@ class MainWindow(QMainWindow):
         self.connect(self._ui.cancelButton, SIGNAL("clicked()"),
                      self.close)
 
+        self.connect(self._ui.applyButton, SIGNAL("clicked()"),
+                     self.apply)
+    def apply(self):
+        self._ui.tableView.model().write()
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     a = MainWindow(debug=True)

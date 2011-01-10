@@ -104,3 +104,7 @@ class GitModel:
         value = eval("commit."+self._columns[column])
         return value
 
+    def write(self):
+        from pprint import pprint
+        pprint(self._modified)
+
