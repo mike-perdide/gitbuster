@@ -1,5 +1,7 @@
 from time import struct_time
+from datetime import datetime, tzinfo, timedelta
 from git import Repo
+from git.objects.util import altz_to_utctz_str
 
 NAMES = {'actor':'Actor', 'author':'Author',
              'authored_date':'Authored Date', 'committed_date':'Committed Date',
@@ -26,6 +28,22 @@ class Index:
     def column(self):
         return self._column
 
+
+class Timezone(tzinfo):
+    def __init__(self, tz_string):
+        self.tz_string = tz_string
+
+    def utcoffset(self, dt):
+        sign = 1 if self.tz_string[0] == '+' else -1
+        hour = sign * int(self.tz_string[1:-2])
+        min = sign * int(self.tz_string[2:])
+        return timedelta(hours=hour, minutes=min)
+
+    def tzname(self, dt):
+        return self.tz_string
+
+    def dst(self, dt):
+        return timedelta(0)
 
 class GitModel:
 
@@ -64,7 +82,18 @@ class GitModel:
         if self.is_modified(index):
             value = self._modified[commit][field_name]
         else:
-            value = eval("commit."+self._columns[column])
+            if field in TIME_FIELDS:
+                if field == 'authored_date':
+                    _timestamp = commit.authored_date
+                    _utc_offset = altz_to_utctz_str(commit.author_tz_offset)
+                    _tz = Timezone(_utc_offset)
+                elif field == 'committed_date':
+                    _timestamp = commit.committed_date
+                    _utc_offset = altz_to_utctz_str(commit.committer_tz_offset)
+                    _tz = Timezone(_utc_offset)
+                value = (_timestamp, _tz)
+            else:
+                value = eval("commit."+self._columns[column])
         return value
 
     def set_columns(self, list):
