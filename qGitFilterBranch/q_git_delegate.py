@@ -15,6 +15,7 @@ class QGitDelegate(QItemDelegate):
             editor = QTextEdit(parent)
         elif field_name in TIME_FIELDS:
             editor = QDateTimeEdit(parent)
+            editor.setDisplayFormat("dd/MM/yyyy hh:mm:ss")
         else:
             return QItemDelegate.createEditor(self, parent, option,
                                               index)
@@ -36,6 +37,11 @@ class QGitDelegate(QItemDelegate):
         if field_name in TEXT_FIELDS or field_name in ACTOR_FIELDS:
             text = index.model().data(index, Qt.EditRole).toString()
             editor.setText(text)
+        elif field_name in TIME_FIELDS:
+            timestamp, tz = index.model().data(index, Qt.EditRole)
+            _q_datetime = QDateTime()
+            _q_datetime.setTime_t(timestamp)
+            editor.setDateTime(_q_datetime)
 
     def setModelData(self, editor, model, index):
         pass
