@@ -108,7 +108,7 @@ class GitModel:
                 value = (_timestamp, _tz)
             elif field in ACTOR_FIELDS:
                 actor = eval("commit." + field)
-                value = "%s <%s>" % (actor.name, actor.email)
+                value = (actor.name, actor.email)
             else:
                 value = eval("commit." + field)
         return value

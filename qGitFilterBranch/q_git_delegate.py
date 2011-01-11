@@ -47,7 +47,12 @@ class QGitDelegate(QItemDelegate):
         columns = model.get_git_model().get_columns()
         field_name = columns[index.column()]
 
-        if field_name in TEXT_FIELDS or field_name in ACTOR_FIELDS:
+        if field_name in TEXT_FIELDS:
             model.setData(index, str(editor.toPlainText()))
         elif field_name in TIME_FIELDS:
             model.setData(index, editor.dateTime().toTime_t())
+        elif field_name in ACTOR_FIELDS:
+            value = str(editor.toPlainText())
+            name = value.split(' <')[0]
+            email = value.split(' <')[1].split('>')[0]
+            model.setData(index, (name, email))

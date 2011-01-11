@@ -46,6 +46,9 @@ class QGitModel(QAbstractTableModel):
                 return QVariant(_datetime.strftime("%d/%m/%Y %H:%M:%S %Z"))
             elif field_name == "message":
                 return QVariant(value.split("\n")[0])
+            elif field_name in ACTOR_FIELDS:
+                name, email = value
+                return QVariant("%s <%s>" % (name, email))
             return QVariant(str(value))
         elif role == Qt.EditRole:
             value = self.git_model.data(index)
