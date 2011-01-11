@@ -123,11 +123,18 @@ class GitModel:
         column = index.column()
         field_name = self._columns[column]
 
-        if commit not in self._modified:
-            self._modified[commit] = {}
-        
-        self._modified[commit][field_name] = value
-        self.dirty = True
+        if field_name in TIME_FIELDS:
+            reference, tz = self.data(index)
+        else:
+            reference = self.data(index)
+
+        if reference != value:
+            if commit not in self._modified:
+                self._modified[commit] = {}
+
+            self._modified[commit][field_name] = value
+
+            self.dirty = True
 
     def is_modified(self, index):
         commit = self._commits[index.row()]
