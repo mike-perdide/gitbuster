@@ -133,21 +133,24 @@ class GitModel:
             reference = self.data(index)
 
         if reference != value:
-            if commit not in self._modified:
-                self._modified[commit] = {}
+            self.set_field_data(commit, field_name, value)
 
-            self._modified[commit][field_name] = value
             if self._merge:
                 if field_name == "committed_date":
-                    self._modified[commit]["authored_date"] = value
+                    self.set_field_data(commit, "authored_date", value)
                 elif field_name == "authored_date":
-                    self._modified[commit]["committed_date"] = value
+                    self.set_field_data(commit, "committed_date", value)
                 elif field_name == "author":
-                    self._modified[commit]["committer"] = value
+                    self.set_field_data(commit, "committer", value)
                 elif field_name == "committer":
-                    self._modified[commit]["author"] = value
+                    self.set_field_data(commit, "author", value)
 
             self.dirty = True
+
+    def set_field_data(self, commit, field, value):
+        if commit not in self._modified:
+            self._modified[commit] = {}
+        self._modified[commit][field] = value
 
     def is_modified(self, index):
         commit = self._commits[index.row()]
