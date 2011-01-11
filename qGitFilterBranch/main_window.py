@@ -77,8 +77,19 @@ class MainWindow(QMainWindow):
 
         self.connect(self._ui.applyButton, SIGNAL("clicked()"),
                      self.apply)
+
+        self.connect(self._ui.mergeCheckBox, SIGNAL("stateChanged(int)"),
+                     self.merge_clicked)
     def apply(self):
         self._ui.tableView.model().write()
+
+    def merge_clicked(self):
+        model = self._ui.tableView.model()
+        check_state = self._ui.mergeCheckBox.checkState()
+        if check_state == Qt.Checked:
+            model.setMerge(True)
+        else:
+            model.setMerge(False)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

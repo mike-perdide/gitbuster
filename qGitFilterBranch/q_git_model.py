@@ -78,6 +78,9 @@ class QGitModel(QAbstractTableModel):
 
         return QVariant(int(section + 1))
 
+    def setMerge(self, merge_state):
+        self.git_model.set_merge(merge_state)
+
     def setData(self, index, value, role=Qt.EditRole):
         if index.isValid() and 0 <= index.row() < self.rowCount():
             self.git_model.set_data(index, value)

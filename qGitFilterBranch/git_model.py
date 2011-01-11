@@ -54,6 +54,7 @@ class GitModel:
         self._columns = []
         self.populate()
         self._did = False
+        self._merge = False
 
     def populate(self):
         self._commits = []
@@ -112,6 +113,9 @@ class GitModel:
                 value = eval("commit." + field)
         return value
 
+    def set_merge(self, merge_state):
+        self._merge = merge_state
+
     def set_columns(self, list):
         self._columns = []
         for item in list:
@@ -133,6 +137,15 @@ class GitModel:
                 self._modified[commit] = {}
 
             self._modified[commit][field_name] = value
+            if self._merge:
+                if field_name == "committed_date":
+                    self._modified[commit]["authored_date"] = value
+                elif field_name == "authored_date":
+                    self._modified[commit]["committed_date"] = value
+                elif field_name == "author":
+                    self._modified[commit]["committer"] = value
+                elif field_name == "committer":
+                    self._modified[commit]["author"] = value
 
             self.dirty = True
 
