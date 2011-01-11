@@ -53,6 +53,14 @@ class QGitDelegate(QItemDelegate):
             model.setData(index, editor.dateTime().toTime_t())
         elif field_name in ACTOR_FIELDS:
             value = str(editor.toPlainText())
-            name = value.split(' <')[0]
-            email = value.split(' <')[1].split('>')[0]
-            model.setData(index, (name, email))
+
+            try:
+                name = value.split(' <')[0]
+                email = value.split(' <')[1].split('>')[0]
+            except:
+                name = ""
+                email = ""
+            finally:
+                if name != "" and email != "":
+                    model.setData(index, (name, email))
+
