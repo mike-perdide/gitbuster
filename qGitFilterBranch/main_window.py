@@ -89,9 +89,9 @@ class MainWindow(QMainWindow):
     def apply(self):
         self._ui.tableView.model().write()
 
-    def merge_clicked(self):
+    def merge_clicked(self, check_state):
         model = self._ui.tableView.model()
-        check_state = self._ui.mergeCheckBox.checkState()
+
         if check_state == Qt.Checked:
             model.setMerge(True)
         else:
