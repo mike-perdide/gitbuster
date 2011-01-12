@@ -34,6 +34,8 @@ class MainWindow(QMainWindow):
         self._checkboxes = {}
         self.create_checkboxes()
 
+        self._ui.filtersWidget.hide()
+
     def create_checkboxes(self):
         iter = 0
         for checkbox_name in AVAILABLE_CHOICES:
@@ -80,6 +82,10 @@ class MainWindow(QMainWindow):
 
         self.connect(self._ui.mergeCheckBox, SIGNAL("stateChanged(int)"),
                      self.merge_clicked)
+
+        self.connect(self._ui.filtersCheckBox, SIGNAL("stateChanged(int)"),
+                     self.filters_clicked)
+
     def apply(self):
         self._ui.tableView.model().write()
 
@@ -90,6 +96,23 @@ class MainWindow(QMainWindow):
             model.setMerge(True)
         else:
             model.setMerge(False)
+
+    def filters_clicked(self, check_state):
+        model = self._ui.tableView.model()
+
+        current_width = self.size().width()
+        current_height = self.size().height()
+
+        if check_state == Qt.Checked:
+            self._ui.filtersWidget.show()
+            extra_height = self._ui.filtersWidget.height() + 6
+            self.resize(current_width,
+                        current_height + extra_height)
+        else:
+            self._ui.filtersWidget.hide()
+            extra_height = self._ui.filtersWidget.height() + 6
+            self.resize(current_width,
+                        current_height - extra_height)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
