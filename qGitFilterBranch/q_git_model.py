@@ -88,8 +88,6 @@ class QGitModel(QAbstractTableModel):
         if index.isValid() and 0 <= index.row() < self.rowCount():
             self.git_model.set_data(index, value)
 
-            self.dirty = True
-            #emit dataChanged
             self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"),
                       index, index)
             return True
@@ -117,6 +115,3 @@ class QGitModel(QAbstractTableModel):
                                 Qt.NoItemFlags)
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.ItemIsEditable)
-
-    def setData(self, index, value):
-        self.git_model.set_data(index, value)
