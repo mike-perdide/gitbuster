@@ -1,7 +1,6 @@
 
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, SIGNAL, QDateTime
 from PyQt4.QtGui import QColor
-from time import struct_time, strftime
 from qGitFilter.git_model import GitModel, NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, ACTOR_FIELDS
 from datetime import datetime
 
