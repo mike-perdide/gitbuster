@@ -1,6 +1,23 @@
 from time import struct_time
 from datetime import datetime, tzinfo, timedelta
-from git import Repo
+
+from sys import exit
+try:
+    from git import Repo
+except:
+    print """Couldn't import git. You might want to install GitPython from:
+    http://pypi.python.org/pypi/GitPython/"""
+    exit(1)
+try:
+    from git import __version__
+    str_maj, str_min, str_rev = __version__.split(".")
+    maj, min, rev = int(str_maj), int(str_min), int(str_rev)
+    if  maj < 0 or (maj == 0 and min < 3) or (maj == 0 and min == 3 and rev < 1):
+        raise Exception()
+except:
+    print "This project needs GitPython (>=0.3.1)."
+    exit(1)
+
 from git.objects.util import altz_to_utctz_str
 
 NAMES = {'actor':'Actor', 'author':'Author',
