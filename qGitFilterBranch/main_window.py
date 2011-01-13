@@ -125,12 +125,16 @@ class MainWindow(QMainWindow):
             self.resize(current_width,
                         current_height + extra_height)
             self._ui.filterButton.show()
+            model.enable_filters()
         else:
             self._ui.filtersWidget.hide()
             extra_height = self._ui.filtersWidget.height() + 6
             self.resize(current_width,
                         current_height - extra_height)
             self._ui.filterButton.hide()
+            model.disable_filters()
+
+        model.reset()
 
     def get_filters(self):
         model = self._ui.tableView.model()
