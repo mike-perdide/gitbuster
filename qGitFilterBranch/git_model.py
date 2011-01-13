@@ -140,6 +140,8 @@ class GitModel:
             elif field in ACTOR_FIELDS:
                 actor = eval("commit." + field)
                 value = (actor.name, actor.email)
+            elif field == "message":
+                value = commit.message.rstrip()
             else:
                 value = eval("commit." + field)
         return value
