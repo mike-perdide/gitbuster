@@ -1,5 +1,5 @@
 
-from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, SIGNAL
+from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, SIGNAL, QDateTime
 from PyQt4.QtGui import QColor
 from time import struct_time, strftime
 from qGitFilter.git_model import GitModel, NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, ACTOR_FIELDS
@@ -76,6 +76,79 @@ class QGitModel(QAbstractTableModel):
             self._filters.pop(filter)
 
     def filter_match(self, index):
+        column = index.column()
+        field_name = self.git_model.get_columns()[column]
+        filters = self._filters
+
+        if field_name in TIME_FIELDS:
+            timestamp, tz = self.git_model.data(index)
+            _q_datetime = QDateTime()
+            _q_datetime.setTime_t(timestamp)
+
+            item_date = _q_datetime.date()
+            filter_after_date = None
+            filter_before_date = None
+            if "afterDate" in filters:
+                filter_after_date = filters["afterDate"]
+            if "beforeDate" in filters:
+                filter_before_date = filters["beforeDate"]
+            if filter_after_date and filter_before_date:
+                if filter_after_date < item_date < filter_before_date:
+                    return True
+            elif (filter_after_date and filter_after_date < item_date):
+                return True
+            elif (filter_before_date and
+                  filter_before_date > item_date):
+                return True
+
+            item_weekday = item_date.dayOfWeek()
+            filter_after_weekday = None
+            filter_before_weekday = None
+            if "afterWeekday" in filters:
+                filter_after_weekday = filters["afterWeekday"] + 1
+            if "beforeWeekday" in filters:
+                filter_before_weekday = filters["beforeWeekday"] + 1
+
+            if filter_after_weekday and filter_before_weekday:
+                if filter_after_weekday < item_weekday < filter_before_weekday:
+                    return True
+            elif (filter_after_weekday and filter_after_weekday < item_weekday):
+                return True
+            elif (filter_before_weekday and
+                  filter_before_weekday > item_weekday):
+                return True
+
+            item_time = _q_datetime.time()
+            filter_after_hour = None
+            filter_before_hour = None
+            if "afterHour" in filters:
+                filter_after_hour = filters["afterHour"]
+            if "beforeHour" in filters:
+                filter_before_hour = filters["beforeHour"]
+
+            if filter_after_hour and filter_before_hour:
+                if filter_after_hour < item_time < filter_before_hour:
+                    return True
+            elif (filter_after_hour and filter_after_hour < item_time):
+                return True
+            elif (filter_before_hour and
+                  filter_before_hour > item_time):
+                return True
+
+        elif field_name in ACTOR_FIELDS:
+            if "nameEmail" in filters:
+                match = str(filters["nameEmail"])
+                name, email = self.git_model.data(index)
+                if match in name or match in email:
+                    return True
+
+        elif field_name in TEXT_FIELDS:
+            if "commit" in filters:
+                match = str(filters["commit"])
+                commit_message = self.git_model.data(index)
+                if match in commit_message:
+                    return True
+
         return False
 
     def setColumns(self, list):
