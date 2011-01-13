@@ -33,6 +33,20 @@ ACTOR_FIELDS = ['author', 'committer']
 TIME_FIELDS = ['authored_date', 'committed_date']
 NOT_EDITABLE_FIELDS = ['hexsha']
 
+ENV_FIELDS = {'author_name'     : 'GIT_AUTHOR_NAME',
+              'author_email'    : 'GIT_AUTHOR_EMAIL',
+              'authored_date'   : 'GIT_AUTHOR_DATE',
+              'committer_name'  : 'GIT_COMMITTER_NAME',
+              'committer_email' : 'GIT_COMMITTER_EMAIL',
+              'committer_date'  : 'GIT_COMMITTER_DATE' }
+
+
+def add_assign(env_filter, field, value):
+    env_filter += "export " + ENV_FIELDS[field] + ";\n"
+    env_filter += ENV_FIELDS[field] + "='%s'" % value + ";\n"
+    return env_filter
+
+
 class Index:
 
     def __init__(self, row=0, column=0):
@@ -187,6 +201,47 @@ class GitModel:
         return value
 
     def write(self):
-        from pprint import pprint
-        pprint(self._modified)
+        env_filter = ""
+        commit_filter = ""
 
+        for commit in self._modified:
+            env_header = "if [ \"\$GIT_COMMIT\" = '%s' ]\nthen\n" % commit.hexsha
+            commit_header = str(env_header)
+
+            env_content = ""
+            commit_content = ""
+
+            for field in self._modified[commit]:
+                if field in ACTOR_FIELDS:
+                    name, email = self._modified[commit][field]
+                    if field == "author":
+                        env_content = add_assign(env_content, "author_name", name)
+                        env_content = add_assign(env_content, "author_email", email)
+                    elif field == "committer":
+                        env_content = add_assign(env_content, "committer_name", name)
+                        env_content = add_assign(env_content, "committer_email", email)
+                elif field == "message":
+                    value = self._modified[commit][field]
+                    commit_content += "echo '%s' > ../message\n" % value
+                else:
+                    value = self._modified[commit][field]
+                    export_list += "export " + ENV_FIELDS[field] + ";"
+                    set_list += ENV_FIELDS[field] + "='%s'" % value
+
+            if env_content:
+                env_filter += env_header + env_content +"fi\n"
+
+            if commit_content:
+                commit_filter += commit_header + commit_content + "fi\n"
+
+        options = ""
+        if env_filter:
+            options += '--env-filter "%s" ' % env_filter
+        if commit_filter:
+            commit_filter += 'git commit-tree \\"\$@\\"\n'
+            options += '--commit-filter "%s" ' % commit_filter
+
+        if options:
+            oldest_commit_parent = ""
+            command = "git filter-branch " + options + oldest_commit_parent
+            print command
