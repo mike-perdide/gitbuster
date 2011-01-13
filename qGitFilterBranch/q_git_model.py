@@ -81,65 +81,107 @@ class QGitModel(QAbstractTableModel):
     def disable_filters(self):
         self._filters_enabled = False
 
+    def date_match(self, index, item_date):
+        filters = self._filters
+
+        filter_after_date = None
+        filter_before_date = None
+
+        if "afterDate" in filters:
+            filter_after_date = filters["afterDate"]
+        if "beforeDate" in filters:
+            filter_before_date = filters["beforeDate"]
+
+        if not (filter_before_date or filter_after_date):
+            return True
+        elif filter_after_date and filter_before_date:
+            if filter_after_date < item_date < filter_before_date:
+                return True
+        elif (filter_after_date and filter_after_date < item_date):
+            return True
+        elif (filter_before_date and
+              filter_before_date > item_date):
+            return True
+
+        return False
+
+    def weekday_match(self, index, item_weekday):
+        filters = self._filters
+
+        filter_after_weekday = None
+        filter_before_weekday = None
+
+        if "afterWeekday" in filters:
+            filter_after_weekday = filters["afterWeekday"] + 1
+        if "beforeWeekday" in filters:
+            filter_before_weekday = filters["beforeWeekday"] + 1
+
+        if not (filter_after_weekday or filter_before_weekday):
+            return True
+        elif filter_after_weekday and filter_before_weekday:
+            if filter_after_weekday < item_weekday < filter_before_weekday:
+                return True
+        elif (filter_after_weekday and filter_after_weekday < item_weekday):
+            return True
+        elif (filter_before_weekday and
+              filter_before_weekday > item_weekday):
+            return True
+
+        return False
+
+    def time_match(self, index, item_time):
+        filters = self._filters
+
+        filter_after_hour = None
+        filter_before_hour = None
+
+        if "afterHour" in filters:
+            filter_after_hour = filters["afterHour"]
+        if "beforeHour" in filters:
+            filter_before_hour = filters["beforeHour"]
+
+        if not (filter_after_hour or filter_before_hour):
+            return True
+        elif filter_after_hour and filter_before_hour:
+            if filter_after_hour < item_time < filter_before_hour:
+                return True
+        elif (filter_after_hour and filter_after_hour < item_time):
+            return True
+        elif (filter_before_hour and
+              filter_before_hour > item_time):
+            return True
+
+        return False
+
     def filter_match(self, index):
         column = index.column()
         field_name = self.git_model.get_columns()[column]
         filters = self._filters
 
         if field_name in TIME_FIELDS:
+            filters = self._filters
             timestamp, tz = self.git_model.data(index)
             _q_datetime = QDateTime()
             _q_datetime.setTime_t(timestamp)
 
             item_date = _q_datetime.date()
-            filter_after_date = None
-            filter_before_date = None
-            if "afterDate" in filters:
-                filter_after_date = filters["afterDate"]
-            if "beforeDate" in filters:
-                filter_before_date = filters["beforeDate"]
-            if filter_after_date and filter_before_date:
-                if filter_after_date < item_date < filter_before_date:
-                    return True
-            elif (filter_after_date and filter_after_date < item_date):
-                return True
-            elif (filter_before_date and
-                  filter_before_date > item_date):
-                return True
-
             item_weekday = item_date.dayOfWeek()
-            filter_after_weekday = None
-            filter_before_weekday = None
-            if "afterWeekday" in filters:
-                filter_after_weekday = filters["afterWeekday"] + 1
-            if "beforeWeekday" in filters:
-                filter_before_weekday = filters["beforeWeekday"] + 1
-
-            if filter_after_weekday and filter_before_weekday:
-                if filter_after_weekday < item_weekday < filter_before_weekday:
-                    return True
-            elif (filter_after_weekday and filter_after_weekday < item_weekday):
-                return True
-            elif (filter_before_weekday and
-                  filter_before_weekday > item_weekday):
-                return True
-
             item_time = _q_datetime.time()
-            filter_after_hour = None
-            filter_before_hour = None
-            if "afterHour" in filters:
-                filter_after_hour = filters["afterHour"]
-            if "beforeHour" in filters:
-                filter_before_hour = filters["beforeHour"]
 
-            if filter_after_hour and filter_before_hour:
-                if filter_after_hour < item_time < filter_before_hour:
-                    return True
-            elif (filter_after_hour and filter_after_hour < item_time):
-                return True
-            elif (filter_before_hour and
-                  filter_before_hour > item_time):
-                return True
+            date_time_filters = ("afterWeekday", "beforeWeekday",
+                                 "beforeDate", "afterDate",
+                                 "beforeHour", "afterHour")
+            has_date_time_filter = False
+            for filter in filters:
+                if filter in date_time_filters:
+                    has_date_time_filter = True
+
+            if not has_date_time_filter:
+                return False
+            else:
+                return self.date_match(index, item_date) and \
+                       self.weekday_match(index, item_weekday) and \
+                       self.time_match(index, item_time)
 
         elif field_name in ACTOR_FIELDS:
             if "nameEmail" in filters:
