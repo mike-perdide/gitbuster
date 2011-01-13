@@ -63,7 +63,7 @@
          <item row="1" column="1">
           <widget class="QDateEdit" name="beforeDateFilterDateEdit">
            <property name="displayFormat">
-            <string>MM/dd/yy</string>
+            <string>dd/MM/yyyy</string>
            </property>
           </widget>
          </item>
@@ -184,7 +184,11 @@
           <widget class="QLineEdit" name="commitFilterLineEdit"/>
          </item>
          <item row="1" column="4">
-          <widget class="QTimeEdit" name="beforeHourFilterTimeEdit"/>
+          <widget class="QTimeEdit" name="beforeHourFilterTimeEdit">
+           <property name="displayFormat">
+            <string>hh:mm</string>
+           </property>
+          </widget>
          </item>
          <item row="2" column="2" colspan="2">
           <widget class="QCheckBox" name="nameEmailFilterCheckBox">
@@ -194,7 +198,11 @@
           </widget>
          </item>
          <item row="0" column="4">
-          <widget class="QTimeEdit" name="afterHourFilterTimeEdit"/>
+          <widget class="QTimeEdit" name="afterHourFilterTimeEdit">
+           <property name="displayFormat">
+            <string>hh:mm</string>
+           </property>
+          </widget>
          </item>
          <item row="2" column="4">
           <widget class="QLineEdit" name="nameEmailFilterLineEdit"/>
@@ -202,7 +210,7 @@
          <item row="0" column="1">
           <widget class="QDateEdit" name="afterDateFilterDateEdit">
            <property name="displayFormat">
-            <string>MM/dd/yy</string>
+            <string>dd/MM/yyyy</string>
            </property>
           </widget>
          </item>
