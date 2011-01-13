@@ -12,7 +12,8 @@ try:
     from git import __version__
     str_maj, str_min, str_rev = __version__.split(".")
     maj, min, rev = int(str_maj), int(str_min), int(str_rev)
-    if  maj < 0 or (maj == 0 and min < 3) or (maj == 0 and min == 3 and rev < 1):
+    if  maj < 0 or (maj == 0 and min < 3) or \
+        (maj == 0 and min == 3 and rev < 1):
         raise Exception()
 except:
     print "This project needs GitPython (>=0.3.1)."
@@ -207,8 +208,8 @@ class GitModel:
         commit_filter = ""
 
         for commit in self._modified:
-            env_header = "if [ \"\$GIT_COMMIT\" = '%s' ]\nthen\n" % commit.hexsha
-            commit_header = str(env_header)
+            hexsha = commit.hexsha
+            env_header = "if [ \"\$GIT_COMMIT\" = '%s' ]\nthen\n" % hexsha
 
             env_content = ""
             commit_content = ""
@@ -217,11 +218,15 @@ class GitModel:
                 if field in ACTOR_FIELDS:
                     name, email = self._modified[commit][field]
                     if field == "author":
-                        env_content = add_assign(env_content, "author_name", name)
-                        env_content = add_assign(env_content, "author_email", email)
+                        env_content = add_assign(env_content,
+                                                 "author_name", name)
+                        env_content = add_assign(env_content,
+                                                 "author_email", email)
                     elif field == "committer":
-                        env_content = add_assign(env_content, "committer_name", name)
-                        env_content = add_assign(env_content, "committer_email", email)
+                        env_content = add_assign(env_content,
+                                                 "committer_name", name)
+                        env_content = add_assign(env_content,
+                                                 "committer_email", email)
                 elif field == "message":
                     value = self._modified[commit][field]
                     commit_content += "echo '%s' > ../message\n" % value
