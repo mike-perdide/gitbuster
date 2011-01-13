@@ -11,6 +11,7 @@ class QGitModel(QAbstractTableModel):
         QAbstractTableModel.__init__(self, None)
         self.git_model = GitModel()
         self.populate()
+        self._filters = {}
 
     def get_git_model(self):
         return self.git_model
@@ -61,8 +62,21 @@ class QGitModel(QAbstractTableModel):
             modified = self.git_model.get_modifed()
             if commit in modified and field_name in modified[commit]:
                 return QVariant(QColor(Qt.yellow))
+        elif role == Qt.ForegroundRole:
+            if self.filter_match(index):
+                return QVariant(QColor(Qt.red))
 
         return QVariant()
+
+    def filter_set(self, filter, value):
+        self._filters[filter] = value
+
+    def filter_unset(self, filter):
+        if filter in self._filters:
+            self._filters.pop(filter)
+
+    def filter_match(self, index):
+        return False
 
     def setColumns(self, list):
         self.git_model.set_columns(list)
