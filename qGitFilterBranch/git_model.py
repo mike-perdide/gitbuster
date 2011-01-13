@@ -210,6 +210,7 @@ class GitModel:
         for commit in self._modified:
             hexsha = commit.hexsha
             env_header = "if [ \"\$GIT_COMMIT\" = '%s' ]\nthen\n" % hexsha
+            commit_header = str(env_header)
 
             env_content = ""
             commit_content = ""
