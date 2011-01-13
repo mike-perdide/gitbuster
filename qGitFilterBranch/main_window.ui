@@ -155,7 +155,7 @@
          <item row="1" column="0">
           <widget class="QCheckBox" name="beforeDateFilterCheckBox">
            <property name="text">
-            <string>Before date</string>
+            <string>Before date (dd/mm/yyyy)</string>
            </property>
           </widget>
          </item>
@@ -169,7 +169,7 @@
          <item row="3" column="2" colspan="2">
           <widget class="QCheckBox" name="commitFilterCheckBox">
            <property name="text">
-            <string>Commit message</string>
+            <string>Match commit message</string>
            </property>
           </widget>
          </item>
@@ -193,7 +193,7 @@
          <item row="2" column="2" colspan="2">
           <widget class="QCheckBox" name="nameEmailFilterCheckBox">
            <property name="text">
-            <string>Name/Email</string>
+            <string>Match name/email</string>
            </property>
           </widget>
          </item>
@@ -217,7 +217,7 @@
          <item row="0" column="0">
           <widget class="QCheckBox" name="afterDateFilterCheckBox">
            <property name="text">
-            <string>After date</string>
+            <string>After date (dd/mm/yyyy)</string>
            </property>
           </widget>
          </item>
