@@ -26,7 +26,6 @@ class MainWindow(QMainWindow):
 
         self._ui.tableView.setModel(QGitModel())
         self._ui.tableView.verticalHeader().hide()
-        self._ui.tableView.resizeColumnsToContents()
         self._ui.tableView.setItemDelegate(QGitDelegate())
 
         self._filters_checkboxes = {
@@ -47,6 +46,8 @@ class MainWindow(QMainWindow):
 
         self._ui.filtersWidget.hide()
         self._ui.filterButton.hide()
+
+        self._ui.tableView.resizeColumnsToContents()
 
     def create_checkboxes(self):
         iter = 0
