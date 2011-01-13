@@ -145,6 +145,8 @@ class MainWindow(QMainWindow):
             else:
                 model.filter_unset(checkbox_name)
 
+        model.reset()
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     a = MainWindow(debug=True)
