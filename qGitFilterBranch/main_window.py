@@ -29,19 +29,31 @@ class MainWindow(QMainWindow):
         self._ui.tableView.resizeColumnsToContents()
         self._ui.tableView.setItemDelegate(QGitDelegate())
 
+        self._filters_checkboxes = {
+            "afterWeekday"  : self._ui.afterWeekdayFilterComboBox.currentIndex,
+            "beforeWeekday" : self._ui.beforeWeekdayFilterComboBox.currentIndex,
+            "beforeDate"    : self._ui.beforeDateFilterDateEdit.date,
+            "afterDate"     : self._ui.afterDateFilterDateEdit.date,
+            "beforeHour"    : self._ui.beforeHourFilterTimeEdit.time,
+            "afterHour"     : self._ui.afterHourFilterTimeEdit.time,
+            "commit"        : self._ui.commitFilterLineEdit.text,
+            "nameEmail"     : self._ui.nameEmailFilterLineEdit.text
+        }
+
         self.connect_slots()
 
-        self._checkboxes = {}
+        self._field_checkboxes = {}
         self.create_checkboxes()
 
         self._ui.filtersWidget.hide()
+        self._ui.filterButton.hide()
 
     def create_checkboxes(self):
         iter = 0
         for checkbox_name in AVAILABLE_CHOICES:
             checkbox = QCheckBox(self._ui.centralwidget)
             self._ui.checkboxLayout.addWidget(checkbox, 0, iter, 1, 1)
-            self._checkboxes[checkbox_name] = checkbox
+            self._field_checkboxes[checkbox_name] = checkbox
             checkbox.setText(QApplication.translate("MainWindow",
                                                     NAMES[checkbox_name], None,
                                                     QApplication.UnicodeUTF8))
@@ -66,7 +78,7 @@ class MainWindow(QMainWindow):
     def refreshCheckboxes(self):
         choices = []
         for checkbox_name in AVAILABLE_CHOICES:
-            if self._checkboxes[checkbox_name].isChecked():
+            if self._field_checkboxes[checkbox_name].isChecked():
                 choices.append(checkbox_name)
 
         self._ui.tableView.model().setColumns(choices)
@@ -85,6 +97,9 @@ class MainWindow(QMainWindow):
 
         self.connect(self._ui.filtersCheckBox, SIGNAL("stateChanged(int)"),
                      self.filters_clicked)
+
+        self.connect(self._ui.filterButton, SIGNAL("clicked()"),
+                     self.get_filters)
 
     def apply(self):
         self._ui.tableView.model().write()
@@ -108,11 +123,27 @@ class MainWindow(QMainWindow):
             extra_height = self._ui.filtersWidget.height() + 6
             self.resize(current_width,
                         current_height + extra_height)
+            self._ui.filterButton.show()
         else:
             self._ui.filtersWidget.hide()
             extra_height = self._ui.filtersWidget.height() + 6
             self.resize(current_width,
                         current_height - extra_height)
+            self._ui.filterButton.hide()
+
+    def get_filters(self):
+        model = self._ui.tableView.model()
+
+        for checkbox_name in self._filters_checkboxes:
+            checkbox = eval("self._ui." + checkbox_name + "FilterCheckBox")
+            check_state = checkbox.checkState()
+
+            if check_state == Qt.Checked:
+                get_value = self._filters_checkboxes[checkbox_name]
+                value = get_value()
+                model.filter_set(checkbox_name, value)
+            else:
+                model.filter_unset(checkbox_name)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
