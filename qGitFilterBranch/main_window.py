@@ -4,9 +4,9 @@
 
 from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, QSizePolicy, QPushButton
 from PyQt4.QtCore import SIGNAL, Qt
-from qGitFilter.main_window_ui import Ui_MainWindow
-from qGitFilter.q_git_model import QGitModel, NAMES
-from qGitFilter.q_git_delegate import QGitDelegate
+from qGitFilterBranch.main_window_ui import Ui_MainWindow
+from qGitFilterBranch.q_git_model import QGitModel, NAMES
+from qGitFilterBranch.q_git_delegate import QGitDelegate
 
 import sys
 

@@ -1,6 +1,6 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from qGitFilter.git_model import TEXT_FIELDS, TIME_FIELDS, ACTOR_FIELDS
+from qGitFilterBranch.git_model import TEXT_FIELDS, TIME_FIELDS, ACTOR_FIELDS
 
 class QGitDelegate(QItemDelegate):
 
