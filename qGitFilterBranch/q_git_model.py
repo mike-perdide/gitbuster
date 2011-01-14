@@ -74,6 +74,20 @@ class QGitModel(QAbstractTableModel):
         elif role == Qt.ForegroundRole:
             if "filters" in self._enabled_options and self.filter_match(index):
                 return QVariant(QColor(Qt.red))
+        elif role == Qt.ToolTipRole:
+            value = self.git_model.data(index)
+            if field_name == "hexsha":
+                return QVariant(str(value))
+            elif field_name in TIME_FIELDS:
+                _tmstmp, _tz = value
+                _datetime = datetime.fromtimestamp(_tmstmp).replace(tzinfo=_tz)
+                if "display_weekday" in self._enabled_options:
+                    date_format = "%Y-%m-%d %H:%M:%S %Z (%a)"
+                else:
+                    date_format = "%Y-%m-%d %H:%M:%S %Z"
+                return QVariant(_datetime.strftime(date_format))
+            elif field_name == "message":
+                return QVariant(value)
 
         return QVariant()
 
