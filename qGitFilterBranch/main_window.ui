@@ -36,6 +36,12 @@
     </item>
     <item row="8" column="6">
      <widget class="QPushButton" name="applyButton">
+      <property name="maximumSize">
+       <size>
+        <width>75</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="text">
        <string>Apply</string>
       </property>
@@ -43,6 +49,12 @@
     </item>
     <item row="8" column="7">
      <widget class="QPushButton" name="cancelButton">
+      <property name="maximumSize">
+       <size>
+        <width>75</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="text">
        <string>Cancel</string>
       </property>
@@ -241,6 +253,12 @@
     </item>
     <item row="8" column="5">
      <widget class="QPushButton" name="filterButton">
+      <property name="maximumSize">
+       <size>
+        <width>75</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="text">
        <string>Filter</string>
       </property>
@@ -248,6 +266,12 @@
     </item>
     <item row="8" column="0">
      <widget class="QPushButton" name="toggleModificationsButton">
+      <property name="maximumSize">
+       <size>
+        <width>120</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <property name="text">
        <string>Hide modifications</string>
       </property>
