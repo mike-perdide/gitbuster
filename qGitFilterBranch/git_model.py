@@ -87,6 +87,7 @@ class GitModel:
         self.populate()
         self._did = False
         self._merge = False
+        self._show_modifications = True
 
     def populate(self, filter_method=None):
         self._commits = []
@@ -125,7 +126,7 @@ class GitModel:
         column = index.column()
         field = self._columns[column]
 
-        if self.is_modified(index):
+        if self._show_modifications and self.is_modified(index):
             modified = self._modified[commit]
             if field in TIME_FIELDS:
                 if field == 'authored_date':
@@ -214,6 +215,15 @@ class GitModel:
 
         value = eval("commit."+self._columns[column])
         return value
+
+    def toggle_modifications(self):
+        if self._show_modifications:
+            self._show_modifications = False
+        else:
+            self._show_modifications = True
+
+    def show_modifications(self):
+        return self._show_modifications
 
     def write(self):
         env_filter = ""

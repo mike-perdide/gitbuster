@@ -126,6 +126,9 @@ class MainWindow(QMainWindow):
         self.connect(self._ui.filterButton, SIGNAL("clicked()"),
                      self.get_filters)
 
+        self.connect(self._ui.toggleModificationsButton, SIGNAL("clicked()"),
+                     self.toggle_modifications)
+
     def apply(self):
         self._ui.tableView.model().write()
 
@@ -176,6 +179,20 @@ class MainWindow(QMainWindow):
 
         model.populate()
         model.reset()
+
+    def toggle_modifications(self):
+        model = self._ui.tableView.model()
+
+        model.toggle_modifications()
+
+        if model.show_modifications():
+            label = "Hide modifications"
+        else:
+            label = "Show modifications"
+
+        self._ui.toggleModificationsButton.setText(
+            QApplication.translate("MainWindow", label,
+                                   None, QApplication.UnicodeUTF8))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

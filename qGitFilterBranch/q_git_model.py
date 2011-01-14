@@ -71,9 +71,10 @@ class QGitModel(QAbstractTableModel):
                 return value
             return self.data(index, Qt.DisplayRole)
         elif role == Qt.BackgroundColorRole:
-            modified = self.git_model.get_modifed()
-            if commit in modified and field_name in modified[commit]:
-                return QVariant(QColor(Qt.yellow))
+            if self.show_modifications():
+                modified = self.git_model.get_modifed()
+                if commit in modified and field_name in modified[commit]:
+                    return QVariant(QColor(Qt.yellow))
         elif role == Qt.ForegroundRole:
             if "filters" in self._enabled_options and self.filter_match(index):
                 return QVariant(QColor(Qt.red))
@@ -108,6 +109,13 @@ class QGitModel(QAbstractTableModel):
     def disable_option(self, option):
         if option in self._enabled_options:
             self._enabled_options.pop(self._enabled_options.index(option))
+
+    def toggle_modifications(self):
+        self.git_model.toggle_modifications()
+        self.reset()
+
+    def show_modifications(self):
+        return self.git_model.show_modifications()
 
     def is_enabled(self, option):
         return option in self._enabled_options
