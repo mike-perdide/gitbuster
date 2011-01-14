@@ -232,7 +232,7 @@ class GitModel:
 
         for commit in self._modified:
             hexsha = commit.hexsha
-            env_header = "if [ \"\$GIT_COMMIT\" = '%s' ]\nthen\n" % hexsha
+            env_header = "if [ \"\$GIT_COMMIT\" = '%s' ]; then " % hexsha
             commit_header = str(env_header)
 
             env_content = ""
@@ -257,7 +257,7 @@ class GitModel:
                     message = message.replace('$', '\\\$')
                     message = message.replace("'", "\\'")
                     message = message.replace('"', '\\\\\\"')
-                    commit_content += "echo %s > ../message\n" % message
+                    commit_content += "echo %s > ../message;" % message
                 else:
                     value = self._modified[commit][field]
                     export_list += "export " + ENV_FIELDS[field] + ";"
@@ -267,7 +267,7 @@ class GitModel:
                 env_filter += env_header + env_content +"fi\n"
 
             if commit_content:
-                commit_filter += commit_header + commit_content + "fi\n"
+                commit_filter += commit_header + commit_content + "fi;"
 
         options = ""
         if env_filter:
