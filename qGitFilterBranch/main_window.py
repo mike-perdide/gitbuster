@@ -174,6 +174,7 @@ class MainWindow(QMainWindow):
             else:
                 model.filter_unset(checkbox_name)
 
+        model.populate()
         model.reset()
 
 if __name__ == "__main__":

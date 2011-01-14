@@ -9,15 +9,18 @@ class QGitModel(QAbstractTableModel):
     def __init__(self):
         QAbstractTableModel.__init__(self, None)
         self.git_model = GitModel()
-        self.populate()
         self._filters = {}
+        self.populate()
         self._enabled_options = []
 
     def get_git_model(self):
         return self.git_model
 
     def populate(self):
-        self.git_model.populate()
+        if self._filters:
+            self.git_model.populate(self.filter_match)
+        else:
+            self.git_model.populate()
         self.reset()
 
     def parent(self, index):

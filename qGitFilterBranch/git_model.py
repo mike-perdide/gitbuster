@@ -88,10 +88,22 @@ class GitModel:
         self._did = False
         self._merge = False
 
-    def populate(self):
+    def populate(self, filter_method=None):
         self._commits = []
         for commit in self._repo.iter_commits():
             self._commits.append(commit)
+
+        if filter_method:
+            iter = 0
+            filtered_commits = []
+            for commit in self._repo.iter_commits():
+                for field_index in range(len(self._columns)):
+                    index = Index(row=iter, column=field_index)
+                    if filter_method(index):
+                        filtered_commits.append(commit)
+                        break
+                iter += 1
+            self._commits = filtered_commits
 
     def get_commits(self):
         return self._commits
