@@ -277,9 +277,26 @@ class GitModel:
             options += '--commit-filter "%s" ' % commit_filter
 
         if options:
-            oldest_commit_parent = ""
+            oldest_commit_parent = self.oldest_modified_commit_parent()
             command = "git filter-branch " + options + oldest_commit_parent
             process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
 
             command = 'rm -fr "$(git rev-parse --git-dir)/refs/original/"'
             process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+
+    def oldest_modified_commit_parent(self):
+        reverted_list = list(self._commits)
+        reverted_list.reverse()
+
+        oldest_modified = None
+        parent = None
+        for commit in reverted_list:
+            if commit in self._modified:
+                oldest_modified = commit
+                break
+            parent = commit
+
+        if parent:
+            return str(parent.hexsha) + ".."
+        else:
+            return "HEAD"
