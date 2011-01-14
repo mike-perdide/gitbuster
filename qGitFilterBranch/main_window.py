@@ -60,17 +60,11 @@ class MainWindow(QMainWindow):
                                                     QApplication.UnicodeUTF8))
             if checkbox_name in PRE_CHOICE:
                 checkbox.setCheckState(Qt.Checked)
+            self.connect(checkbox, SIGNAL("stateChanged(int)"),
+                         self.refreshCheckboxes)
             iter += 1
 
-        refreshButton = QPushButton(self._ui.centralwidget)
-        refreshButton.setObjectName("refreshButton")
-        refreshButton.setText(QApplication.translate("MainWindow", "Refresh",
-                                        None, QApplication.UnicodeUTF8))
-        self._ui.checkboxLayout.addWidget(refreshButton, 0, iter, 1, 1)
-        self.connect(refreshButton, SIGNAL("pressed()"),
-                     self.refreshCheckboxes)
         iter += 1
-
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding,
                                  QSizePolicy.Minimum)
         self._ui.checkboxLayout.addItem(spacerItem, 0, iter, 1, 1)
