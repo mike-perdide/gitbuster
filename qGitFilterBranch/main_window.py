@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
             if checkbox_name in PRE_CHOICE:
                 checkbox.setCheckState(Qt.Checked)
             self.connect(checkbox, SIGNAL("stateChanged(int)"),
-                         self.refreshCheckboxes)
+                         self.refresh_checkboxes)
             iter += 1
 
         for checkbox_name in AVAILABLE_OPTIONS:
@@ -85,10 +85,10 @@ class MainWindow(QMainWindow):
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding,
                                  QSizePolicy.Minimum)
         self._ui.checkboxLayout.addItem(spacerItem, 0, iter, 1, 1)
-        self.refreshCheckboxes()
+        self.refresh_checkboxes()
         self.refresh_display_options()
 
-    def refreshCheckboxes(self):
+    def refresh_checkboxes(self):
         choices = []
         for checkbox_name in AVAILABLE_CHOICES:
             if self._checkboxes[checkbox_name].isChecked():
