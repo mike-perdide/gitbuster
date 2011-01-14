@@ -17,7 +17,7 @@ class QGitDelegate(QItemDelegate):
             editor = QLineEdit(parent)
         elif field_name in TIME_FIELDS:
             editor = QDateTimeEdit(parent)
-            editor.setDisplayFormat("dd/MM/yyyy hh:mm:ss")
+            editor.setDisplayFormat("yyyy-MM-dd hh:mm:ss")
         else:
             return QItemDelegate.createEditor(self, parent, option,
                                               index)
