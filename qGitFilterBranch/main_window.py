@@ -15,6 +15,8 @@ AVAILABLE_CHOICES = ['hexsha',
                      'author', 'committer',
                      'message']
 PRE_CHOICE = ['hexsha', 'authored_date', 'author', 'message']
+AVAILABLE_OPTIONS = {'display_email'    : 'Email',
+                     'display_weekday'  : 'Weekday'}
 
 class MainWindow(QMainWindow):
 
@@ -41,7 +43,7 @@ class MainWindow(QMainWindow):
 
         self.connect_slots()
 
-        self._field_checkboxes = {}
+        self._checkboxes = {}
         self.create_checkboxes()
 
         self._ui.filtersWidget.hide()
@@ -54,7 +56,7 @@ class MainWindow(QMainWindow):
         for checkbox_name in AVAILABLE_CHOICES:
             checkbox = QCheckBox(self._ui.centralwidget)
             self._ui.checkboxLayout.addWidget(checkbox, 0, iter, 1, 1)
-            self._field_checkboxes[checkbox_name] = checkbox
+            self._checkboxes[checkbox_name] = checkbox
             checkbox.setText(QApplication.translate("MainWindow",
                                                     NAMES[checkbox_name], None,
                                                     QApplication.UnicodeUTF8))
@@ -64,20 +66,43 @@ class MainWindow(QMainWindow):
                          self.refreshCheckboxes)
             iter += 1
 
-        iter += 1
+        for checkbox_name in AVAILABLE_OPTIONS:
+            checkbox = QCheckBox(self._ui.centralwidget)
+            self._ui.checkboxLayout.addWidget(checkbox, 0, iter, 1, 1)
+            self._checkboxes[checkbox_name] = checkbox
+            checkbox.setText(QApplication.translate("MainWindow",
+                                        AVAILABLE_OPTIONS[checkbox_name], None,
+                                        QApplication.UnicodeUTF8))
+            if checkbox_name in PRE_CHOICE:
+                checkbox.setCheckState(Qt.Checked)
+            self.connect(checkbox, SIGNAL("stateChanged(int)"),
+                         self.refresh_display_options)
+            iter += 1
+
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding,
                                  QSizePolicy.Minimum)
         self._ui.checkboxLayout.addItem(spacerItem, 0, iter, 1, 1)
         self.refreshCheckboxes()
+        self.refresh_display_options()
 
     def refreshCheckboxes(self):
         choices = []
         for checkbox_name in AVAILABLE_CHOICES:
-            if self._field_checkboxes[checkbox_name].isChecked():
+            if self._checkboxes[checkbox_name].isChecked():
                 choices.append(checkbox_name)
 
         self._ui.tableView.model().setColumns(choices)
         self._ui.tableView.model().populate()
+        self._ui.tableView.resizeColumnsToContents()
+
+    def refresh_display_options(self):
+        model = self._ui.tableView.model()
+        for option_name in AVAILABLE_OPTIONS:
+            if self._checkboxes[option_name].isChecked():
+                model.enable_option(option_name)
+            else:
+                model.disable_option(option_name)
+
         self._ui.tableView.resizeColumnsToContents()
 
     def connect_slots(self):
@@ -119,14 +144,14 @@ class MainWindow(QMainWindow):
             self.resize(current_width,
                         current_height + extra_height)
             self._ui.filterButton.show()
-            model.enable_filters()
+            model.enable_option("filters")
         else:
             self._ui.filtersWidget.hide()
             extra_height = self._ui.filtersWidget.height() + 6
             self.resize(current_width,
                         current_height - extra_height)
             self._ui.filterButton.hide()
-            model.disable_filters()
+            model.disable_option("filters")
 
         model.reset()
 

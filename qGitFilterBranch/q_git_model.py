@@ -75,13 +75,13 @@ class QGitModel(QAbstractTableModel):
         if filter in self._filters:
             self._filters.pop(filter)
 
-    def enable_filters(self):
-        if "filters" not in self._enabled_options:
-            self._enabled_options.append("filters")
+    def enable_option(self, option):
+        if option not in self._enabled_options:
+            self._enabled_options.append(option)
 
-    def disable_filters(self):
-        if "filters" in self._enabled_options:
-            self._enabled_options.pop("filters")
+    def disable_option(self, option):
+        if option in self._enabled_options:
+            self._enabled_options.pop(self._enabled_options.index(option))
 
     def date_match(self, index, item_date):
         filters = self._filters
