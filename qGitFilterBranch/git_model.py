@@ -20,6 +20,7 @@ except:
     exit(1)
 
 from git.objects.util import altz_to_utctz_str
+from subprocess import Popen, PIPE
 
 NAMES = {'actor':'Actor', 'author':'Author',
              'authored_date':'Authored Date', 'committed_date':'Committed Date',
@@ -278,4 +279,7 @@ class GitModel:
         if options:
             oldest_commit_parent = ""
             command = "git filter-branch " + options + oldest_commit_parent
-            print command
+            process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+
+            command = 'rm -fr "$(git rev-parse --git-dir)/refs/original/"'
+            process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
