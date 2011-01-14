@@ -44,12 +44,19 @@ class QGitModel(QAbstractTableModel):
             if field_name in TIME_FIELDS:
                 _tmstmp, _tz = value
                 _datetime = datetime.fromtimestamp(_tmstmp).replace(tzinfo=_tz)
-                return QVariant(_datetime.strftime("%A, %B %d,%Y %H:%M:%S %Z"))
+                if "display_weekday" in self._enabled_options:
+                    date_format = "%Y-%m-%d %H:%M:%S (%a)"
+                else:
+                    date_format = "%Y-%m-%d %H:%M:%S"
+                return QVariant(_datetime.strftime(date_format))
             elif field_name == "message":
                 return QVariant(value.split("\n")[0])
             elif field_name in ACTOR_FIELDS:
                 name, email = value
-                return QVariant("%s <%s>" % (name, email))
+                if "display_email" in self._enabled_options:
+                    return QVariant("%s <%s>" % (name, email))
+                else:
+                    return QVariant("%s" % name)
             return QVariant(str(value))
         elif role == Qt.EditRole:
             value = self.git_model.data(index)
