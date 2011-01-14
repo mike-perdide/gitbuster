@@ -106,6 +106,9 @@ class QGitModel(QAbstractTableModel):
         if option in self._enabled_options:
             self._enabled_options.pop(self._enabled_options.index(option))
 
+    def is_enabled(self, option):
+        return option in self._enabled_options
+
     def date_match(self, index, item_date):
         filters = self._filters
 
