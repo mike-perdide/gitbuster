@@ -56,13 +56,18 @@ class QGitDelegate(QItemDelegate):
         elif field_name in ACTOR_FIELDS:
             value = str(editor.text())
 
-            try:
-                name = value.split(' <')[0]
-                email = value.split(' <')[1].split('>')[0]
-            except:
-                name = ""
-                email = ""
-            finally:
-                if name != "" and email != "":
-                    model.setData(index, (name, email))
+            if model.is_enabled("email"):
+                try:
+                    name = value.split(' <')[0]
+                    email = value.split(' <')[1].split('>')[0]
+                except:
+                    name = ""
+                    email = ""
+                finally:
+                    if name != "" and email != "":
+                        model.setData(index, (name, email))
+            else:
+                orig_name, orig_email = model.get_git_model().data(index)
+                name = value
+                model.setData(index, (name, orig_email))
 
