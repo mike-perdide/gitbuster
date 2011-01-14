@@ -56,7 +56,7 @@ class QGitDelegate(QItemDelegate):
         elif field_name in ACTOR_FIELDS:
             value = str(editor.text())
 
-            if model.is_enabled("email"):
+            if model.is_enabled("display_email"):
                 try:
                     name = value.split(' <')[0]
                     email = value.split(' <')[1].split('>')[0]
