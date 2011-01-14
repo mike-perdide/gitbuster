@@ -14,7 +14,7 @@ AVAILABLE_CHOICES = ['hexsha',
                      'authored_date', 'committed_date',
                      'author', 'committer',
                      'message']
-PRE_CHOICE = ['hexsha', 'committed_date', 'committer', 'message']
+PRE_CHOICE = ['hexsha', 'authored_date', 'author', 'message']
 
 class MainWindow(QMainWindow):
 
