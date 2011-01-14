@@ -11,8 +11,10 @@ class QGitDelegate(QItemDelegate):
         columns = index.model().get_git_model().get_columns()
         field_name = columns[index.column()]
 
-        if field_name in TEXT_FIELDS or field_name in ACTOR_FIELDS:
+        if field_name in TEXT_FIELDS:
             editor = QTextEdit(parent)
+        elif field_name in ACTOR_FIELDS:
+            editor = QLineEdit(parent)
         elif field_name in TIME_FIELDS:
             editor = QDateTimeEdit(parent)
             editor.setDisplayFormat("dd/MM/yyyy hh:mm:ss")
@@ -52,7 +54,7 @@ class QGitDelegate(QItemDelegate):
         elif field_name in TIME_FIELDS:
             model.setData(index, editor.dateTime().toTime_t())
         elif field_name in ACTOR_FIELDS:
-            value = str(editor.toPlainText())
+            value = str(editor.text())
 
             try:
                 name = value.split(' <')[0]
