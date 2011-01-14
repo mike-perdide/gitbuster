@@ -251,6 +251,9 @@
       <property name="text">
        <string>Merge Committed and Authored notions (advised)</string>
       </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="3" column="3" colspan="4">

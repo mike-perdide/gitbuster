@@ -26,7 +26,9 @@ class MainWindow(QMainWindow):
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        self._ui.tableView.setModel(QGitModel())
+        model = QGitModel()
+        self._ui.tableView.setModel(model)
+        model.setMerge(True)
         self._ui.tableView.verticalHeader().hide()
         self._ui.tableView.setItemDelegate(QGitDelegate())
 
