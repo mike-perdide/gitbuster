@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         self._ui.filterButton.hide()
 
         self._ui.tableView.resizeColumnsToContents()
+        self._ui.tableView.horizontalHeader().setStretchLastSection(True)
 
     def create_checkboxes(self):
         iter = 0
@@ -94,6 +95,7 @@ class MainWindow(QMainWindow):
         self._ui.tableView.model().setColumns(choices)
         self._ui.tableView.model().populate()
         self._ui.tableView.resizeColumnsToContents()
+        self._ui.tableView.horizontalHeader().setStretchLastSection(True)
 
     def refresh_display_options(self):
         model = self._ui.tableView.model()
@@ -104,6 +106,7 @@ class MainWindow(QMainWindow):
                 model.disable_option(option_name)
 
         self._ui.tableView.resizeColumnsToContents()
+        self._ui.tableView.horizontalHeader().setStretchLastSection(True)
 
     def connect_slots(self):
         self.connect(self._ui.cancelButton, SIGNAL("clicked()"),
