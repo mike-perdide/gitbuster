@@ -129,6 +129,9 @@ class MainWindow(QMainWindow):
         self.connect(self._ui.toggleModificationsButton, SIGNAL("clicked()"),
                      self.toggle_modifications)
 
+        self.connect(self._ui.tableView, SIGNAL("activated(const QModelIndex&)"),
+                     self._ui.tableView.edit)
+
     def apply(self):
         self._ui.tableView.model().write()
 
