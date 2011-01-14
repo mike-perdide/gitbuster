@@ -269,6 +269,7 @@ class QGitModel(QAbstractTableModel):
 
     def write(self):
         self.git_model.write()
+        self.populate()
 
     def insertRows(self, position, rows=1, index=QModelIndex()):
         print "Inserting rows"

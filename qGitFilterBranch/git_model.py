@@ -281,6 +281,8 @@ class GitModel:
             command = "git filter-branch " + options + oldest_commit_parent
             process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
 
+            self._modified = {}
+
             command = 'rm -fr "$(git rev-parse --git-dir)/refs/original/"'
             process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
 
