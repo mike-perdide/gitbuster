@@ -57,6 +57,8 @@ class QGitModel(QAbstractTableModel):
                     return QVariant("%s <%s>" % (name, email))
                 else:
                     return QVariant("%s" % name)
+            elif field_name == "hexsha":
+                return QVariant(str(value)[:7])
             return QVariant(str(value))
         elif role == Qt.EditRole:
             value = self.git_model.data(index)
