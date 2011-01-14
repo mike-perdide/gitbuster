@@ -11,7 +11,7 @@ class QGitModel(QAbstractTableModel):
         self.git_model = GitModel()
         self.populate()
         self._filters = {}
-        self._filters_enabled = False
+        self._enabled_options = []
 
     def get_git_model(self):
         return self.git_model
@@ -63,7 +63,7 @@ class QGitModel(QAbstractTableModel):
             if commit in modified and field_name in modified[commit]:
                 return QVariant(QColor(Qt.yellow))
         elif role == Qt.ForegroundRole:
-            if self._filters_enabled and self.filter_match(index):
+            if "filters" in self._enabled_options and self.filter_match(index):
                 return QVariant(QColor(Qt.red))
 
         return QVariant()
@@ -76,10 +76,12 @@ class QGitModel(QAbstractTableModel):
             self._filters.pop(filter)
 
     def enable_filters(self):
-        self._filters_enabled = True
+        if "filters" not in self._enabled_options:
+            self._enabled_options.append("filters")
 
     def disable_filters(self):
-        self._filters_enabled = False
+        if "filters" in self._enabled_options:
+            self._enabled_options.pop("filters")
 
     def date_match(self, index, item_date):
         filters = self._filters
