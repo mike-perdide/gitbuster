@@ -252,7 +252,11 @@ class GitModel:
                                                  "committer_email", email)
                 elif field == "message":
                     value = self._modified[commit][field]
-                    commit_content += "echo '%s' > ../message\n" % value
+                    message = value.replace('\\', '\\\\')
+                    message = message.replace('$', '\\\$')
+                    message = message.replace("'", "\\'")
+                    message = message.replace('"', '\\\\\\"')
+                    commit_content += "echo %s > ../message\n" % message
                 else:
                     value = self._modified[commit][field]
                     export_list += "export " + ENV_FIELDS[field] + ";"
