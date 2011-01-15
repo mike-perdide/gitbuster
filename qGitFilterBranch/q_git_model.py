@@ -72,7 +72,7 @@ class QGitModel(QAbstractTableModel):
             return self.data(index, Qt.DisplayRole)
         elif role == Qt.BackgroundColorRole:
             if self.show_modifications():
-                modified = self.git_model.get_modifed()
+                modified = self.git_model.get_modified()
                 if commit in modified and field_name in modified[commit]:
                     return QVariant(QColor(Qt.yellow))
         elif role == Qt.ForegroundRole:

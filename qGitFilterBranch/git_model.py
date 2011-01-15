@@ -121,7 +121,7 @@ class GitModel:
     def get_commits(self):
         return self._commits
 
-    def get_modifed(self):
+    def get_modified(self):
         return self._modified
 
     def get_columns(self):
