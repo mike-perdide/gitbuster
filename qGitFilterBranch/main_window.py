@@ -8,8 +8,6 @@ from qGitFilterBranch.main_window_ui import Ui_MainWindow
 from qGitFilterBranch.q_git_model import QGitModel, NAMES
 from qGitFilterBranch.q_git_delegate import QGitDelegate
 
-import sys
-
 AVAILABLE_CHOICES = ['hexsha',
                      'authored_date', 'committed_date',
                      'author', 'committer',
@@ -197,8 +195,3 @@ class MainWindow(QMainWindow):
             QApplication.translate("MainWindow", label,
                                    None, QApplication.UnicodeUTF8))
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    a = MainWindow(debug=True)
-    a.show()
-    sys.exit(app.exec_())
