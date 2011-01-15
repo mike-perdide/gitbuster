@@ -92,6 +92,7 @@ class GitModel:
 
     def populate(self, filter_method=None):
         self._commits = []
+
         for commit in self._repo.iter_commits():
             self._commits.append(commit)
 
@@ -99,20 +100,20 @@ class GitModel:
             iter = 0
             max_filters = 0
             filtered_commits = {}
+
             for commit in self._repo.iter_commits():
                 for field_index in range(len(self._columns)):
                     index = Index(row=iter, column=field_index)
+                    if commit not in filtered_commits:
+                        filtered_commits[commit] = 0
                     if filter_method(index):
-                        if commit not in filtered_commits:
-                            filtered_commits[commit] = 1
-                        else:
-                            filtered_commits[commit] += 1
+                        filtered_commits[commit] += 1
                         if filtered_commits[commit] > max_filters:
                             max_filters = filtered_commits[commit]
                 iter += 1
 
             self._commits = []
-            for commit in filtered_commits:
+            for commit in self._repo.iter_commits():
                 if filtered_commits[commit] == max_filters:
                     self._commits.append(commit)
 
