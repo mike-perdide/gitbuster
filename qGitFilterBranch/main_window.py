@@ -18,13 +18,13 @@ AVAILABLE_OPTIONS = {'display_email'    : 'Email',
 
 class MainWindow(QMainWindow):
 
-    def __init__(self, debug=False):
+    def __init__(self, directory=".", debug=False):
         QMainWindow.__init__(self)
 
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        model = QGitModel()
+        model = QGitModel(directory=directory)
         self._ui.tableView.setModel(model)
         model.setMerge(True)
         self._ui.tableView.verticalHeader().hide()

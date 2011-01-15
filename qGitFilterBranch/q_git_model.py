@@ -6,9 +6,9 @@ from datetime import datetime
 
 class QGitModel(QAbstractTableModel):
 
-    def __init__(self):
+    def __init__(self, directory="."):
         QAbstractTableModel.__init__(self, None)
-        self.git_model = GitModel()
+        self.git_model = GitModel(directory=directory)
         self._filters = {}
         self.populate()
         self._enabled_options = []

@@ -79,8 +79,8 @@ class Timezone(tzinfo):
 
 class GitModel:
 
-    def __init__(self):
-        self._repo = Repo(".")
+    def __init__(self, directory="."):
+        self._repo = Repo(directory)
         self._modified = {}
         self._dirty = False
         self._columns = []
