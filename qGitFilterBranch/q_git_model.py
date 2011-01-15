@@ -16,6 +16,9 @@ class QGitModel(QAbstractTableModel):
     def get_git_model(self):
         return self.git_model
 
+    def get_modified_count(self):
+        return len(self.git_model.get_modified())
+
     def populate(self):
         if self._filters:
             self.git_model.populate(self.filter_match)
