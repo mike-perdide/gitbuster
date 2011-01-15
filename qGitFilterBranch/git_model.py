@@ -291,11 +291,13 @@ class GitModel:
             oldest_commit_parent = self.oldest_modified_commit_parent()
             command = "git filter-branch " + options + oldest_commit_parent
             process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+            process.wait()
 
             self._modified = {}
 
             command = 'rm -fr "$(git rev-parse --git-dir)/refs/original/"'
             process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+            process.wait()
 
     def oldest_modified_commit_parent(self):
         reverted_list = list(self._commits)
