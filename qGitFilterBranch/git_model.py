@@ -1,4 +1,4 @@
-from datetime import tzinfo, timedelta
+from datetime import datetime, tzinfo, timedelta
 
 from sys import exit
 try:
@@ -39,7 +39,7 @@ ENV_FIELDS = {'author_name'     : 'GIT_AUTHOR_NAME',
               'authored_date'   : 'GIT_AUTHOR_DATE',
               'committer_name'  : 'GIT_COMMITTER_NAME',
               'committer_email' : 'GIT_COMMITTER_EMAIL',
-              'committer_date'  : 'GIT_COMMITTER_DATE' }
+              'committed_date'  : 'GIT_COMMITTER_DATE' }
 
 
 def add_assign(env_filter, field, value):
@@ -266,10 +266,13 @@ class GitModel:
                     message = message.replace("'", "\\'")
                     message = message.replace('"', '\\\\\\"')
                     commit_content += "echo %s > ../message;" % message
-                else:
-                    value = self._modified[commit][field]
-                    export_list += "export " + ENV_FIELDS[field] + ";"
-                    set_list += ENV_FIELDS[field] + "='%s'" % value
+                elif field in TIME_FIELDS:
+                    _timestamp = self._modified[commit][field]
+                    _utc_offset = altz_to_utctz_str(commit.author_tz_offset)
+                    _tz = Timezone(_utc_offset)
+                    _dt = datetime.fromtimestamp(_timestamp).replace(tzinfo=_tz)
+                    value = _dt.strftime("%a %b %d %H:%M:%S %Y %Z")
+                    env_content = add_assign(env_content, field, value)
 
             if env_content:
                 env_filter += env_header + env_content +"fi\n"
