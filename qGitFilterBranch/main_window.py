@@ -131,7 +131,12 @@ class MainWindow(QMainWindow):
                      self._ui.tableView.edit)
 
     def apply(self):
-        self._ui.tableView.model().write()
+        check_state = self._ui.logCheckBox.checkState()
+        if check_state == Qt.Checked:
+            log_checked = True
+        else:
+            log_checked = False
+        self._ui.tableView.model().write(log=log_checked)
 
     def merge_clicked(self, check_state):
         model = self._ui.tableView.model()

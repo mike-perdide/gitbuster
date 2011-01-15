@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     filepath = "/"
     while not is_top_git_directory(filepath):
-        fileDialog = QFileDialog()
+        fileDialog = QFileDialog(directory=".")
         filepath = str(fileDialog.getExistingDirectory())
         if not filepath:
             sys.exit(1)

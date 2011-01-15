@@ -20,6 +20,7 @@ except:
 
 from git.objects.util import altz_to_utctz_str
 from subprocess import Popen, PIPE
+from os.path import join
 
 NAMES = {'actor':'Actor', 'author':'Author',
              'authored_date':'Authored Date', 'committed_date':'Committed Date',
@@ -80,6 +81,7 @@ class Timezone(tzinfo):
 class GitModel:
 
     def __init__(self, directory="."):
+        self._directory = directory
         self._repo = Repo(directory)
         self._modified = {}
         self._dirty = False
@@ -234,7 +236,7 @@ class GitModel:
     def show_modifications(self):
         return self._show_modifications
 
-    def write(self):
+    def write(self, log=False):
         env_filter = ""
         commit_filter = ""
 
@@ -292,6 +294,22 @@ class GitModel:
             command = "git filter-branch " + options + oldest_commit_parent
             process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
             process.wait()
+            if log:
+                log_file = join(self._directory, "qGitFilterBranch.log")
+                handle = open(log_file, "a")
+                handle.write("=======================\n")
+                handle.write("Operation date :" +
+                             datetime.now().strftime("%a %b %d %H:%M:%S %Y") +
+                            "\n")
+                handle.write("===== Command: ========\n")
+                handle.write(command + "\n")
+                handle.write("===== git output: =====\n")
+                for line in process.stdout.readlines():
+                    handle.write(line + "\n")
+                handle.write("===== git errors: =====\n")
+                for line in process.stderr.readlines():
+                    handle.write(line + "\n")
+                handle.close()
 
             self._modified = {}
 

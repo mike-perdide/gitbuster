@@ -267,8 +267,8 @@ class QGitModel(QAbstractTableModel):
             return True
         return False
 
-    def write(self):
-        self.git_model.write()
+    def write(self, log=False):
+        self.git_model.write(log=log)
         self.populate()
 
     def insertRows(self, position, rows=1, index=QModelIndex()):
