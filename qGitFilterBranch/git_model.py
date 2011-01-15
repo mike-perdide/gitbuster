@@ -267,6 +267,8 @@ class GitModel:
                     message = message.replace('$', '\\\$')
                     message = message.replace("'", "\\'")
                     message = message.replace('"', '\\\\\\"')
+                    message = message.replace('(', '\(')
+                    message = message.replace(')', '\)')
                     commit_content += "echo %s > ../message;" % message
                 elif field in TIME_FIELDS:
                     _timestamp = self._modified[commit][field]
