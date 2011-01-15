@@ -4,10 +4,15 @@ from qGitFilterBranch.git_model import TEXT_FIELDS, TIME_FIELDS, ACTOR_FIELDS
 
 class QGitDelegate(QItemDelegate):
 
-    def __init__(self):
+    def __init__(self, view):
         QItemDelegate.__init__(self, None)
+        self._view = view
+        self._selected_indexes = None
 
     def createEditor(self, parent, option, index):
+        if len(self._view.selectedIndexes()) > 1:
+            self._selected_indexes = self._view.selectedIndexes()
+
         columns = index.model().get_git_model().get_columns()
         field_name = columns[index.column()]
 
@@ -71,3 +76,12 @@ class QGitDelegate(QItemDelegate):
                 name = value
                 model.setData(index, (name, orig_email))
 
+        if self._selected_indexes:
+            edited_column = index.column()
+
+            selected_indexes = list(self._selected_indexes)
+            self._selected_indexes = None
+
+            for selected_index in selected_indexes:
+                if selected_index.column() == edited_column:
+                    self.setModelData(editor, model, selected_index)

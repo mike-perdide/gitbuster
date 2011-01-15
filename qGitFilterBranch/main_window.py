@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         self._ui.tableView.setModel(model)
         model.setMerge(True)
         self._ui.tableView.verticalHeader().hide()
-        self._ui.tableView.setItemDelegate(QGitDelegate())
+        self._ui.tableView.setItemDelegate(QGitDelegate(self._ui.tableView))
 
         self._filters_checkboxes = {
             "afterWeekday"  : self._ui.afterWeekdayFilterComboBox.currentIndex,
