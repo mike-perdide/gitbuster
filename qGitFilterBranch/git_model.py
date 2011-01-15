@@ -1,5 +1,4 @@
-from time import struct_time
-from datetime import datetime, tzinfo, timedelta
+from datetime import tzinfo, timedelta
 
 from sys import exit
 try:
@@ -222,7 +221,6 @@ class GitModel:
     def original_data(self, index):
         commit = self._commits[index.row()]
         column = index.column()
-        field_name = self._columns[column]
 
         value = eval("commit."+self._columns[column])
         return value
@@ -300,11 +298,9 @@ class GitModel:
         reverted_list = list(self._commits)
         reverted_list.reverse()
 
-        oldest_modified = None
         parent = None
         for commit in reverted_list:
             if commit in self._modified:
-                oldest_modified = commit
                 break
             parent = commit
 
