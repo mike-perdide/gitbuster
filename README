@@ -1,0 +1,39 @@
+qGitFilterBranch
+++++++++++++++++
+
+Python Qt4 frontend for git filter-branch. qGitFilterBranch allows you to :
+ - use filters to display only the commits matching :
+   * committed before/after a date (e.g. commits before 01/01/11)
+   * committed before/after a weekday (e.g. commits after friday)
+   * committed before/after an hour (e.g. commits after 20:00)
+   * the log message contains some string (e.g. matching "CHANGEME")
+   * the user/email contains some string (e.g. matching "wrong.email@")
+ - edit the displayed commits to change :
+   * the authored/committed date
+   * the author/committer name and email
+   * the log message
+ - change multiple values at once
+
+Installation
+============
+
+You will need :
+ * the pyuic4 command to build the user interface file (in Debian,
+available in pyqt4-dev-tools).
+
+    # apt-get install pyqt4-dev-tools
+
+ * the GitPython package :
+
+    # pip install GitPython
+
+To build qGitFilterBranch:
+
+    $ cd qGitFilterBranch/
+    $ make
+
+To launch qGitFilterBranch:
+    
+    $ export PYTHONPATH=$PYTHONPATH:<path_to_>/qGitFilterBranch
+    $ cd qGitFilterBranch
+    $ ./run.py
