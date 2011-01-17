@@ -21,6 +21,7 @@ except:
 from git.objects.util import altz_to_utctz_str
 from subprocess import Popen, PIPE
 from os.path import join
+from os import chdir
 
 NAMES = {'actor':'Actor', 'author':'Author',
              'authored_date':'Authored Date', 'committed_date':'Committed Date',
@@ -292,6 +293,8 @@ class GitModel:
             options += '--commit-filter "%s" ' % commit_filter
 
         if options:
+            chdir(self._directory)
+
             oldest_commit_parent = self.oldest_modified_commit_parent()
             command = "git filter-branch " + options + oldest_commit_parent
             process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
