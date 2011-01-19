@@ -2,8 +2,10 @@
 
 # -*- coding: utf-8 -*-
 
+from PyQt4.QtCore import QDir, QSettings
 from PyQt4.QtGui import QApplication, QFileDialog
 from qGitFilterBranch.main_window import MainWindow
+from os import environ
 from os.path import join, exists
 import sys
 
@@ -14,13 +16,26 @@ def is_top_git_directory(filepath):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    filepath = "/"
+    settings = QSettings("Noname company yet", "qGitFilterBranch")
+
+    settings.beginGroup("Last run")
+
+    filepath = '/'
     while not is_top_git_directory(filepath):
-        fileDialog = QFileDialog(directory=".")
-        filepath = str(fileDialog.getExistingDirectory())
+        filepath = unicode(QFileDialog.getExistingDirectory(
+            None,
+            "Open git repository",
+            unicode(settings.value("directory", QDir.homePath()).toString()),
+            QFileDialog.ShowDirsOnly
+            ))
         if not filepath:
             sys.exit(1)
+
+    settings.setValue("directory", filepath)
+    settings.endGroup()
+    settings.sync()
 
     a = MainWindow(directory=filepath, debug=True)
     a.show()
     sys.exit(app.exec_())
+
