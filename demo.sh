@@ -24,13 +24,30 @@ pypideps=gitpython
 
 missing=0
 
+#virtualenv for the sandbox
 if [ x`which virtualenv` = "x" ] ; then
     missing=1
     echo "Missing virtualenv. On debian and ubuntu, look for a package named 'python-virtualenv'"
 fi
+#git for fetching and using qGitFilterBranch
 if [ x`which git` = "x" ] ; then
     missing=1
     echo "Missing git. On most systems, look for a package named 'git'"
+fi
+#make for pypi
+if [ x`which make` = "x" ] ; then
+    missing=1
+    echo "Missing make. On most systems, look for a package named 'make'"
+fi
+#gcc for pypi
+if [ x`which gcc` = "x" ] ; then
+    missing=1
+    echo "Missing gcc. On most systems, look for a package named 'gcc'"
+fi
+#pyuic4 for qGitFilterBranch
+if [ x`which pyuic4` = "x" ] ; then
+    missing=1
+    echo "Missing make. On debian/ubuntu systems, look for a package named 'pyqt4-dev-tools'"
 fi
 
 if [ $missing = 1 ] ; then
@@ -50,7 +67,7 @@ deactivate 2> /dev/null
 echo "Now you can"
 echo " * [Dd] delete $mydir and forget about this project"
 echo " * [Kk] keep $mydir, maybe copy it into a more persistent place. There will be a launcher script in it for your convenience"
-read -p "Choice? (defaults to 'keep')>" -i "K" answer
+read -p "Choice? (defaults to 'keep')>" answer
 case "$answer" in
     d | D)
         rm -fr $mydir
@@ -71,35 +88,33 @@ EOF
         echo "A script named $launcher was created for your convenience. It will help you start qGitFilterBranch"
     ;;
 esac
+exit
 }
 
-err(){
-echo "Command returned non 0 status: $?: $cmd."
-gc
+checkcmd(){
+if [ "$?" != 0 ] ; then
+    echo "Command returned non 0 status: $?: $cmd."
+    gc
+fi
 }
 
-trap err ERR
+runandcheck(){
+    echo $1
+    eval $2
+    checkcmd
+}
+
 trap gc EXIT
 
-echo "Invoking virtualenv on $mydir"
-cmd="virtualenv $mydir > /dev/null"
-eval $cmd
-cd $mydir
-echo "Activating virtualenv"
-cmd="source ./bin/activate > /dev/null"
-eval $cmd
 depslog=$mydir/deps.log
-echo "Fetching Pipy deps. Logs in $depslog"
-cmd="easy_install $pypideps > $depslog"
-eval $cmd
 fetchlog=$mydir/fetch.log
-echo "Fetching project. Logs in $fetchlog"
-cmd="$fetchcmd > $fetchlog"
-eval $cmd
 buildlog=$mydir/build.log
-echo "Building project. Logs in $buildlog"
-cmd="$buildcmd > $buildlog"
-eval $cmd
-cmd=$runcmd
-eval $cmd
+
+runandcheck "Invoking virtualenv on $mydir" "virtualenv $mydir > /dev/null"
+runandcheck "Moving to $mydir" "cd $mydir"
+runandcheck "Activating virtualenv" ". ./bin/activate > /dev/null"
+runandcheck "Fetching Pipy deps. Logs in $depslog" "easy_install $pypideps > $depslog"
+runandcheck "Fetching project. Logs in $fetchlog" "$fetchcmd > $fetchlog"
+runandcheck "Building project. Logs in $buildlog" "$buildcmd > $buildlog"
+runandcheck "Starting qGitFilterBranch" "$runcmd"
 
