@@ -180,17 +180,20 @@ class MainWindow(QMainWindow):
         model = self._ui.tableView.model()
         modified_commits_count = model.get_modified_count()
         if modified_commits_count > 0:
-            self._ui.applyButton.setText(
-                QApplication.translate("MainWindow", "Applying ...", None,
-                                       QApplication.UnicodeUTF8))
+            to_rewrite_count = model.get_to_rewrite_count()
 
             if modified_commits_count > 1:
-                msg = "%d commits of the git tree are about to be rewritten."
+                msg = "%d commits have been modified.\n"
             else:
-                msg = "%d commit of the git tree is about to be rewritten."
+                msg = "%d commit has been modified.\n"
+
+            if to_rewrite_count > 1:
+                msg += "%d commits of the git tree are about to be rewritten."
+            else:
+                msg += "%d commit of the git tree is about to be rewritten."
 
             msgBox = QMessageBox()
-            msgBox.setText(msg % modified_commits_count)
+            msgBox.setText(msg % (modified_commits_count, to_rewrite_count))
             msgBox.setInformativeText("Do you want to continue ?")
             msgBox.setStandardButtons(QMessageBox.Ok |
                                       QMessageBox.Cancel)
