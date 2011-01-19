@@ -105,6 +105,7 @@ class GitFilterBranchProcess(Thread):
         process.wait()
         self._finished = True
 
+        self._errors = process.stderr.readlines()
         if self._log:
             log_file = "./qGitFilterBranch.log"
             handle = open(log_file, "a")
@@ -118,13 +119,12 @@ class GitFilterBranchProcess(Thread):
             for line in self._output:
                 handle.write(line + "\n")
             handle.write("===== git errors: =====\n")
-            for line in process.stderr.readlines():
+            for line in self._errors:
                 handle.write(line + "\n")
             handle.close()
 
-        errors = process.stderr.readlines()
-        if errors:
-            for line in errors:
+        if self._errors:
+            for line in self._errors:
                 print line
         else:
             self._parent.erase_modifications()
@@ -140,6 +140,12 @@ class GitFilterBranchProcess(Thread):
             Returns the output as a list of lines
         """
         return list(self._output)
+
+    def errors(self):
+        """
+            Returns the errors as a list of lines
+        """
+        return list(self._errors)
 
     def is_finished(self):
         """
