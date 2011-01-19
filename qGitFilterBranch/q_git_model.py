@@ -19,6 +19,22 @@ class QGitModel(QAbstractTableModel):
     def get_modified_count(self):
         return len(self.git_model.get_modified())
 
+    def get_to_rewrite_count(self):
+        oldest_commit_parent = self.git_model.oldest_modified_commit_parent()
+
+        if oldest_commit_parent:
+            count = 0
+
+            for commit in self.git_model.get_commits():
+                if commit.hexsha == oldest_commit_parent:
+                   break
+                count += 1
+
+            return count
+
+        else:
+            return 0
+
     def populate(self):
         if self._filters:
             self.git_model.populate(self.filter_match)
@@ -270,9 +286,11 @@ class QGitModel(QAbstractTableModel):
             return True
         return False
 
-    def write(self, log=False):
-        self.git_model.write(log=log)
-        self.populate()
+    def write(self, log):
+        self.git_model.write(log)
+
+    def is_finished_writing(self):
+        return self.git_model.is_finished_writing()
 
     def insertRows(self, position, rows=1, index=QModelIndex()):
         print "Inserting rows"
@@ -293,3 +311,6 @@ class QGitModel(QAbstractTableModel):
                                 Qt.NoItemFlags)
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.ItemIsEditable)
+
+    def progress(self):
+        return self.git_model.progress()

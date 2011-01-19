@@ -2,11 +2,12 @@
 
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox
-from PyQt4.QtCore import SIGNAL, Qt
+from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QProgressBar
+from PyQt4.QtCore import SIGNAL, Qt, QThread
 from qGitFilterBranch.main_window_ui import Ui_MainWindow
 from qGitFilterBranch.q_git_model import QGitModel, NAMES
 from qGitFilterBranch.q_git_delegate import QGitDelegate
+import time
 
 AVAILABLE_CHOICES = ['hexsha',
                      'authored_date', 'committed_date',
@@ -15,6 +16,38 @@ AVAILABLE_CHOICES = ['hexsha',
 PRE_CHOICE = ['hexsha', 'authored_date', 'author', 'message']
 AVAILABLE_OPTIONS = {'display_email'    : 'Email',
                      'display_weekday'  : 'Weekday'}
+
+class ProgressThread(QThread):
+
+    def __init__(self, progress_bar, model):
+        QThread.__init__(self)
+
+        self._progress_bar = progress_bar
+        self._model = model
+
+    def run(self):
+        model = self._model
+        progress_bar = self._progress_bar
+
+        progress_bar.emit(SIGNAL("starting"))
+        progress_bar.emit(SIGNAL("update(int)"), 0)
+
+        while not model.is_finished_writing():
+            # While the git filter-branch command isn't finished, update the
+            # progress bar with the process progress.
+            progress = model.progress()
+
+            if progress:
+                progress_bar.emit(SIGNAL("update(int)"), int(progress * 100))
+            time.sleep(0.5)
+
+        progress_bar.emit(SIGNAL("update(int)"), 100)
+        time.sleep(0.2)
+        progress_bar.emit(SIGNAL("stopping"))
+
+        # Repopulate the model after the filter-branch is done.
+        model.populate()
+
 
 class MainWindow(QMainWindow):
 
@@ -51,6 +84,8 @@ class MainWindow(QMainWindow):
 
         self._ui.tableView.resizeColumnsToContents()
         self._ui.tableView.horizontalHeader().setStretchLastSection(True)
+
+        self._ui.progressBar.hide()
 
     def create_checkboxes(self):
         iter = 0
@@ -130,8 +165,19 @@ class MainWindow(QMainWindow):
         self.connect(self._ui.tableView, SIGNAL("activated(const QModelIndex&)"),
                      self._ui.tableView.edit)
 
+        # Catching progress bar signals.
+        self.connect(self._ui.progressBar, SIGNAL("starting"),
+                     self.show_progress_bar)
+
+        self.connect(self._ui.progressBar, SIGNAL("update(int)"),
+                     self.update_progress_bar)
+
+        self.connect(self._ui.progressBar, SIGNAL("stopping"),
+                     self.hide_progress_bar)
+
     def apply(self):
-        modified_commits_count = self._ui.tableView.model().get_modified_count()
+        model = self._ui.tableView.model()
+        modified_commits_count = model.get_modified_count()
         if modified_commits_count > 0:
             self._ui.applyButton.setText(
                 QApplication.translate("MainWindow", "Applying ...", None,
@@ -157,11 +203,32 @@ class MainWindow(QMainWindow):
                 else:
                     log_checked = False
 
-                self._ui.tableView.model().write(log=log_checked)
+                model = self._ui.tableView.model()
+                model.write(log_checked)
 
-            self._ui.applyButton.setText(
-                QApplication.translate("MainWindow", "Apply", None,
-                                       QApplication.UnicodeUTF8))
+                # If we have more than 80 commits modified, show progress bar
+                if to_rewrite_count > 80:
+                    progress_bar = self._ui.progressBar
+                    self.progress_thread = ProgressThread(progress_bar, model)
+                    self.progress_thread.start()
+                else:
+                    # Wait a few milliseconds and before repopulating the model
+                    while not model.is_finished_writing():
+                        time.sleep(0.2)
+                    model.populate()
+
+    def show_progress_bar(self):
+        self._ui.progressBar.show()
+        self._ui.applyButton.setDisabled(True)
+        self._ui.cancelButton.setDisabled(True)
+
+    def update_progress_bar(self, value):
+        self._ui.progressBar.setValue(value)
+
+    def hide_progress_bar(self):
+        self._ui.progressBar.hide()
+        self._ui.applyButton.setEnabled(True)
+        self._ui.cancelButton.setEnabled(True)
 
     def merge_clicked(self, check_state):
         model = self._ui.tableView.model()

@@ -20,8 +20,11 @@ except:
 
 from git.objects.util import altz_to_utctz_str
 from subprocess import Popen, PIPE
+from threading import Thread
 from os.path import join
+import os
 from os import chdir
+import fcntl
 
 NAMES = {'actor':'Actor', 'author':'Author',
              'authored_date':'Authored Date', 'committed_date':'Committed Date',
@@ -48,6 +51,101 @@ def add_assign(env_filter, field, value):
     env_filter += "export " + ENV_FIELDS[field] + ";\n"
     env_filter += ENV_FIELDS[field] + "='%s'" % value + ";\n"
     return env_filter
+
+
+class GitFilterBranchProcess(Thread):
+
+    def __init__(self, parent, args, oldest_commit_modified_parent, log):
+        Thread.__init__(self)
+
+        self._args = args
+        if oldest_commit_modified_parent == "HEAD":
+            self._oldest_commit = "HEAD"
+        else:
+            self._oldest_commit = oldest_commit_modified_parent + ".."
+
+        self._log = log
+        self._parent = parent
+
+        self._output = []
+        self._progress = None
+        self._finished = False
+
+    def run(self):
+        clean_pipe = "|tr '\r' '\n'"
+        command = "git filter-branch "
+        command += self._args + self._oldest_commit + clean_pipe
+
+        process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+
+        # Setting the stdout file descriptor to non blocking.
+        fcntl.fcntl(
+                process.stdout.fileno(),
+                fcntl.F_SETFL,
+                fcntl.fcntl(process.stdout.fileno(),
+                            fcntl.F_GETFL) | os.O_NONBLOCK,
+            )
+
+        while True:
+            try:
+                line = process.stdout.readline()
+            except IOError, e:
+                continue
+
+            if not line:
+                break
+
+            clean_line = line.replace('\r', '\n')
+            self._output.append(clean_line)
+            if "Rewrite" in clean_line:
+                progress = float(line.split('(')[1].split('/')[0])
+                total = float(line.split('/')[1].split(')')[0])
+                self._progress = progress/total
+
+        process.wait()
+        self._finished = True
+
+        if self._log:
+            log_file = "./qGitFilterBranch.log"
+            handle = open(log_file, "a")
+            handle.write("=======================\n")
+            handle.write("Operation date :" +
+                         datetime.now().strftime("%a %b %d %H:%M:%S %Y") +
+                        "\n")
+            handle.write("===== Command: ========\n")
+            handle.write(command + "\n")
+            handle.write("===== git output: =====\n")
+            for line in self._output:
+                handle.write(line + "\n")
+            handle.write("===== git errors: =====\n")
+            for line in process.stderr.readlines():
+                handle.write(line + "\n")
+            handle.close()
+
+        errors = process.stderr.readlines()
+        if errors:
+            for line in errors:
+                print line
+        else:
+            self._parent.erase_modifications()
+
+    def progress(self):
+        """
+            Returns the progress percentage
+        """
+        return self._progress
+
+    def output(self):
+        """
+            Returns the output as a list of lines
+        """
+        return list(self._output)
+
+    def is_finished(self):
+        """
+            Returns self._finished
+        """
+        return self._finished
 
 
 class Index:
@@ -91,6 +189,7 @@ class GitModel:
         self._did = False
         self._merge = False
         self._show_modifications = True
+        self._git_process = None
 
     def populate(self, filter_method=None):
         self._commits = []
@@ -295,44 +394,49 @@ class GitModel:
         if options:
             chdir(self._directory)
 
-            oldest_commit_parent = self.oldest_modified_commit_parent()
-            command = "git filter-branch " + options + oldest_commit_parent
-            process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
-            process.wait()
-            if log:
-                log_file = join(self._directory, "qGitFilterBranch.log")
-                handle = open(log_file, "a")
-                handle.write("=======================\n")
-                handle.write("Operation date :" +
-                             datetime.now().strftime("%a %b %d %H:%M:%S %Y") +
-                            "\n")
-                handle.write("===== Command: ========\n")
-                handle.write(command + "\n")
-                handle.write("===== git output: =====\n")
-                for line in process.stdout.readlines():
-                    handle.write(line + "\n")
-                handle.write("===== git errors: =====\n")
-                for line in process.stderr.readlines():
-                    handle.write(line + "\n")
-                handle.close()
-
-            self._modified = {}
-
             command = 'rm -fr "$(git rev-parse --git-dir)/refs/original/"'
             process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
             process.wait()
 
+            command = 'rm -fr .git-rewrite"'
+            process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+            process.wait()
+
+            oldest_commit_parent = self.oldest_modified_commit_parent()
+
+            self._git_process = GitFilterBranchProcess(self, options,
+                                                       oldest_commit_parent,
+                                                       log)
+            self._git_process.start()
+
+    def is_finished_writing(self):
+        if self._git_process is not None:
+            return self._git_process.is_finished()
+        return True
+
+    def progress(self):
+        if self._git_process is not None:
+            return self._git_process.progress()
+        return 0
+
     def oldest_modified_commit_parent(self):
-        reverted_list = list(self._commits)
-        reverted_list.reverse()
+        if self._commits:
+            reverted_list = list(self._commits)
+            reverted_list.reverse()
 
-        parent = None
-        for commit in reverted_list:
-            if commit in self._modified:
-                break
-            parent = commit
+            parent = None
+            for commit in reverted_list:
+                if commit in self._modified:
+                    break
+                parent = commit
 
-        if parent:
-            return str(parent.hexsha) + ".."
+            if parent:
+                return str(parent.hexsha)
+            else:
+                return "HEAD"
+
         else:
-            return "HEAD"
+            return False
+
+    def erase_modifications(self):
+        self._modified = {}
