@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):
         model = QGitModel(directory=directory)
         self._ui.tableView.setModel(model)
         model.setMerge(True)
+        model.enable_option("filters")
         self._ui.tableView.verticalHeader().hide()
         self._ui.tableView.setItemDelegate(QGitDelegate(self._ui.tableView))
 
@@ -78,9 +79,6 @@ class MainWindow(QMainWindow):
 
         self._checkboxes = {}
         self.create_checkboxes()
-
-        self._ui.filtersWidget.hide()
-        self._ui.filterButton.hide()
 
         self._ui.tableView.resizeColumnsToContents()
         self._ui.tableView.horizontalHeader().setStretchLastSection(True)
@@ -152,9 +150,6 @@ class MainWindow(QMainWindow):
 
         self.connect(self._ui.mergeCheckBox, SIGNAL("stateChanged(int)"),
                      self.merge_clicked)
-
-        self.connect(self._ui.filtersCheckBox, SIGNAL("stateChanged(int)"),
-                     self.filters_clicked)
 
         self.connect(self._ui.filterButton, SIGNAL("clicked()"),
                      self.get_filters)
@@ -241,29 +236,6 @@ class MainWindow(QMainWindow):
             model.setMerge(True)
         else:
             model.setMerge(False)
-
-    def filters_clicked(self, check_state):
-        model = self._ui.tableView.model()
-
-        current_width = self.size().width()
-        current_height = self.size().height()
-
-        if check_state == Qt.Checked:
-            self._ui.filtersWidget.show()
-            extra_height = self._ui.filtersWidget.height() + 6
-            self.resize(current_width,
-                        current_height + extra_height)
-            self._ui.filterButton.show()
-            model.enable_option("filters")
-        else:
-            self._ui.filtersWidget.hide()
-            extra_height = self._ui.filtersWidget.height() + 6
-            self.resize(current_width,
-                        current_height - extra_height)
-            self._ui.filterButton.hide()
-            model.disable_option("filters")
-
-        model.reset()
 
     def get_filters(self):
         model = self._ui.tableView.model()
