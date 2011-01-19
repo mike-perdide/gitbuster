@@ -68,15 +68,17 @@ class GitFilterBranchProcess(Thread):
         self._parent = parent
 
         self._output = []
+        self._errors = []
         self._progress = None
         self._finished = False
 
     def run(self):
         clean_pipe = "|tr '\r' '\n'"
         command = "git filter-branch "
-        command += self._args + self._oldest_commit + clean_pipe
+        command += self._args + self._oldest_commit
 
-        process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+        process = Popen(command + clean_pipe, shell=True,
+                        stdout=PIPE, stderr=PIPE)
 
         # Setting the stdout file descriptor to non blocking.
         fcntl.fcntl(
@@ -117,7 +119,7 @@ class GitFilterBranchProcess(Thread):
             handle.write(command + "\n")
             handle.write("===== git output: =====\n")
             for line in self._output:
-                handle.write(line + "\n")
+                handle.write(line.rstrip() + "\n")
             handle.write("===== git errors: =====\n")
             for line in self._errors:
                 handle.write(line + "\n")
