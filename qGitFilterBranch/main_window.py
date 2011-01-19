@@ -162,7 +162,8 @@ class MainWindow(QMainWindow):
         self.connect(self._ui.toggleModificationsButton, SIGNAL("clicked()"),
                      self.toggle_modifications)
 
-        self.connect(self._ui.tableView, SIGNAL("activated(const QModelIndex&)"),
+        self.connect(self._ui.tableView,
+                     SIGNAL("activated(const QModelIndex&)"),
                      self._ui.tableView.edit)
 
         # Catching progress bar signals.

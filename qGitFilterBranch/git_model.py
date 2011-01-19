@@ -177,6 +177,7 @@ class Timezone(tzinfo):
     def dst(self, dt):
         return timedelta(0)
 
+
 class GitModel:
 
     def __init__(self, directory="."):
