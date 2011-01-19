@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # This script will try and run a demo of a project, here qGitFilterBranch.
 # It will try not to mess with your installed system thanks to virtualenv.
@@ -21,18 +21,19 @@ pypideps=gitpython
 
 
 # # This script's dependencies
+
 missing=0
 
-if [ x`which virtualenv` == "x" ] ; then
+if [ x`which virtualenv` = "x" ] ; then
     missing=1
     echo "Missing virtualenv. On debian and ubuntu, look for a package named 'python-virtualenv'"
 fi
-if [ x`which git` == "x" ] ; then
+if [ x`which git` = "x" ] ; then
     missing=1
     echo "Missing git. On most systems, look for a package named 'git'"
 fi
 
-if [ $missing == 1 ] ; then
+if [ $missing = 1 ] ; then
     exit 1
 fi
 
