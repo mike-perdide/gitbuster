@@ -200,7 +200,7 @@ class GitModel:
         self._show_modifications = True
         self._git_process = None
 
-    def populate(self, filter_method=None):
+    def populate(self, filter_count=0, filter_method=None):
         self._commits = []
 
         for commit in self._repo.iter_commits():
@@ -208,7 +208,6 @@ class GitModel:
 
         if filter_method:
             iter = 0
-            max_filters = 0
             filtered_commits = {}
 
             for commit in self._repo.iter_commits():
@@ -218,13 +217,11 @@ class GitModel:
                         filtered_commits[commit] = 0
                     if filter_method(index):
                         filtered_commits[commit] += 1
-                        if filtered_commits[commit] > max_filters:
-                            max_filters = filtered_commits[commit]
                 iter += 1
 
             self._commits = []
             for commit in self._repo.iter_commits():
-                if filtered_commits[commit] == max_filters:
+                if filtered_commits[commit] == filter_count:
                     self._commits.append(commit)
 
     def get_commits(self):
