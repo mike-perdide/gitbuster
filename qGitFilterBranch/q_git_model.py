@@ -37,7 +37,7 @@ class QGitModel(QAbstractTableModel):
 
     def populate(self):
         if self._filters:
-            self.git_model.populate(self.filter_match)
+            self.git_model.populate(len(self._filters), self.filter_match)
         else:
             self.git_model.populate()
         self.reset()
