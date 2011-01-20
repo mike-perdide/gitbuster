@@ -245,14 +245,14 @@ class QGitModel(QAbstractTableModel):
             if "nameEmail" in filters:
                 match = str(filters["nameEmail"])
                 name, email = self.git_model.data(index)
-                if match in name or match in email:
+                if match and (match in name or match in email):
                     return True
 
         elif field_name in TEXT_FIELDS:
             if "commit" in filters:
                 match = str(filters["commit"])
                 commit_message = self.git_model.data(index)
-                if match in commit_message:
+                if match and match in commit_message:
                     return True
 
         return False
