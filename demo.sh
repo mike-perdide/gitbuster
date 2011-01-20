@@ -47,7 +47,7 @@ fi
 #pyuic4 for qGitFilterBranch
 if [ x`which pyuic4` = "x" ] ; then
     missing=1
-    echo "Missing make. On debian/ubuntu systems, look for a package named 'pyqt4-dev-tools'"
+    echo "Missing pyuic4. On debian/ubuntu systems, look for a package named 'pyqt4-dev-tools'"
 fi
 
 if [ $missing = 1 ] ; then
