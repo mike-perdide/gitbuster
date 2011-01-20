@@ -344,6 +344,31 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>tableView</tabstop>
+  <tabstop>mergeCheckBox</tabstop>
+  <tabstop>logCheckBox</tabstop>
+  <tabstop>afterDateFilterCheckBox</tabstop>
+  <tabstop>afterDateFilterDateEdit</tabstop>
+  <tabstop>beforeDateFilterCheckBox</tabstop>
+  <tabstop>beforeDateFilterDateEdit</tabstop>
+  <tabstop>afterWeekdayFilterCheckBox</tabstop>
+  <tabstop>afterWeekdayFilterComboBox</tabstop>
+  <tabstop>beforeWeekdayFilterCheckBox</tabstop>
+  <tabstop>beforeWeekdayFilterComboBox</tabstop>
+  <tabstop>afterHourFilterCheckBox</tabstop>
+  <tabstop>afterHourFilterTimeEdit</tabstop>
+  <tabstop>beforeHourFilterCheckBox</tabstop>
+  <tabstop>beforeHourFilterTimeEdit</tabstop>
+  <tabstop>nameEmailFilterCheckBox</tabstop>
+  <tabstop>nameEmailFilterLineEdit</tabstop>
+  <tabstop>commitFilterCheckBox</tabstop>
+  <tabstop>commitFilterLineEdit</tabstop>
+  <tabstop>toggleModificationsButton</tabstop>
+  <tabstop>filterButton</tabstop>
+  <tabstop>applyButton</tabstop>
+  <tabstop>cancelButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
