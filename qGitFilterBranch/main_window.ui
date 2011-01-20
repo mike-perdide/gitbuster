@@ -84,19 +84,6 @@
     <item row="8" column="3">
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="1">
-       <widget class="QPushButton" name="filterButton">
-        <property name="maximumSize">
-         <size>
-          <width>75</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Filter</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
        <widget class="QPushButton" name="applyButton">
         <property name="maximumSize">
          <size>
@@ -109,7 +96,7 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
+      <item row="0" column="2">
        <widget class="QPushButton" name="cancelButton">
         <property name="maximumSize">
          <size>
@@ -365,7 +352,6 @@
   <tabstop>commitFilterCheckBox</tabstop>
   <tabstop>commitFilterLineEdit</tabstop>
   <tabstop>toggleModificationsButton</tabstop>
-  <tabstop>filterButton</tabstop>
   <tabstop>applyButton</tabstop>
   <tabstop>cancelButton</tabstop>
  </tabstops>

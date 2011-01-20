@@ -151,9 +151,6 @@ class MainWindow(QMainWindow):
         self.connect(self._ui.mergeCheckBox, SIGNAL("stateChanged(int)"),
                      self.merge_clicked)
 
-        self.connect(self._ui.filterButton, SIGNAL("clicked()"),
-                     self.apply_filters)
-
         self.connect(self._ui.toggleModificationsButton, SIGNAL("clicked()"),
                      self.toggle_modifications)
 
