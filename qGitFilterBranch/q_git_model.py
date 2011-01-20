@@ -30,8 +30,18 @@ class QGitModel(QAbstractTableModel):
             return 0
 
     def populate(self):
-        if self._filters:
-            self.git_model.populate(len(self._filters), self.filter_match)
+        filters = self._filters
+        if filters:
+            filter_count = 0
+            if "afterHour" in filters or "beforeHour" in filters:
+                filter_count += 1
+            if "afterDate" in filters or "beforeDate" in filters:
+                filter_count += 1
+            if "afterWeekday" in filters or "beforeWeekday" in filters:
+                filter_count += 1
+            if "nameEmail" in filters or "commit" in filters:
+                filter_count += 1
+            self.git_model.populate(filter_count, self.filter_match)
         else:
             self.git_model.populate()
         self.reset()
