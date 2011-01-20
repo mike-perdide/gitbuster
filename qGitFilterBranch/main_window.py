@@ -171,6 +171,44 @@ class MainWindow(QMainWindow):
         self.connect(self._ui.progressBar, SIGNAL("stopping"),
                      self.hide_progress_bar)
 
+        # Apply filters when filter edit widgets are edited or when the filter
+        # checkboxes are ticked.
+        box_widgets = (self._ui.afterWeekdayFilterComboBox,
+                       self._ui.beforeWeekdayFilterComboBox)
+        for widget in box_widgets:
+            self.connect(widget, SIGNAL("currentIndexChanged (int)"),
+                         self.get_filters)
+
+        time_edit_widgets = (self._ui.afterHourFilterTimeEdit,
+                             self._ui.beforeHourFilterTimeEdit)
+        for widget in time_edit_widgets:
+            self.connect(widget, SIGNAL("timeChanged (const QTime&)"),
+                         self.get_filters)
+
+        date_edit_widgets = (self._ui.afterDateFilterDateEdit,
+                             self._ui.beforeDateFilterDateEdit)
+        for widget in time_edit_widgets:
+            self.connect(widget, SIGNAL("dateChanged (const QDate&)"),
+                         self.get_filters)
+
+        line_edit_widgets = (self._ui.nameEmailFilterLineEdit,
+                             self._ui.commitFilterLineEdit)
+        for widget in line_edit_widgets:
+            self.connect(widget, SIGNAL("returnPressed()"),
+                         self.get_filters)
+
+        filter_checkbox_widgets = (self._ui.afterWeekdayFilterCheckBox,
+                                   self._ui.beforeWeekdayFilterCheckBox,
+                                   self._ui.afterHourFilterCheckBox,
+                                   self._ui.beforeHourFilterCheckBox,
+                                   self._ui.afterDateFilterCheckBox,
+                                   self._ui.beforeDateFilterCheckBox,
+                                   self._ui.nameEmailFilterCheckBox,
+                                   self._ui.commitFilterCheckBox)
+        for widget in filter_checkbox_widgets:
+            self.connect(widget, SIGNAL("stateChanged(int)"),
+                         self.get_filters)
+
     def apply(self):
         model = self._ui.tableView.model()
         modified_commits_count = model.get_modified_count()
