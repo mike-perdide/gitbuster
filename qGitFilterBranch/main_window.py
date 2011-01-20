@@ -152,7 +152,7 @@ class MainWindow(QMainWindow):
                      self.merge_clicked)
 
         self.connect(self._ui.filterButton, SIGNAL("clicked()"),
-                     self.get_filters)
+                     self.apply_filters)
 
         self.connect(self._ui.toggleModificationsButton, SIGNAL("clicked()"),
                      self.toggle_modifications)
@@ -177,25 +177,25 @@ class MainWindow(QMainWindow):
                        self._ui.beforeWeekdayFilterComboBox)
         for widget in box_widgets:
             self.connect(widget, SIGNAL("currentIndexChanged (int)"),
-                         self.get_filters)
+                         self.apply_filters)
 
         time_edit_widgets = (self._ui.afterHourFilterTimeEdit,
                              self._ui.beforeHourFilterTimeEdit)
         for widget in time_edit_widgets:
             self.connect(widget, SIGNAL("timeChanged (const QTime&)"),
-                         self.get_filters)
+                         self.apply_filters)
 
         date_edit_widgets = (self._ui.afterDateFilterDateEdit,
                              self._ui.beforeDateFilterDateEdit)
         for widget in time_edit_widgets:
             self.connect(widget, SIGNAL("dateChanged (const QDate&)"),
-                         self.get_filters)
+                         self.apply_filters)
 
         line_edit_widgets = (self._ui.nameEmailFilterLineEdit,
                              self._ui.commitFilterLineEdit)
         for widget in line_edit_widgets:
             self.connect(widget, SIGNAL("returnPressed()"),
-                         self.get_filters)
+                         self.apply_filters)
 
         filter_checkbox_widgets = (self._ui.afterWeekdayFilterCheckBox,
                                    self._ui.beforeWeekdayFilterCheckBox,
@@ -207,7 +207,7 @@ class MainWindow(QMainWindow):
                                    self._ui.commitFilterCheckBox)
         for widget in filter_checkbox_widgets:
             self.connect(widget, SIGNAL("stateChanged(int)"),
-                         self.get_filters)
+                         self.apply_filters)
 
     def apply(self):
         model = self._ui.tableView.model()
@@ -275,7 +275,7 @@ class MainWindow(QMainWindow):
         else:
             model.setMerge(False)
 
-    def get_filters(self):
+    def apply_filters(self):
         model = self._ui.tableView.model()
 
         for checkbox_name in self._filters_checkboxes:
