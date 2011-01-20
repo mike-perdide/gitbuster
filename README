@@ -14,20 +14,32 @@ Python Qt4 frontend for git filter-branch. qGitFilterBranch allows you to :
    * the log message
  - change multiple values at once
 
+Safe try
+========
+With the demo.sh you can try qGitFilterBranch in a safe environment. The script
+will check that all dependencies are met and install GitPython in a virtualenv.
+That way it won't interfere with your system packaging tools (like apt).
+
 Installation
 ============
-
-You will need :
- * the pyuic4 command to build the user interface file (in Debian,
-available in pyqt4-dev-tools).
+Dependencies:
+ * pyuic4: on debian/ubuntu systems, look for a package named 'pyqt4-dev-tools'.
 
     # apt-get install pyqt4-dev-tools
 
- * the GitPython package :
+ * gcc: on most systems, look for a package named 'gcc'.
+
+    # apt-get install gcc
+
+ * make: on most systems, look for a package named 'make'.
+
+    # apt-get install make
+
+ * GitPython: you can use the following command.
 
     # pip install GitPython
 
-To build qGitFilterBranch:
+To build qGitFilterBranch UI files:
 
     $ cd qGitFilterBranch/
     $ make
