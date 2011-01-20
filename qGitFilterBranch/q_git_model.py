@@ -13,12 +13,6 @@ class QGitModel(QAbstractTableModel):
         self.populate()
         self._enabled_options = []
 
-    def get_git_model(self):
-        return self.git_model
-
-    def get_modified_count(self):
-        return len(self.git_model.get_modified())
-
     def get_to_rewrite_count(self):
         oldest_commit_parent = self.git_model.oldest_modified_commit_parent()
 
@@ -45,12 +39,6 @@ class QGitModel(QAbstractTableModel):
     def parent(self, index):
         #returns the parent of the model item with the given index.
         return QModelIndex()
-
-    def rowCount(self, parent=QModelIndex()):
-        return self.git_model.row_count()
-
-    def columnCount(self, parent=QModelIndex()):
-        return self.git_model.column_count()
 
     def data(self, index, role):
         if not index.isValid() or not (0 <= index.row() < self.rowCount()):
@@ -128,13 +116,6 @@ class QGitModel(QAbstractTableModel):
     def disable_option(self, option):
         if option in self._enabled_options:
             self._enabled_options.pop(self._enabled_options.index(option))
-
-    def toggle_modifications(self):
-        self.git_model.toggle_modifications()
-        self.reset()
-
-    def show_modifications(self):
-        return self.git_model.show_modifications()
 
     def is_enabled(self, option):
         return option in self._enabled_options
@@ -257,9 +238,6 @@ class QGitModel(QAbstractTableModel):
 
         return False
 
-    def setColumns(self, list):
-        self.git_model.set_columns(list)
-
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
@@ -274,9 +252,6 @@ class QGitModel(QAbstractTableModel):
 
         return QVariant(int(section + 1))
 
-    def setMerge(self, merge_state):
-        self.git_model.set_merge(merge_state)
-
     def setData(self, index, value, role=Qt.EditRole):
         if index.isValid() and 0 <= index.row() < self.rowCount():
             self.git_model.set_data(index, value)
@@ -285,12 +260,6 @@ class QGitModel(QAbstractTableModel):
                       index, index)
             return True
         return False
-
-    def write(self, log):
-        self.git_model.write(log)
-
-    def is_finished_writing(self):
-        return self.git_model.is_finished_writing()
 
     def insertRows(self, position, rows=1, index=QModelIndex()):
         print "Inserting rows"
@@ -312,5 +281,38 @@ class QGitModel(QAbstractTableModel):
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.ItemIsEditable)
 
+    # Beyond this point, abandon all hope of seeing anything more than "proxying
+    # methods" (for instance, progress() calls git_model.progress())
+    def toggle_modifications(self):
+        self.git_model.toggle_modifications()
+        self.reset()
+
+    def show_modifications(self):
+        return self.git_model.show_modifications()
+
     def progress(self):
         return self.git_model.progress()
+
+    def setColumns(self, list):
+        self.git_model.set_columns(list)
+
+    def setMerge(self, merge_state):
+        self.git_model.set_merge(merge_state)
+
+    def write(self, log):
+        self.git_model.write(log)
+
+    def is_finished_writing(self):
+        return self.git_model.is_finished_writing()
+
+    def get_git_model(self):
+        return self.git_model
+
+    def get_modified_count(self):
+        return len(self.git_model.get_modified())
+
+    def rowCount(self, parent=QModelIndex()):
+        return self.git_model.row_count()
+
+    def columnCount(self, parent=QModelIndex()):
+        return self.git_model.column_count()
