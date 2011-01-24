@@ -223,8 +223,15 @@ class MainWindow(QMainWindow):
                 else:
                     log_checked = False
 
+                script_check_state = msgBox._ui.scriptCheckBox.checkState()
+
+                if script_check_state == Qt.Checked:
+                    script_checked = True
+                else:
+                    script_checked = False
+
                 model = self._ui.tableView.model()
-                model.write(log_checked)
+                model.write(log_checked, script_checked)
 
                 # If we have more than 80 commits modified, show progress bar
                 if to_rewrite_count > 80:

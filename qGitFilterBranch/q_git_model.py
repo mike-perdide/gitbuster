@@ -309,8 +309,8 @@ class QGitModel(QAbstractTableModel):
     def setMerge(self, merge_state):
         self.git_model.set_merge(merge_state)
 
-    def write(self, log):
-        self.git_model.write(log)
+    def write(self, log, script):
+        self.git_model.write(log, script)
 
     def is_finished_writing(self):
         return self.git_model.is_finished_writing()
