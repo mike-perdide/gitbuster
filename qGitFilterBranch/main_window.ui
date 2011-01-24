@@ -72,13 +72,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QCheckBox" name="logCheckBox">
-        <property name="text">
-         <string>Log operations</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item row="8" column="3">
@@ -334,7 +327,6 @@
  <tabstops>
   <tabstop>tableView</tabstop>
   <tabstop>mergeCheckBox</tabstop>
-  <tabstop>logCheckBox</tabstop>
   <tabstop>afterDateFilterCheckBox</tabstop>
   <tabstop>afterDateFilterDateEdit</tabstop>
   <tabstop>beforeDateFilterCheckBox</tabstop>
