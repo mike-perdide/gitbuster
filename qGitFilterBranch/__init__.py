@@ -11,7 +11,7 @@ def is_top_git_directory(filepath):
     git_path = join(filepath, ".git")
     return exists(git_path)
 
-def run():
+def main():
     app = QApplication(sys.argv)
 
     settings = QSettings("Noname company yet", "qGitFilterBranch")

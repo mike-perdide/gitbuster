@@ -9,5 +9,6 @@ setup(name='qGitFilterBranch',
       packages=['qGitFilterBranch'],
       requires=('GitPython (>0.3.0)',),
       license='GPLv3',
-      entry_points={'console_scripts' : ['qGitFilterBranch = qGitFilterBranch:run']}
+      entry_points={
+          'console_scripts' : ['qGitFilterBranch = qGitFilterBranch:main']}
      )
