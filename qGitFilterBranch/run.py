@@ -2,7 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
-from qGitFilterBranch import run
+from qGitFilterBranch import main
 
 if __name__ == "__main__":
-    run()
+    main()
