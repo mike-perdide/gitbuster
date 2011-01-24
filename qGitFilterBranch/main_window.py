@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, QSizePolicy, QMessageBox, QProgressBar
@@ -7,6 +5,7 @@ from PyQt4.QtCore import SIGNAL, Qt, QThread
 from qGitFilterBranch.main_window_ui import Ui_MainWindow
 from qGitFilterBranch.q_git_model import QGitModel, NAMES
 from qGitFilterBranch.q_git_delegate import QGitDelegate
+from qGitFilterBranch.confirm_dialog import ConfirmDialog
 import time
 
 AVAILABLE_CHOICES = ['hexsha',
@@ -212,27 +211,14 @@ class MainWindow(QMainWindow):
         if modified_commits_count > 0:
             to_rewrite_count = model.get_to_rewrite_count()
 
-            if modified_commits_count > 1:
-                msg = "%d commits have been modified.\n"
-            else:
-                msg = "%d commit has been modified.\n"
-
-            if to_rewrite_count > 1:
-                msg += "%d commits of the git tree are about to be rewritten."
-            else:
-                msg += "%d commit of the git tree is about to be rewritten."
-
-            msgBox = QMessageBox()
-            msgBox.setText(msg % (modified_commits_count, to_rewrite_count))
-            msgBox.setInformativeText("Do you want to continue ?")
-            msgBox.setStandardButtons(QMessageBox.Ok |
-                                      QMessageBox.Cancel)
-            msgBox.setDefaultButton(QMessageBox.Cancel)
+            msgBox = ConfirmDialog(modified_count=modified_commits_count,
+                                   to_rewrite_count=to_rewrite_count)
             ret = msgBox.exec_()
 
-            if ret == QMessageBox.Ok:
-                check_state = self._ui.logCheckBox.checkState()
-                if check_state == Qt.Checked:
+            if ret:
+                log_check_state = msgBox._ui.logCheckBox.checkState()
+
+                if log_check_state == Qt.Checked:
                     log_checked = True
                 else:
                     log_checked = False
