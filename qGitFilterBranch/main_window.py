@@ -1,3 +1,9 @@
+# main_window.py
+# Copyright (C) 2010 Julien Miotte <miotte.julien@gmail.com>
+#
+# This module is part of qGitFilterBranch and is released under the GPLv3
+# License: http://www.gnu.org/licenses/gpl-3.0.txt
+#
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, QSizePolicy
