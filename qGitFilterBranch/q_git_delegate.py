@@ -55,11 +55,11 @@ class QGitDelegate(QItemDelegate):
         field_name = columns[index.column()]
 
         if field_name in TEXT_FIELDS:
-            model.setData(index, str(editor.toPlainText()))
+            model.setData(index, unicode(str(editor.toPlainText())))
         elif field_name in TIME_FIELDS:
             model.setData(index, editor.dateTime().toTime_t())
         elif field_name in ACTOR_FIELDS:
-            value = str(editor.text())
+            value = unicode(str(editor.text()))
 
             if model.is_enabled("display_email"):
                 try:
