@@ -379,14 +379,27 @@ class GitModel:
                         env_content = add_assign(env_content,
                                                  "committer_email", email)
                 elif field == "message":
+            # Behold, thee who wanders in this portion of the source code.  What
+            # you see here may look like the ramblings of a deranged man. You
+            # may partially be right, but here me out before lighting the pyre.
+            # The command given to the commit-filter argument is to be
+            # interpreted in a bash environment. Therefore, if we want to use
+            # newlines, we need to use ' quotes. BUT, and that's where I find it
+            # gets hairy. If we already have single quotes in the commit
+            # message, we need to escape it. Since escaping single quotes in
+            # single quotes string doesn't work, we need to: close the single
+            # quote string, open double quotes string, escape the single quote,
+            # close the double quotes string, and then open a new single quote
+            # string for the rest of the commit message.
                     value = self._modified[commit][field]
                     message = value.replace('\\', '\\\\')
                     message = message.replace('$', '\\\$')
-                    message = message.replace("'", "\\'")
+                    # Backslash overflow !
                     message = message.replace('"', '\\\\\\"')
+                    message = message.replace("'", "'\"\\\\\\'\"'")
                     message = message.replace('(', '\(')
                     message = message.replace(')', '\)')
-                    commit_content += "echo %s > ../message;" % message
+                    commit_content += "echo '%s' > ../message;" % message
                 elif field in TIME_FIELDS:
                     _timestamp = self._modified[commit][field]
                     _utc_offset = altz_to_utctz_str(commit.author_tz_offset)
