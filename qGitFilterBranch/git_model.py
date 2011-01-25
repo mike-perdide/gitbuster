@@ -54,9 +54,29 @@ def add_assign(env_filter, field, value):
 
 
 class GitFilterBranchProcess(Thread):
+    """
+        Thread meant to execute and follow the progress of the git command
+        process.
+    """
 
     def __init__(self, parent, args, oldest_commit_modified_parent,
                  log, script):
+        """
+            Initialization of the GitFilterBranchProcess thread.
+
+            :param parent:
+                GitModel object, parent of this thread.
+            :param args:
+                List of arguments that will be passed on to git filter-branch.
+            :param oldest_commit_modified_parent:
+                The oldest modified commit's parent.
+            :param log:
+                If set to True, the git filter-branch command will be logged.
+            :param script:
+                If set to True, the git filter-branch command will be written in
+                a script that can be distributed to other developpers of the
+                project.
+        """
         Thread.__init__(self)
 
         self._args = args
@@ -74,7 +94,12 @@ class GitFilterBranchProcess(Thread):
         self._progress = None
         self._finished = False
 
+
     def run(self):
+        """
+            Main method of the script. Launches the git command and
+            logs/generate scripts if the options are set.
+        """
         clean_pipe = "|tr '\r' '\n'"
         command = "git filter-branch "
         command += self._args + self._oldest_commit
@@ -168,38 +193,100 @@ class GitFilterBranchProcess(Thread):
 
 
 class Index:
+    """
+        This mimics the qModelIndex, so that we can use it in the
+        GitModel.data() method when populating the model.
+    """
 
     def __init__(self, row=0, column=0):
+        """
+            Initialization of the Index object.
+
+            :param row:
+                Row number, integer.
+
+            :param column:
+                Column number, integer.
+        """
         self._row = row
         self._column = column
 
     def row(self):
+        """
+            Returns the row number.
+        """
         return self._row
 
     def column(self):
+        """
+            Returns the column number.
+        """
         return self._column
 
 
 class Timezone(tzinfo):
+    """
+        Timezone class used to preserve the timezone information when handling
+        the commits information.
+    """
+
     def __init__(self, tz_string):
+        """
+            Initialize the Timezone object with it's string representation.
+
+            :param tz_string:
+                Representation of the offset to UTC of the timezone. (i.e. +0100
+                for CET or -0400 for ECT)
+        """
         self.tz_string = tz_string
 
     def utcoffset(self, dt):
+        """
+            Returns the offset to UTC using the string representation of the
+            timezone.
+
+            :return:
+                Timedelta object representing the offset to UTC.
+        """
         sign = 1 if self.tz_string[0] == '+' else -1
         hour = sign * int(self.tz_string[1:-2])
         min = sign * int(self.tz_string[2:])
         return timedelta(hours=hour, minutes=min)
 
     def tzname(self, dt):
+        """
+            Returns the offset to UTC string representation.
+
+            :return:
+                Offset to UTC string representation.
+        """
         return self.tz_string
 
     def dst(self, dt):
+        """
+            Returns a timedelta object representing a whole number of minutes
+            with magnitude less than one day.
+
+            :return:
+                timedelta(0)
+        """
         return timedelta(0)
 
 
 class GitModel:
+    """
+        This class represents the list of commits of the current branch of a
+        given repository. This class is meant to be Qt-free so that it can be
+        used in other ways than qGitFilterBranch.
+    """
 
     def __init__(self, directory="."):
+        """
+            Initializes the model with the repository root directory.
+
+            :param directory:
+                Root directory of the git repository.
+        """
         self._directory = directory
         self._repo = Repo(directory)
         self._modified = {}
@@ -212,6 +299,16 @@ class GitModel:
         self._git_process = None
 
     def populate(self, filter_count=0, filter_method=None):
+        """
+            Populates the model, by constructing a list of the commits of the
+            current branch of the given repository.
+
+            :param filter_count:
+                The number of display filters configured.
+            :param filter_method:
+                The filter method used to determine whether a commit matches the
+                configured criteria.
+        """
         self._commits = []
 
         for commit in self._repo.iter_commits():
@@ -236,21 +333,46 @@ class GitModel:
                     self._commits.append(commit)
 
     def get_commits(self):
+        """
+            Returns the commit list.
+        """
         return self._commits
 
     def get_modified(self):
+        """
+            Returns the modified values dictionnary.
+        """
         return self._modified
 
     def get_columns(self):
+        """
+            Returns the selected fields names.
+        """
         return self._columns
 
     def row_count(self):
+        """
+            Returns the count of commits.
+        """
         return len(self._commits)
 
     def column_count(self):
+        """
+            Returns the count of selected fields names.
+        """
         return len(self._columns)
 
     def data(self, index):
+        """
+            This method uses the index row to select the commit and the index
+            column to select the field to return.
+
+            :param index:
+                The index of the wanted information.
+
+            :return:
+                Depending on the index column, one of the commit fields.
+        """
         commit = self._commits[index.row()]
         column = index.column()
         field = self._columns[column]
@@ -290,15 +412,39 @@ class GitModel:
         return value
 
     def set_merge(self, merge_state):
+        """
+            Set the merge option, meaning that the committed and authored
+            notions are merged. For instance, if the committed date is changed
+            in the set_data() method, the authored date will be set with the
+            same value.
+
+            :param merge_state:
+                Boolean, sets the merge option.
+        """
         self._merge = merge_state
 
     def set_columns(self, list):
+        """
+            Set the fields that will be returned as columns.
+
+            :param list:
+                A list of commit field names.
+        """
         self._columns = []
         for item in list:
             if item in NAMES:
                 self._columns.append(item)
 
     def set_data(self, index, value):
+        """
+            Set the given value to the commit and the field determined by the
+            index.
+
+            :param index:
+                The index of the commit and the field that should be modified.
+            :param value:
+                The value that will be assigned.
+        """
         commit = self._commits[index.row()]
         column = index.column()
         field_name = self._columns[column]
@@ -324,11 +470,33 @@ class GitModel:
             self.dirty = True
 
     def set_field_data(self, commit, field, value):
+        """
+            This method is used in set_data() to assign the given value to the
+            given field of the given commit.
+
+            :param commit:
+                The commit that will be modified.
+            :param field:
+                The field that will be modified.
+            :param value:
+                The value that will be assigned.
+        """
         if commit not in self._modified:
             self._modified[commit] = {}
         self._modified[commit][field] = value
 
     def is_modified(self, index):
+        """
+            Returns True if the commit field determined by the index has been
+            modified (if there is a corresponding entry in the self._modified
+            dict).
+
+            :param index:
+                Index of the field of the commit.
+
+            :return:
+                True if the field of the commit is modified else False.
+        """
         commit = self._commits[index.row()]
         column = index.column()
         field_name = self._columns[column]
@@ -338,6 +506,16 @@ class GitModel:
         return False
 
     def original_data(self, index):
+        """
+            Returns the original data, even if the commit field pointed by the
+            index has been modified.
+
+            :param index:
+                Index of the field of the commit.
+
+            :return:
+                The original value of the field of the commit.
+        """
         commit = self._commits[index.row()]
         column = index.column()
 
@@ -345,15 +523,33 @@ class GitModel:
         return value
 
     def toggle_modifications(self):
+        """
+            Toggle the show/hide modifications option. If unset, data() will act
+            like original_data(). If not, it will return the modified value of
+            the field of the commit, if it has been modified.
+        """
         if self._show_modifications:
             self._show_modifications = False
         else:
             self._show_modifications = True
 
     def show_modifications(self):
+        """
+            Returns the current toggleModifications option state.
+        """
         return self._show_modifications
 
     def write(self, log, script):
+        """
+            Start the git filter-branch command and therefore write the
+            modifications stored in _modified.
+
+            :param log:
+                Boolean, set to True to log the git command.
+            :param script:
+                Boolean, set to True to generate a git filter-branch script that
+                can be used by on every checkout of the repository.
+        """
         env_filter = ""
         commit_filter = ""
 
@@ -440,16 +636,29 @@ class GitModel:
             self._git_process.start()
 
     def is_finished_writing(self):
+        """
+            Returns False if the git command process isn't finished else True.
+        """
         if self._git_process is not None:
             return self._git_process.is_finished()
         return True
 
     def progress(self):
+        """
+            Returns the git command process progress.
+        """
         if self._git_process is not None:
             return self._git_process.progress()
         return 0
 
     def oldest_modified_commit_parent(self):
+        """
+            Returns a string with the oldest modified commit's parent hexsha or
+            HEAD if the oldest modified commit is HEAD.
+
+            :return:
+                The hexsha of the last modified commit's parent.
+        """
         if self._commits:
             reverted_list = list(self._commits)
             reverted_list.reverse()
@@ -469,4 +678,7 @@ class GitModel:
             return False
 
     def erase_modifications(self):
+        """
+            Erase all modifications: set _modified to {}.
+        """
         self._modified = {}
