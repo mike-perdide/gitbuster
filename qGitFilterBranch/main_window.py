@@ -226,7 +226,7 @@ class MainWindow(QMainWindow):
 
         date_edit_widgets = (self._ui.afterDateFilterDateEdit,
                              self._ui.beforeDateFilterDateEdit)
-        for widget in time_edit_widgets:
+        for widget in date_edit_widgets:
             self.connect(widget, SIGNAL("dateChanged (const QDate&)"),
                          self.apply_filters)
 
