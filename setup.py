@@ -9,6 +9,7 @@ setup(name='qGitFilterBranch',
       packages=['qGitFilterBranch'],
       requires=('GitPython (>0.3.0)',),
       license='GPLv3',
+      url='https://github.com/mike-perdide/qGitFilterBranch',
       entry_points={
           'console_scripts' : ['qGitFilterBranch = qGitFilterBranch:main']}
      )
