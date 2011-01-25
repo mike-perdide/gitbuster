@@ -17,14 +17,32 @@ AVAILABLE_OPTIONS = {'display_email'    : 'Email',
                      'display_weekday'  : 'Weekday'}
 
 class ProgressThread(QThread):
+    """
+        Thread checking on the git command process, rewriting the
+        git repository.
+    """
 
     def __init__(self, progress_bar, model):
+        """
+            Initializes the thread with the progress bar widget and the
+            qGitModel used.
+
+            :param progress_bar:
+                Progress bar widdget used to display the progression of the
+                git command process.
+            :param model:
+                The qGitModel used in the MainWindow's view.
+        """
         QThread.__init__(self)
 
         self._progress_bar = progress_bar
         self._model = model
 
     def run(self):
+        """
+            Run method of the thread. Will check on the git command process
+            progress regularly and updates the progress bar widget.
+        """
         model = self._model
         progress_bar = self._progress_bar
 
@@ -49,8 +67,17 @@ class ProgressThread(QThread):
 
 
 class MainWindow(QMainWindow):
+    """
+        Main Window of qGitFilterBranch.
+    """
 
     def __init__(self, directory=".", debug=False):
+        """
+            Initilaisation method, setting the directory.
+
+            :param directory:
+                Root directory of the git repository.
+        """
         QMainWindow.__init__(self)
 
         self._ui = Ui_MainWindow()
@@ -85,6 +112,11 @@ class MainWindow(QMainWindow):
         self._ui.progressBar.hide()
 
     def create_checkboxes(self):
+        """
+            Creates the checkboxes used to determine what columns are to be
+            displayed or what options should be set to the model (i.e. should we
+            display the weekday, etc.)
+        """
         iter = 0
         for checkbox_name in AVAILABLE_CHOICES:
             checkbox = QCheckBox(self._ui.centralwidget)
@@ -119,6 +151,10 @@ class MainWindow(QMainWindow):
         self.refresh_display_options()
 
     def refresh_checkboxes(self):
+        """
+            When a "column checkbox" is checked or unchecked, we repopulate the
+            model so that only the selected columns are displayed.
+        """
         choices = []
         for checkbox_name in AVAILABLE_CHOICES:
             if self._checkboxes[checkbox_name].isChecked():
@@ -130,6 +166,10 @@ class MainWindow(QMainWindow):
         self._ui.tableView.horizontalHeader().setStretchLastSection(True)
 
     def refresh_display_options(self):
+        """
+            When a "display option" is checked or unchecked, we set the display
+            options on the model.
+        """
         model = self._ui.tableView.model()
         for option_name in AVAILABLE_OPTIONS:
             if self._checkboxes[option_name].isChecked():
@@ -141,6 +181,9 @@ class MainWindow(QMainWindow):
         self._ui.tableView.horizontalHeader().setStretchLastSection(True)
 
     def connect_slots(self):
+        """
+            Connect the slots to the objects.
+        """
         self.connect(self._ui.cancelButton, SIGNAL("clicked()"),
                      self.close)
 
@@ -206,6 +249,9 @@ class MainWindow(QMainWindow):
                          self.apply_filters)
 
     def apply(self):
+        """
+            Write the modifications to the git repository.
+        """
         model = self._ui.tableView.model()
         modified_commits_count = model.get_modified_count()
         if modified_commits_count > 0:
@@ -245,19 +291,37 @@ class MainWindow(QMainWindow):
                     model.populate()
 
     def show_progress_bar(self):
+        """
+            Shows the progress bar representing the progress of the writing
+            process.
+        """
         self._ui.progressBar.show()
         self._ui.applyButton.setDisabled(True)
         self._ui.cancelButton.setDisabled(True)
 
     def update_progress_bar(self, value):
+        """
+            Updates the progress bar with a value.
+
+            :param value:
+                Progression of the write process, between 0 and 100
+        """
         self._ui.progressBar.setValue(value)
 
     def hide_progress_bar(self):
+        """
+            Hide the progress bar representing the progress of the writing
+            process.
+        """
         self._ui.progressBar.hide()
         self._ui.applyButton.setEnabled(True)
         self._ui.cancelButton.setEnabled(True)
 
     def merge_clicked(self, check_state):
+        """
+            When the "merge checkbox" is checked or unchecked, pass on the
+            option to the model.
+        """
         model = self._ui.tableView.model()
 
         if check_state == Qt.Checked:
@@ -266,6 +330,10 @@ class MainWindow(QMainWindow):
             model.setMerge(False)
 
     def apply_filters(self):
+        """
+            When a "filter checkbox" is checked or unchecked, set the filters on
+            the model and reset it.
+        """
         model = self._ui.tableView.model()
 
         for checkbox_name in self._filters_checkboxes:
@@ -283,6 +351,10 @@ class MainWindow(QMainWindow):
         model.reset()
 
     def toggle_modifications(self):
+        """
+            When the toggleModifications button is pressed, ask the model to
+            show or hide the modifications.
+        """
         model = self._ui.tableView.model()
 
         model.toggle_modifications()
