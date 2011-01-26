@@ -333,3 +333,12 @@ class QGitModel(QAbstractTableModel):
 
     def columnCount(self, parent=QModelIndex()):
         return self.git_model.column_count()
+
+    def get_branches(self):
+        return self.git_model.get_branches()
+
+    def get_current_branch(self):
+        return self.git_model.get_current_branch()
+
+    def set_current_branch(self, branch):
+        return self.git_model.set_current_branch(branch)

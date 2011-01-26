@@ -89,10 +89,10 @@ class MainWindow(QMainWindow):
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        model = QGitModel(directory=directory)
-        self._ui.tableView.setModel(model)
-        model.setMerge(True)
-        model.enable_option("filters")
+        self._model = QGitModel(directory=directory)
+        self._ui.tableView.setModel(self._model)
+        self._model.setMerge(True)
+        self._model.enable_option("filters")
         self._ui.tableView.verticalHeader().hide()
         self._ui.tableView.setItemDelegate(QGitDelegate(self._ui.tableView))
 
@@ -106,6 +106,15 @@ class MainWindow(QMainWindow):
             "commit"        : self._ui.commitFilterLineEdit.text,
             "nameEmail"     : self._ui.nameEmailFilterLineEdit.text
         }
+
+        index = 0
+        for branch in self._model.get_branches():
+            self._ui.currentBranchComboBox.addItem("%s" % str(branch))
+            if branch == self._model.get_current_branch():
+                current_index = index
+            index += 1
+
+        self._ui.currentBranchComboBox.setCurrentIndex(current_index)
 
         self.connect_slots()
 
@@ -216,6 +225,12 @@ class MainWindow(QMainWindow):
         self.connect(self._ui.progressBar, SIGNAL("stopping"),
                      self.hide_progress_bar)
 
+        # Change current branch when the currentBranchComboBox current index is
+        # changed.
+        self.connect(self._ui.currentBranchComboBox,
+                     SIGNAL("currentIndexChanged(const QString&)"),
+                     self.current_branch_changed)
+
         # Apply filters when filter edit widgets are edited or when the filter
         # checkboxes are ticked.
         box_widgets = (self._ui.afterWeekdayFilterComboBox,
@@ -322,6 +337,18 @@ class MainWindow(QMainWindow):
         self._ui.progressBar.hide()
         self._ui.applyButton.setEnabled(True)
         self._ui.cancelButton.setEnabled(True)
+
+    def current_branch_changed(self, new_branch_name):
+        """
+            When the currentBranchComboBox current index is changed, set the
+            current branch of the model to the new branch.
+        """
+        for branch in self._model.get_branches():
+            if str(branch) == new_branch_name:
+                self._model.set_current_branch(branch)
+                self._model.reset()
+                self._model.populate()
+                break
 
     def merge_clicked(self, check_state):
         """
