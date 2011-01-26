@@ -297,6 +297,7 @@ class GitModel:
         """
         self._directory = directory
         self._repo = Repo(directory)
+        self._current_branch = self._repo.active_branch
         self._modified = {}
         self._dirty = False
         self._columns = []
@@ -319,7 +320,8 @@ class GitModel:
         """
         self._commits = []
 
-        for commit in self._repo.iter_commits():
+        branch_rev = self._current_branch.commit
+        for commit in self._repo.iter_commits(rev=branch_rev):
             self._commits.append(commit)
 
         if filter_method:
@@ -339,6 +341,27 @@ class GitModel:
             for commit in self._repo.iter_commits():
                 if filtered_commits[commit] == filter_count:
                     self._commits.append(commit)
+
+    def get_branches(self):
+        """
+            Returns the repository avalaible branches.
+        """
+        return self._repo.branches
+
+    def get_current_branch(self):
+        """
+            Returns the model's current branch.
+        """
+        return self._current_branch
+
+    def set_current_branch(self, branch):
+        """
+            Sets the model's current branch.
+
+            :param branch:
+                The desired branch to modelize.
+        """
+        self._current_branch = branch
 
     def get_commits(self):
         """
