@@ -381,7 +381,6 @@ class MainWindow(QMainWindow):
                 model.filter_unset(checkbox_name)
 
         model.populate()
-        model.reset()
 
     def toggle_modifications(self):
         """
