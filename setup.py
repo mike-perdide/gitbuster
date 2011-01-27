@@ -16,6 +16,11 @@ SETUP_ARGS = {"name"        : ("metadata",),
               "scripts"     : ("files",),
              }
 
+MULTI = ("classifiers",
+         "requires",
+         "packages",
+         "scripts")
+
 def generate_setuptools_kwargs_from_setup_cfg():
     config = ConfigParser.RawConfigParser()
     config.read('setup.cfg')
@@ -35,11 +40,14 @@ def generate_setuptools_kwargs_from_setup_cfg():
             # There is no such option in the setup.cfg
             continue
 
-        if "\n" in in_cfg_value:
+        if arg in MULTI:
             # Special behaviour when we have a multi line option
-            kwargs[arg] = in_cfg_value.strip().split('\n')
-        else:
-            kwargs[arg] = in_cfg_value
+            if "\n" in in_cfg_value:
+                in_cfg_value = in_cfg_value.strip().split('\n')
+            else:
+                in_cfg_value = list((in_cfg_value,))
+
+        kwargs[arg] = in_cfg_value
 
     return kwargs
     
