@@ -1,0 +1,4 @@
+include *.txt
+include setup.py
+include qGitFilterBranch/*.py
+include qGitFilterBranch/*_ui.py
