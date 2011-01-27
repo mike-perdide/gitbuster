@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(name='qGitFilterBranch',
-      version='1.0',
+      version='0.9',
       description='git filter-branch qt interface',
       author='Julien Miotte',
       author_email='miotte.julien@gmail.com',
