@@ -339,7 +339,7 @@ class GitModel:
 
             self._commits = []
             for commit in self._repo.iter_commits():
-                if filtered_commits[commit] == filter_count:
+                if filtered_commits[commit] >= filter_count:
                     self._commits.append(commit)
 
     def get_branches(self):
