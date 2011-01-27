@@ -13,7 +13,7 @@ fetchcmd="git clone https://github.com/mike-perdide/qGitFilterBranch.git"
 #Command to build project. Escape variables.
 buildcmd="make -C qGitFilterBranch/qGitFilterBranch/"
 #Command to run project. Escape variables.
-runcmd="PYTHONPATH=\$mydir/qGitFilterBranch/ \$mydir/bin/python qGitFilterBranch/qGitFilterBranch/run.py"
+runcmd="PYTHONPATH=\$mydir/qGitFilterBranch/ \$mydir/bin/python qGitFilterBranch/qGitFilterBranch/qGitFilterBranch"
 #Pypi deps for the project
 pypideps=gitpython
 
