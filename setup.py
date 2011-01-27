@@ -13,6 +13,7 @@ SETUP_ARGS = {"name"        : ("metadata",),
               "packages"    : ("files",),
               "requires"    : ("metadata", "requires_dist"),
               "classifiers" : ("metadata", "classifier"),
+              "scripts"     : ("files",),
              }
 
 def generate_setuptools_kwargs_from_setup_cfg():
