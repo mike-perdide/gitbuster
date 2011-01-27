@@ -48,4 +48,4 @@ To launch qGitFilterBranch:
     
     $ export PYTHONPATH=$PYTHONPATH:<path_to_>/qGitFilterBranch
     $ cd qGitFilterBranch
-    $ ./run.py
+    $ ./qGitFilterBranch
