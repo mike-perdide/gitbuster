@@ -42,7 +42,7 @@ NAMES = {'actor':'Actor', 'author':'Author',
              'list_from_string':'List From String', 'message':'Message',
              'parents':'Parents', 'repo':'Repo', 'stats':'Stats',
              'summary':'Summary', 'tree':'Tree'}
-TEXT_FIELDS = ['hexsha', 'message', 'summary']
+TEXT_FIELDS = ['message', 'summary']
 ACTOR_FIELDS = ['author', 'committer']
 TIME_FIELDS = ['authored_date', 'committed_date']
 NOT_EDITABLE_FIELDS = ['hexsha']

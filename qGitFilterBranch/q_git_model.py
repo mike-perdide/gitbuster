@@ -46,7 +46,11 @@ class QGitModel(QAbstractTableModel):
                 filter_count += 1
             if "afterWeekday" in filters or "beforeWeekday" in filters:
                 filter_count += 1
-            if "nameEmail" in filters or "commit" in filters:
+            if "nameEmail" in filters:
+                filter_count +=1
+            if "commit" in filters:
+                filter_count += 1
+            if "localOnly" in filters:
                 filter_count += 1
             self.git_model.populate(filter_count, self.filter_match)
         else:
@@ -253,6 +257,13 @@ class QGitModel(QAbstractTableModel):
                 match = str(filters["commit"])
                 commit_message = self.git_model.data(index)
                 if match and match in commit_message:
+                    return True
+
+        elif field_name == "hexsha":
+            if "localOnly" in filters:
+                commits = self.git_model.get_commits()
+                commit = commits[index.row()]
+                if not self.git_model.is_commit_pushed(commit):
                     return True
 
         return False
