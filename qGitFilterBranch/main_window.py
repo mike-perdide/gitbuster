@@ -104,7 +104,8 @@ class MainWindow(QMainWindow):
             "beforeHour"    : self._ui.beforeHourFilterTimeEdit.time,
             "afterHour"     : self._ui.afterHourFilterTimeEdit.time,
             "commit"        : self._ui.commitFilterLineEdit.text,
-            "nameEmail"     : self._ui.nameEmailFilterLineEdit.text
+            "nameEmail"     : self._ui.nameEmailFilterLineEdit.text,
+            "localOnly"     : None
         }
 
         index = 0
@@ -264,7 +265,8 @@ class MainWindow(QMainWindow):
                                    self._ui.afterDateFilterCheckBox,
                                    self._ui.beforeDateFilterCheckBox,
                                    self._ui.nameEmailFilterCheckBox,
-                                   self._ui.commitFilterCheckBox)
+                                   self._ui.commitFilterCheckBox,
+                                   self._ui.localOnlyFilterCheckBox)
         for widget in filter_checkbox_widgets:
             self.connect(widget, SIGNAL("stateChanged(int)"),
                          self.apply_filters)
