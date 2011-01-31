@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         self._ui.tableView.verticalHeader().hide()
         self._ui.tableView.setItemDelegate(QGitDelegate(self._ui.tableView))
 
-        self._filters_checkboxes = {
+        self._filters_values = {
             "afterWeekday"  : self._ui.afterWeekdayFilterComboBox.currentIndex,
             "beforeWeekday" : self._ui.beforeWeekdayFilterComboBox.currentIndex,
             "beforeDate"    : self._ui.beforeDateFilterDateEdit.date,
@@ -371,13 +371,18 @@ class MainWindow(QMainWindow):
         """
         model = self._ui.tableView.model()
 
-        for checkbox_name in self._filters_checkboxes:
+        for checkbox_name in self._filters_values:
             checkbox = eval("self._ui." + checkbox_name + "FilterCheckBox")
             check_state = checkbox.checkState()
 
             if check_state == Qt.Checked:
-                get_value = self._filters_checkboxes[checkbox_name]
-                value = get_value()
+                get_value = self._filters_values[checkbox_name]
+
+                if get_value:
+                    value = get_value()
+                else:
+                    value = None
+
                 model.filter_set(checkbox_name, value)
             else:
                 model.filter_unset(checkbox_name)
