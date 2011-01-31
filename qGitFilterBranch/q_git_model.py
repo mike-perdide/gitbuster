@@ -99,6 +99,8 @@ class QGitModel(QAbstractTableModel):
                 modified = self.git_model.get_modified()
                 if commit in modified and field_name in modified[commit]:
                     return QVariant(QColor(Qt.yellow))
+            if self.git_model.is_commit_pushed(commit):
+                return QVariant(QColor(Qt.lightGray))
         elif role == Qt.ForegroundRole:
             if "filters" in self._enabled_options and self.filter_match(index):
                 return QVariant(QColor(Qt.red))

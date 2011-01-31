@@ -319,10 +319,19 @@ class GitModel:
                 configured criteria.
         """
         self._commits = []
+        self._unpushed = []
 
         branch_rev = self._current_branch.commit
+        remote_commits_head = self._current_branch.tracking_branch().commit
+
+        pushed = False
         for commit in self._repo.iter_commits(rev=branch_rev):
             self._commits.append(commit)
+
+            if commit.hexsha == remote_commits_head.hexsha:
+                pushed = True
+            if not pushed:
+                self._unpushed.append(commit)
 
         if filter_method:
             iter = 0
@@ -341,6 +350,14 @@ class GitModel:
             for commit in self._repo.iter_commits():
                 if filtered_commits[commit] >= filter_count:
                     self._commits.append(commit)
+
+    def is_commit_pushed(self, commit):
+        """
+            Returns True if the commit has been pushed to the remote branch.
+
+            :param commit:
+        """
+        return not commit in self._unpushed
 
     def get_branches(self):
         """
