@@ -316,6 +316,13 @@
            </property>
           </widget>
          </item>
+         <item row="4" column="0">
+          <widget class="QCheckBox" name="localOnlyFilterCheckBox">
+           <property name="text">
+            <string>Local commits only</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
