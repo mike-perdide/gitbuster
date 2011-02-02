@@ -307,16 +307,18 @@ class GitModel:
         self._show_modifications = True
         self._git_process = None
 
-    def populate(self, filter_count=0, filter_method=None):
+    def populate(self, filter_count=0, filter_score=None):
         """
             Populates the model, by constructing a list of the commits of the
             current branch of the given repository.
 
             :param filter_count:
                 The number of display filters configured.
-            :param filter_method:
-                The filter method used to determine whether a commit matches the
-                configured criteria.
+            :param filter_score:
+                The filter method used to determine whether a field matches the
+                configured criteria. The return value is 0 if the field doesn't
+                match. The return value is 1 or more if the fields matches one
+                or more.
         """
         self._commits = []
         self._unpushed = []
@@ -333,7 +335,7 @@ class GitModel:
             if not pushed:
                 self._unpushed.append(commit)
 
-        if filter_method:
+        if filter_score:
             iter = 0
             filtered_commits = {}
 
@@ -342,8 +344,7 @@ class GitModel:
                     index = Index(row=iter, column=field_index)
                     if commit not in filtered_commits:
                         filtered_commits[commit] = 0
-                    if filter_method(index):
-                        filtered_commits[commit] += 1
+                    filtered_commits[commit] += filter_score(index)
                 iter += 1
 
             self._commits = []

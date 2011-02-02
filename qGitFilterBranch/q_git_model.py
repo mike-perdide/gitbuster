@@ -52,7 +52,7 @@ class QGitModel(QAbstractTableModel):
                 filter_count += 1
             if "localOnly" in filters:
                 filter_count += 1
-            self.git_model.populate(filter_count, self.filter_match)
+            self.git_model.populate(filter_count, self.filter_score)
         else:
             self.git_model.populate()
         self.reset()
@@ -106,7 +106,7 @@ class QGitModel(QAbstractTableModel):
             if self.git_model.is_commit_pushed(commit):
                 return QVariant(QColor(Qt.lightGray))
         elif role == Qt.ForegroundRole:
-            if "filters" in self._enabled_options and self.filter_match(index):
+            if "filters" in self._enabled_options and self.filter_score(index):
                 return QVariant(QColor(Qt.red))
         elif role == Qt.ToolTipRole:
             value = self.git_model.data(index)
@@ -154,18 +154,16 @@ class QGitModel(QAbstractTableModel):
         if "beforeDate" in filters:
             filter_before_date = filters["beforeDate"]
 
-        if not (filter_before_date or filter_after_date):
-            return True
-        elif filter_after_date and filter_before_date:
+        if filter_after_date and filter_before_date:
             if filter_after_date < item_date < filter_before_date:
-                return True
+                return 1
         elif (filter_after_date and filter_after_date < item_date):
-            return True
+            return 1
         elif (filter_before_date and
               filter_before_date > item_date):
-            return True
+            return 1
 
-        return False
+        return 0
 
     def weekday_match(self, index, item_weekday):
         filters = self._filters
@@ -178,18 +176,16 @@ class QGitModel(QAbstractTableModel):
         if "beforeWeekday" in filters:
             filter_before_weekday = filters["beforeWeekday"] + 1
 
-        if not (filter_after_weekday or filter_before_weekday):
-            return True
-        elif filter_after_weekday and filter_before_weekday:
+        if filter_after_weekday and filter_before_weekday:
             if filter_after_weekday < item_weekday < filter_before_weekday:
-                return True
+                return 1
         elif (filter_after_weekday and filter_after_weekday < item_weekday):
-            return True
+            return 1
         elif (filter_before_weekday and
               filter_before_weekday > item_weekday):
-            return True
+            return 1
 
-        return False
+        return 0
 
     def time_match(self, index, item_time):
         filters = self._filters
@@ -202,20 +198,18 @@ class QGitModel(QAbstractTableModel):
         if "beforeHour" in filters:
             filter_before_hour = filters["beforeHour"]
 
-        if not (filter_after_hour or filter_before_hour):
-            return True
-        elif filter_after_hour and filter_before_hour:
+        if filter_after_hour and filter_before_hour:
             if filter_after_hour < item_time < filter_before_hour:
-                return True
+                return 1
         elif (filter_after_hour and filter_after_hour < item_time):
-            return True
+            return 1
         elif (filter_before_hour and
               filter_before_hour > item_time):
-            return True
+            return 1
 
-        return False
+        return 0
 
-    def filter_match(self, index):
+    def filter_score(self, index):
         column = index.column()
         field_name = self.git_model.get_columns()[column]
         filters = self._filters
@@ -239,10 +233,10 @@ class QGitModel(QAbstractTableModel):
                     has_date_time_filter = True
 
             if not has_date_time_filter:
-                return False
+                return 0
             else:
-                return self.date_match(index, item_date) and \
-                       self.weekday_match(index, item_weekday) and \
+                return self.date_match(index, item_date) + \
+                       self.weekday_match(index, item_weekday) + \
                        self.time_match(index, item_time)
 
         elif field_name in ACTOR_FIELDS:
@@ -250,23 +244,23 @@ class QGitModel(QAbstractTableModel):
                 match = str(filters["nameEmail"])
                 name, email = self.git_model.data(index)
                 if match and (match in name or match in email):
-                    return True
+                    return 1
 
         elif field_name in TEXT_FIELDS:
             if "commit" in filters:
                 match = str(filters["commit"])
                 commit_message = self.git_model.data(index)
                 if match and match in commit_message:
-                    return True
+                    return 1
 
         elif field_name == "hexsha":
             if "localOnly" in filters:
                 commits = self.git_model.get_commits()
                 commit = commits[index.row()]
                 if not self.git_model.is_commit_pushed(commit):
-                    return True
+                    return 1
 
-        return False
+        return 0
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
