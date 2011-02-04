@@ -399,9 +399,9 @@ class MainWindow(QMainWindow):
         model.toggle_modifications()
 
         if model.show_modifications():
-            label = "Hide modifications"
+            label = "&Hide modifications"
         else:
-            label = "Show modifications"
+            label = "&Show modifications"
 
         self._ui.toggleModificationsButton.setText(
             QApplication.translate("MainWindow", label,
