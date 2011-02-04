@@ -324,7 +324,10 @@ class GitModel:
         self._unpushed = []
 
         branch_rev = self._current_branch.commit
-        remote_commits_head = self._current_branch.tracking_branch().commit
+        if self._current_branch.tracking_branch():
+            remote_commits_head = self._current_branch.tracking_branch().commit
+        else:
+            remote_commits_head = None
 
         pushed = False
         for commit in self._repo.iter_commits(rev=branch_rev):
