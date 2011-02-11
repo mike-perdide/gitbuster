@@ -319,6 +319,7 @@ class QGitModel(QAbstractTableModel):
 
     def setColumns(self, list):
         self.git_model.set_columns(list)
+        self.populate()
 
     def setMerge(self, merge_state):
         self.git_model.set_merge(merge_state)
