@@ -216,6 +216,10 @@ class MainWindow(QMainWindow):
                      SIGNAL("activated(const QModelIndex&)"),
                      self._ui.tableView.edit)
 
+        # Connecting actions
+        self.connect(self._ui.actionQuit, SIGNAL("triggered(bool)"),
+                     self.close)
+
         # Catching progress bar signals.
         self.connect(self._ui.progressBar, SIGNAL("starting"),
                      self.show_progress_bar)
