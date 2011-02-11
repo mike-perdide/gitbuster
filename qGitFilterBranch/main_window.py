@@ -6,13 +6,17 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, QSizePolicy
-from PyQt4.QtCore import SIGNAL, Qt, QThread
+from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, \
+                        QSizePolicy, QFileDialog
+from PyQt4.QtCore import SIGNAL, Qt, QThread, QDir, QSettings
+
 from qGitFilterBranch.main_window_ui import Ui_MainWindow
 from qGitFilterBranch.q_git_model import QGitModel, NAMES
 from qGitFilterBranch.q_git_delegate import QGitDelegate
 from qGitFilterBranch.confirm_dialog import ConfirmDialog
+
 import time
+from os.path import join, exists
 
 AVAILABLE_CHOICES = ['hexsha',
                      'authored_date', 'committed_date',
@@ -21,6 +25,34 @@ AVAILABLE_CHOICES = ['hexsha',
 PRE_CHOICE = ['hexsha', 'authored_date', 'author', 'message']
 AVAILABLE_OPTIONS = {'display_email'    : 'Email',
                      'display_weekday'  : 'Weekday'}
+
+
+def is_top_git_directory(filepath):
+    git_path = join(filepath, ".git")
+    return exists(git_path)
+
+def select_git_directory():
+    settings = QSettings("Noname company yet", "qGitFilterBranch")
+
+    settings.beginGroup("Last run")
+
+    filepath = '/'
+    while not is_top_git_directory(filepath):
+        filepath = unicode(QFileDialog.getExistingDirectory(
+            None,
+            "Open git repository",
+            unicode(settings.value("directory", QDir.homePath()).toString()),
+            QFileDialog.ShowDirsOnly
+            ))
+        if not filepath:
+            return filepath
+
+    settings.setValue("directory", filepath)
+    settings.endGroup()
+    settings.sync()
+
+    return filepath
+
 
 class ProgressThread(QThread):
     """
@@ -89,12 +121,7 @@ class MainWindow(QMainWindow):
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        self._model = QGitModel(directory=directory)
-        self._ui.tableView.setModel(self._model)
-        self._model.setMerge(True)
-        self._model.enable_option("filters")
-        self._ui.tableView.verticalHeader().hide()
-        self._ui.tableView.setItemDelegate(QGitDelegate(self._ui.tableView))
+        self.set_current_directory(directory)
 
         self._filters_values = {
             "afterWeekday"  : self._ui.afterWeekdayFilterComboBox.currentIndex,
@@ -108,24 +135,42 @@ class MainWindow(QMainWindow):
             "localOnly"     : None
         }
 
-        index = 0
-        for branch in self._model.get_branches():
-            self._ui.currentBranchComboBox.addItem("%s" % str(branch))
-            if branch == self._model.get_current_branch():
-                current_index = index
-            index += 1
-
-        self._ui.currentBranchComboBox.setCurrentIndex(current_index)
-
         self.connect_slots()
 
-        self._checkboxes = {}
-        self.create_checkboxes()
+        self._ui.progressBar.hide()
+
+    def set_current_directory(self, directory):
+        """
+            Sets the current directory and sets up the important widgets.
+
+            :param directory:
+                The git directory.
+        """
+        self._model = QGitModel(directory=directory)
+        self._model.setMerge(True)
+        self._model.enable_option("filters")
+
+        self._ui.tableView.setModel(self._model)
+        self._ui.tableView.verticalHeader().hide()
+        self._ui.tableView.setItemDelegate(QGitDelegate(self._ui.tableView))
 
         self._ui.tableView.resizeColumnsToContents()
         self._ui.tableView.horizontalHeader().setStretchLastSection(True)
 
-        self._ui.progressBar.hide()
+        self._model.populate()
+
+        self._checkboxes = {}
+        self.create_checkboxes()
+
+        index = 0
+        self._ui.currentBranchComboBox.clear()
+        current_branch = self._model.get_current_branch()
+        for branch in self._model.get_branches():
+            self._ui.currentBranchComboBox.addItem("%s" % str(branch))
+            if branch == current_branch:
+                current_index = index
+            index += 1
+        self._ui.currentBranchComboBox.setCurrentIndex(current_index)
 
     def create_checkboxes(self):
         """
@@ -177,7 +222,6 @@ class MainWindow(QMainWindow):
                 choices.append(checkbox_name)
 
         self._ui.tableView.model().setColumns(choices)
-        self._ui.tableView.model().populate()
         self._ui.tableView.resizeColumnsToContents()
         self._ui.tableView.horizontalHeader().setStretchLastSection(True)
 
@@ -219,6 +263,10 @@ class MainWindow(QMainWindow):
         # Connecting actions
         self.connect(self._ui.actionQuit, SIGNAL("triggered(bool)"),
                      self.close)
+
+        self.connect(self._ui.actionChange_repository,
+                     SIGNAL("triggered(bool)"),
+                     self.change_directory)
 
         # Catching progress bar signals.
         self.connect(self._ui.progressBar, SIGNAL("starting"),
@@ -343,6 +391,15 @@ class MainWindow(QMainWindow):
         self._ui.progressBar.hide()
         self._ui.applyButton.setEnabled(True)
         self._ui.cancelButton.setEnabled(True)
+
+    def change_directory(self):
+        """
+            When the change directory action is triggered, pop up a dialog to
+            select the new directory and set the directory of the model.
+        """
+        directory = select_git_directory()
+        if directory:
+            self.set_current_directory(directory)
 
     def current_branch_changed(self, new_branch_name):
         """

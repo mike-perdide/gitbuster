@@ -333,7 +333,8 @@ class GitModel:
         for commit in self._repo.iter_commits(rev=branch_rev):
             self._commits.append(commit)
 
-            if commit.hexsha == remote_commits_head.hexsha:
+            if remote_commits_head is not None and \
+               commit.hexsha == remote_commits_head.hexsha:
                 pushed = True
             if not pushed:
                 self._unpushed.append(commit)
