@@ -492,6 +492,13 @@
               <property name="displayFormat">
                <string>hh:mm</string>
               </property>
+              <property name="time">
+               <time>
+                <hour>23</hour>
+                <minute>59</minute>
+                <second>0</second>
+               </time>
+              </property>
              </widget>
             </item>
            </layout>
