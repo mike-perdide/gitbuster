@@ -350,3 +350,8 @@ class QGitModel(QAbstractTableModel):
 
     def set_current_branch(self, branch):
         return self.git_model.set_current_branch(branch)
+
+    def reorder_commits(self, min_date, max_date, min_time, max_time, weekdays):
+        self.git_model.reorder_commits(min_date, max_date, min_time, max_time,
+                                       weekdays)
+        self.reset()

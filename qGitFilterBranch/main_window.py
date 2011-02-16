@@ -17,6 +17,7 @@ from qGitFilterBranch.confirm_dialog import ConfirmDialog
 
 import time
 from os.path import join, exists
+from datetime import datetime
 
 AVAILABLE_CHOICES = ['hexsha',
                      'authored_date', 'committed_date',
@@ -323,6 +324,10 @@ class MainWindow(QMainWindow):
             self.connect(widget, SIGNAL("stateChanged(int)"),
                          self.apply_filters)
 
+        # Connecting the re-order push button to the re-order method.
+        self.connect(self._ui.reOrderPushButton, SIGNAL("clicked()"),
+                     self.reorder_pushed)
+
     def apply(self):
         """
             Write the modifications to the git repository.
@@ -400,6 +405,48 @@ class MainWindow(QMainWindow):
         directory = select_git_directory()
         if directory:
             self.set_current_directory(directory)
+
+    def reorder_pushed(self):
+        """
+            The user asks for the automatic re-order of the commits.
+        """
+        q_max_date = self._ui.reOrderMaxDateEdit.date()
+        q_min_date = self._ui.reOrderMinDateEdit.date()
+
+        q_max_time = self._ui.reOrderMaxTimeEdit.time()
+        q_min_time = self._ui.reOrderMinTimeEdit.time()
+
+
+        checkboxes = {self._ui.reOrderWeekdayMondayCheckBox : 1,
+                      self._ui.reOrderWeekdayTuesdayCheckBox : 2,
+                      self._ui.reOrderWeekdayWednesdayCheckBox : 3,
+                      self._ui.reOrderWeekdayThursdayCheckBox : 4,
+                      self._ui.reOrderWeekdayFridayCheckBox : 5,
+                      self._ui.reOrderWeekdaySaturdayCheckBox : 6,
+                      self._ui.reOrderWeekdaySundayCheckBox : 7,
+        }
+        weekdays = []
+        for checkbox in checkboxes:
+            if checkbox.checkState() == Qt.Checked:
+                weekdays.append(checkboxes[checkbox])
+
+        if not weekdays:
+            weekdays = [1, 2, 3, 4, 5, 6, 7]
+
+
+        q_max_date = q_max_date.addDays(1)
+        max_date = datetime(q_max_date.year(), q_max_date.month(),
+                            q_max_date.day())
+        min_date = datetime(q_min_date.year(), q_min_date.month(),
+                            q_min_date.day())
+
+        max_time = datetime(2000, 1, 1, q_max_time.hour(),
+                            q_max_time.minute(), q_max_time.second())
+        min_time = datetime(2000, 1, 1, q_min_time.hour(),
+                            q_min_time.minute(), q_min_time.second())
+
+        model = self._ui.tableView.model()
+        model.reorder_commits(min_date, max_date, min_time, max_time, weekdays)
 
     def current_branch_changed(self, new_branch_name):
         """
