@@ -8,7 +8,7 @@
 
 from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, \
                         QSizePolicy, QFileDialog
-from PyQt4.QtCore import SIGNAL, Qt, QThread, QDir, QSettings
+from PyQt4.QtCore import SIGNAL, Qt, QThread, QDir, QSettings, QDateTime
 
 from qGitFilterBranch.main_window_ui import Ui_MainWindow
 from qGitFilterBranch.q_git_model import QGitModel, NAMES
@@ -139,6 +139,15 @@ class MainWindow(QMainWindow):
         self.connect_slots()
 
         self._ui.progressBar.hide()
+
+        # Initialize the dateEdit widgets
+        dateedits = [self._ui.beforeDateFilterDateEdit,
+                     self._ui.afterDateFilterDateEdit,
+                     self._ui.reOrderMinDateEdit,
+                     self._ui.reOrderMaxDateEdit]
+
+        for dateedit in dateedits:
+            dateedit.setDateTime(QDateTime.currentDateTime())
 
     def set_current_directory(self, directory):
         """
