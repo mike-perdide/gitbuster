@@ -191,7 +191,7 @@
     <item row="5" column="0" colspan="3">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -631,15 +631,25 @@
  </widget>
  <tabstops>
   <tabstop>currentBranchComboBox</tabstop>
+  <tabstop>tableView</tabstop>
   <tabstop>mergeCheckBox</tabstop>
+  <tabstop>afterDateFilterCheckBox</tabstop>
   <tabstop>afterDateFilterDateEdit</tabstop>
+  <tabstop>afterHourFilterCheckBox</tabstop>
   <tabstop>afterHourFilterTimeEdit</tabstop>
+  <tabstop>beforeDateFilterCheckBox</tabstop>
   <tabstop>beforeDateFilterDateEdit</tabstop>
+  <tabstop>beforeHourFilterCheckBox</tabstop>
   <tabstop>beforeHourFilterTimeEdit</tabstop>
+  <tabstop>afterWeekdayFilterCheckBox</tabstop>
   <tabstop>afterWeekdayFilterComboBox</tabstop>
+  <tabstop>nameEmailFilterCheckBox</tabstop>
   <tabstop>nameEmailFilterLineEdit</tabstop>
+  <tabstop>beforeWeekdayFilterCheckBox</tabstop>
   <tabstop>beforeWeekdayFilterComboBox</tabstop>
+  <tabstop>commitFilterCheckBox</tabstop>
   <tabstop>commitFilterLineEdit</tabstop>
+  <tabstop>localOnlyFilterCheckBox</tabstop>
   <tabstop>reOrderWeekdayMondayCheckBox</tabstop>
   <tabstop>reOrderWeekdayTuesdayCheckBox</tabstop>
   <tabstop>reOrderWeekdayWednesdayCheckBox</tabstop>
@@ -655,18 +665,25 @@
   <tabstop>toggleModificationsButton</tabstop>
   <tabstop>applyButton</tabstop>
   <tabstop>cancelButton</tabstop>
-  <tabstop>afterHourFilterCheckBox</tabstop>
-  <tabstop>afterWeekdayFilterCheckBox</tabstop>
-  <tabstop>beforeDateFilterCheckBox</tabstop>
-  <tabstop>beforeWeekdayFilterCheckBox</tabstop>
-  <tabstop>commitFilterCheckBox</tabstop>
-  <tabstop>beforeHourFilterCheckBox</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>localOnlyFilterCheckBox</tabstop>
-  <tabstop>tableView</tabstop>
-  <tabstop>nameEmailFilterCheckBox</tabstop>
-  <tabstop>afterDateFilterCheckBox</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>reOrderMinDateEdit</sender>
+   <signal>dateChanged(QDate)</signal>
+   <receiver>reOrderMaxDateEdit</receiver>
+   <slot>setDate(QDate)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>190</x>
+     <y>639</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>357</x>
+     <y>644</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
