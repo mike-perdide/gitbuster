@@ -1,5 +1,5 @@
 from PyQt4.QtCore import QDate, QTime
-from random import random
+from random import random, uniform
 from datetime import datetime, timedelta, time
 
 how_many_commits = 12
@@ -51,6 +51,8 @@ class non_continuous_timelapse:
 
             cur_date += timedelta(1)
 
+    def get_total_seconds(self):
+        return self.total_seconds
 
     def datetime_from_seconds(self, seconds):
         """
@@ -70,8 +72,10 @@ class non_continuous_timelapse:
 
 
 min_date = datetime(2010, 5, 16)
-max_date = datetime(2010, 10, 10)
+max_date = datetime(2010, 5, 18)
 
+if min_date == max_date:
+    max_date += timedelta(1)
 authorized_hours = (
     # Default date : 01/01/2000. We need datetime objets to be able to calculate
     # timedeltas.
@@ -85,9 +89,6 @@ truc_truc = non_continuous_timelapse(min_date, max_date,
                                      authorized_hours=authorized_hours,
                                      authorized_weekdays=authorized_weekdays)
 
-for i in xrange(10):
-    print i, truc_truc.datetime_from_seconds(60 * 20 * i + 1)
-
 #total_seconds = 0
 #total_days = 0
 # We take all the acceptable timelapses and make a continuous timelapse
@@ -98,18 +99,26 @@ for i in xrange(10):
 #print "    Total seconds should be 1058400:", truc_truc.total_seconds
 #print "=============================================="
 
-#delta = total_seconds / (how_many_commits + 1)
-#max_error = delta / 2
 
-#time_cursor = 0
-#for commit in xrange(how_many_commits):
-#    time_cursor += delta
-#    # The next lines sets the commit_time to time_cursor, plus or less an error
-#    commit_time = time_cursor + int((random() * 2 - 1) * max_error)
-#    print commit_time
+# Random method
+delta = truc_truc.get_total_seconds() / (how_many_commits + 1)
+max_error = delta / 2
 
-#print total_days
-#cur_date = min_date
-#for day in xrange(days_lapse):
-#    cur_date += timedelta(1)
-#    if cur_date.weekday() in authorized_weekdays:
+time_cursor = 0
+for commit in xrange(how_many_commits):
+    time_cursor += delta
+    # The next lines sets the commit_time to time_cursor, plus or less an error
+    new_commit_time = time_cursor + int((random() * 2 - 1) * max_error)
+    print truc_truc.datetime_from_seconds(new_commit_time)
+
+print "====="
+
+# Uniform method
+distribution = [int(random() * truc_truc.get_total_seconds())
+                for commit in xrange(how_many_commits)]
+distribution.sort()
+
+for commit in xrange(how_many_commits):
+    # The next lines sets the commit_time to time_cursor, plus or less an error
+    new_commit_time = distribution[commit]
+    print truc_truc.datetime_from_seconds(new_commit_time)
