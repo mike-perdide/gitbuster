@@ -76,9 +76,9 @@ class QGitModel(QAbstractTableModel):
                 _tmstmp, _tz = value
                 _datetime = datetime.fromtimestamp(_tmstmp).replace(tzinfo=_tz)
                 if "display_weekday" in self._enabled_options:
-                    date_format = "%Y-%m-%d %H:%M:%S (%a)"
+                    date_format = "%d/%m/%Y %H:%M:%S (%a)"
                 else:
-                    date_format = "%Y-%m-%d %H:%M:%S"
+                    date_format = "%d/%m/%Y %H:%M:%S"
                 return QVariant(_datetime.strftime(date_format))
             elif field_name == "message":
                 return QVariant(value.split("\n")[0])
