@@ -425,6 +425,16 @@ class MainWindow(QMainWindow):
         q_max_time = self._ui.reOrderMaxTimeEdit.time()
         q_min_time = self._ui.reOrderMinTimeEdit.time()
 
+        error = ""
+        if not q_max_date >= q_min_date:
+            error = "Min date is greater than max date."
+        elif not q_max_time >= q_min_time:
+            error = "Min time is greater than max time."
+        if error:
+            self._ui.reOrderErrorsLabel.setText(
+                QApplication.translate("MainWindow", error,
+                                       None, QApplication.UnicodeUTF8))
+            return
 
         checkboxes = {self._ui.reOrderWeekdayMondayCheckBox : 0,
                       self._ui.reOrderWeekdayTuesdayCheckBox : 1,

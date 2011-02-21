@@ -584,6 +584,53 @@
             </property>
            </widget>
           </item>
+          <item row="6" column="0" colspan="3">
+           <widget class="QLabel" name="reOrderErrorsLabel">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>196</red>
+                  <green>0</green>
+                  <blue>3</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>196</red>
+                  <green>0</green>
+                  <blue>3</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>128</red>
+                  <green>128</green>
+                  <blue>128</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
@@ -683,12 +730,92 @@
    <slot>setDate(QDate)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>190</x>
-     <y>639</y>
+     <x>257</x>
+     <y>690</y>
     </hint>
     <hint type="destinationlabel">
-     <x>357</x>
-     <y>644</y>
+     <x>417</x>
+     <y>690</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reOrderPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>reOrderErrorsLabel</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>799</x>
+     <y>738</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>729</x>
+     <y>741</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reOrderMinDateEdit</sender>
+   <signal>dateChanged(QDate)</signal>
+   <receiver>reOrderErrorsLabel</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>217</x>
+     <y>677</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>432</x>
+     <y>736</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reOrderMaxDateEdit</sender>
+   <signal>dateChanged(QDate)</signal>
+   <receiver>reOrderErrorsLabel</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>372</x>
+     <y>679</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>458</x>
+     <y>739</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reOrderMaxTimeEdit</sender>
+   <signal>timeChanged(QTime)</signal>
+   <receiver>reOrderErrorsLabel</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>381</x>
+     <y>710</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>480</x>
+     <y>734</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reOrderMinTimeEdit</sender>
+   <signal>timeChanged(QTime)</signal>
+   <receiver>reOrderErrorsLabel</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>230</x>
+     <y>713</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>502</x>
+     <y>740</y>
     </hint>
    </hints>
   </connection>
