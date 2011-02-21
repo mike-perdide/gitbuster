@@ -37,7 +37,7 @@ import fcntl
 from random import random, uniform
 
 DEFAULT_AUTHORIZED_HOURS = ((time.min, time.max),)
-DEFAULT_AUTHORIZED_WEEKDAYS = (1, 2, 3, 4, 5, 6, 7)
+DEFAULT_AUTHORIZED_WEEKDAYS = (0, 1, 2, 3, 4, 5, 6)
 
 NAMES = {'actor':'Actor', 'author':'Author',
              'authored_date':'Authored Date', 'committed_date':'Committed Date',
