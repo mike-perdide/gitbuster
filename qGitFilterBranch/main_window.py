@@ -426,13 +426,13 @@ class MainWindow(QMainWindow):
         q_min_time = self._ui.reOrderMinTimeEdit.time()
 
 
-        checkboxes = {self._ui.reOrderWeekdayMondayCheckBox : 1,
-                      self._ui.reOrderWeekdayTuesdayCheckBox : 2,
-                      self._ui.reOrderWeekdayWednesdayCheckBox : 3,
-                      self._ui.reOrderWeekdayThursdayCheckBox : 4,
-                      self._ui.reOrderWeekdayFridayCheckBox : 5,
-                      self._ui.reOrderWeekdaySaturdayCheckBox : 6,
-                      self._ui.reOrderWeekdaySundayCheckBox : 7,
+        checkboxes = {self._ui.reOrderWeekdayMondayCheckBox : 0,
+                      self._ui.reOrderWeekdayTuesdayCheckBox : 1,
+                      self._ui.reOrderWeekdayWednesdayCheckBox : 2,
+                      self._ui.reOrderWeekdayThursdayCheckBox : 3,
+                      self._ui.reOrderWeekdayFridayCheckBox : 4,
+                      self._ui.reOrderWeekdaySaturdayCheckBox : 5,
+                      self._ui.reOrderWeekdaySundayCheckBox : 6,
         }
         weekdays = []
         for checkbox in checkboxes:
@@ -440,7 +440,7 @@ class MainWindow(QMainWindow):
                 weekdays.append(checkboxes[checkbox])
 
         if not weekdays:
-            weekdays = [1, 2, 3, 4, 5, 6, 7]
+            weekdays = (0, 1, 2, 3, 4, 5, 6)
 
 
         q_max_date = q_max_date.addDays(1)
