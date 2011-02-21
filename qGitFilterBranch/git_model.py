@@ -331,6 +331,9 @@ class non_continuous_timelapse:
 
             cur_date += timedelta(1)
 
+        if not self.authorized_ranges:
+            raise Exception("The non-continuous timelapse is empty.")
+
     def get_total_seconds(self):
         return self.total_seconds
 
@@ -341,6 +344,7 @@ class non_continuous_timelapse:
         keys.sort()
         keys.reverse()
 
+        stamp = 0
         for stamp in keys:
             if seconds > stamp:
                 break
