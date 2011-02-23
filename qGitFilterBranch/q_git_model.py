@@ -14,6 +14,12 @@ from datetime import datetime
 class QGitModel(QAbstractTableModel):
 
     def __init__(self, directory="."):
+        """
+            Initializes the git model with the repository root directory.
+
+            :param directory:
+                Root directory of the git repository.
+        """
         QAbstractTableModel.__init__(self, None)
         self.git_model = GitModel(directory=directory)
         self._filters = {}
@@ -21,6 +27,10 @@ class QGitModel(QAbstractTableModel):
         self._enabled_options = []
 
     def get_to_rewrite_count(self):
+        """
+            Returns the number of commits to will be rewritten. That means the
+            number of commit between HEAD and the oldest modified commit.
+        """
         oldest_commit_parent = self.git_model.oldest_modified_commit_parent()
 
         if oldest_commit_parent:
@@ -37,6 +47,11 @@ class QGitModel(QAbstractTableModel):
             return 0
 
     def populate(self):
+        """
+            Populates the git model, see git_model.GitModel.populate for more
+            infos. Moreover, it counts the number of filters that should be
+            applied.
+        """
         filters = self._filters
         if filters:
             filter_count = 0
@@ -62,6 +77,9 @@ class QGitModel(QAbstractTableModel):
         return QModelIndex()
 
     def data(self, index, role):
+        """
+            Returns the data of the model.
+        """
         if not index.isValid() or not (0 <= index.row() < self.rowCount()):
             return QVariant()
 
@@ -126,24 +144,59 @@ class QGitModel(QAbstractTableModel):
         return QVariant()
 
     def filter_set(self, filter, value):
+        """
+            Activates a filter/sets a filter value.
+
+            :param filter:
+                The filter to be set.
+            :param value:
+                The value of the filter.
+        """
         self._filters[filter] = value
 
     def filter_unset(self, filter):
+        """
+            Deactivates a filter.
+
+            :param filter:
+                The filter to be deactivated.
+        """
         if filter in self._filters:
             self._filters.pop(filter)
 
     def enable_option(self, option):
+        """
+            Enables a display option.
+
+            :param option:
+                The option to enable.
+        """
         if option not in self._enabled_options:
             self._enabled_options.append(option)
 
     def disable_option(self, option):
+        """
+            Disables a display option.
+
+            :param option:
+                The option to disable.
+        """
         if option in self._enabled_options:
             self._enabled_options.pop(self._enabled_options.index(option))
 
     def is_enabled(self, option):
+        """
+            Return True if the display option is enabled.
+        """
         return option in self._enabled_options
 
-    def date_match(self, index, item_date):
+    def date_match(self, item_date):
+        """
+            Returns True if item_date matches the date filters.
+
+            :param item_date:
+                The date that will be evaluated.
+        """
         filters = self._filters
 
         filter_after_date = None
@@ -165,7 +218,13 @@ class QGitModel(QAbstractTableModel):
 
         return 0
 
-    def weekday_match(self, index, item_weekday):
+    def weekday_match(self, item_weekday):
+        """
+            Returns True if item_weekday matches the weekday filters.
+
+            :param item_weekday:
+                The weekday that will be evaluated.
+        """
         filters = self._filters
 
         filter_after_weekday = None
@@ -187,7 +246,13 @@ class QGitModel(QAbstractTableModel):
 
         return 0
 
-    def time_match(self, index, item_time):
+    def time_match(self, item_time):
+        """
+            Returns True if item_time matches the time filters.
+
+            :param item_time:
+                The time that will be evaluated.
+        """
         filters = self._filters
 
         filter_after_hour = None
@@ -210,6 +275,12 @@ class QGitModel(QAbstractTableModel):
         return 0
 
     def filter_score(self, index):
+        """
+            Returns the number of filters matching the given index.
+
+            :param index:
+                The index of the item that will be checked against the filters.
+        """
         column = index.column()
         field_name = self.git_model.get_columns()[column]
         filters = self._filters
@@ -235,9 +306,9 @@ class QGitModel(QAbstractTableModel):
             if not has_date_time_filter:
                 return 0
             else:
-                return self.date_match(index, item_date) + \
-                       self.weekday_match(index, item_weekday) + \
-                       self.time_match(index, item_time)
+                return self.date_match(item_date) + \
+                       self.weekday_match(item_weekday) + \
+                       self.time_match(item_time)
 
         elif field_name in ACTOR_FIELDS:
             if "nameEmail" in filters:
@@ -263,6 +334,9 @@ class QGitModel(QAbstractTableModel):
         return 0
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
+        """
+            Returns the headers (qt model method).
+        """
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
                 return QVariant(int(Qt.AlignLeft|Qt.AlignVCenter))
@@ -277,6 +351,9 @@ class QGitModel(QAbstractTableModel):
         return QVariant(int(section + 1))
 
     def setData(self, index, value, role=Qt.EditRole):
+        """
+            Sets the data when the model is modified (qt model method).
+        """
         if index.isValid() and 0 <= index.row() < self.rowCount():
             self.git_model.set_data(index, value)
 
@@ -293,6 +370,9 @@ class QGitModel(QAbstractTableModel):
         return True
 
     def flags(self, index):
+        """
+            Returns the flags for the given index.
+        """
         if not index.isValid():
             return Qt.ItemIsEnabled
 
