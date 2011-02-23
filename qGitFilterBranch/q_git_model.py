@@ -6,9 +6,11 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, SIGNAL, QDateTime
+from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, \
+                         QDateTime, SIGNAL
 from PyQt4.QtGui import QColor
-from qGitFilterBranch.git_model import GitModel, NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, ACTOR_FIELDS
+from qGitFilterBranch.git_model import GitModel, NAMES, TEXT_FIELDS, \
+                                TIME_FIELDS, NOT_EDITABLE_FIELDS, ACTOR_FIELDS
 from datetime import datetime
 
 class QGitModel(QAbstractTableModel):
@@ -38,7 +40,7 @@ class QGitModel(QAbstractTableModel):
 
             for commit in self.git_model.get_commits():
                 if commit.hexsha == oldest_commit_parent:
-                   break
+                    break
                 count += 1
 
             return count
@@ -62,7 +64,7 @@ class QGitModel(QAbstractTableModel):
             if "afterWeekday" in filters or "beforeWeekday" in filters:
                 filter_count += 1
             if "nameEmail" in filters:
-                filter_count +=1
+                filter_count += 1
             if "commit" in filters:
                 filter_count += 1
             if "localOnly" in filters:
@@ -143,26 +145,26 @@ class QGitModel(QAbstractTableModel):
 
         return QVariant()
 
-    def filter_set(self, filter, value):
+    def filter_set(self, model_filter, value):
         """
             Activates a filter/sets a filter value.
 
-            :param filter:
+            :param model_filter:
                 The filter to be set.
             :param value:
                 The value of the filter.
         """
-        self._filters[filter] = value
+        self._filters[model_filter] = value
 
-    def filter_unset(self, filter):
+    def filter_unset(self, model_filter):
         """
             Deactivates a filter.
 
-            :param filter:
+            :param model_filter:
                 The filter to be deactivated.
         """
-        if filter in self._filters:
-            self._filters.pop(filter)
+        if model_filter in self._filters:
+            self._filters.pop(model_filter)
 
     def enable_option(self, option):
         """
@@ -299,8 +301,8 @@ class QGitModel(QAbstractTableModel):
                                  "beforeDate", "afterDate",
                                  "beforeHour", "afterHour")
             has_date_time_filter = False
-            for filter in filters:
-                if filter in date_time_filters:
+            for model_filter in filters:
+                if model_filter in date_time_filters:
                     has_date_time_filter = True
 
             if not has_date_time_filter:
@@ -388,50 +390,65 @@ class QGitModel(QAbstractTableModel):
     # Beyond this point, abandon all hope of seeing anything more than "proxying
     # methods" (for instance, progress() calls git_model.progress())
     def toggle_modifications(self):
+        "See GitModel for more help."
         self.git_model.toggle_modifications()
         self.reset()
 
     def show_modifications(self):
+        "See GitModel for more help."
         return self.git_model.show_modifications()
 
     def progress(self):
+        "See GitModel for more help."
         return self.git_model.progress()
 
-    def setColumns(self, list):
-        self.git_model.set_columns(list)
+    def setColumns(self, column_list):
+        "See GitModel for more help."
+        self.git_model.set_columns(column_list)
         self.populate()
 
     def setMerge(self, merge_state):
+        "See GitModel for more help."
         self.git_model.set_merge(merge_state)
 
     def write(self, log, script):
+        "See GitModel for more help."
         self.git_model.write(log, script)
 
     def is_finished_writing(self):
+        "See GitModel for more help."
         return self.git_model.is_finished_writing()
 
     def get_git_model(self):
+        "See GitModel for more help."
         return self.git_model
 
     def get_modified_count(self):
+        "See GitModel for more help."
         return len(self.git_model.get_modified())
 
     def rowCount(self, parent=QModelIndex()):
+        "See GitModel for more help."
         return self.git_model.row_count()
 
     def columnCount(self, parent=QModelIndex()):
+        "See GitModel for more help."
         return self.git_model.column_count()
 
     def get_branches(self):
+        "See GitModel for more help."
         return self.git_model.get_branches()
 
     def get_current_branch(self):
+        "See GitModel for more help."
         return self.git_model.get_current_branch()
 
     def set_current_branch(self, branch):
+        "See GitModel for more help."
         return self.git_model.set_current_branch(branch)
 
-    def reorder_commits(self, min_date, max_date, min_time, max_time, weekdays):
-        self.git_model.reorder_commits(min_date, max_date, min_time, max_time,
+    def reorder_commits(self, dates, time, weekdays):
+        "See GitModel for more help."
+        self.git_model.reorder_commits(dates, time,
                                        weekdays)
         self.reset()
