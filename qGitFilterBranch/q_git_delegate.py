@@ -6,8 +6,8 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4.QtCore import Qt, SIGNAL
+from PyQt4.QtGui import QTextEdit, QLineEdit, QDateTimeEdit, QItemDelegate
 from qGitFilterBranch.git_model import TEXT_FIELDS, TIME_FIELDS, ACTOR_FIELDS
 
 class QGitDelegate(QItemDelegate):

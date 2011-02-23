@@ -9,32 +9,32 @@
 from time import mktime
 from datetime import datetime, tzinfo, timedelta, time
 
-from sys import exit
+import sys
 try:
     from git import Repo
 except:
     print """Couldn't import git. You might want to install GitPython from:
     http://pypi.python.org/pypi/GitPython/"""
-    exit(1)
+    sys.exit(1)
 try:
     from git import __version__
     str_maj, str_min, str_rev = __version__.split(".")
-    maj, min, rev = int(str_maj), int(str_min), int(str_rev)
-    if  maj < 0 or (maj == 0 and min < 3) or \
-        (maj == 0 and min == 3 and rev < 1):
+    _maj, _min, _rev = int(str_maj), int(str_min), int(str_rev)
+    if  _maj < 0 or (_maj == 0 and _min < 3) or \
+        (_maj == 0 and _min == 3 and _rev < 1):
         raise Exception()
 except:
     print "This project needs GitPython (>=0.3.1)."
-    exit(1)
+    sys.exit(1)
 
 from git.objects.util import altz_to_utctz_str
 from subprocess import Popen, PIPE
 from threading import Thread
-from os.path import join
 import os
 from os import chdir
 import fcntl
-from random import random, uniform
+from random import random
+#from random import uniform
 
 DEFAULT_AUTHORIZED_HOURS = ((time.min, time.max),)
 DEFAULT_AUTHORIZED_WEEKDAYS = (0, 1, 2, 3, 4, 5, 6)
@@ -131,7 +131,7 @@ class GitFilterBranchProcess(Thread):
         while True:
             try:
                 line = process.stdout.readline()
-            except IOError, e:
+            except IOError, error:
                 continue
 
             if not line:
@@ -263,8 +263,8 @@ class Timezone(tzinfo):
         """
         sign = 1 if self.tz_string[0] == '+' else -1
         hour = sign * int(self.tz_string[1:-2])
-        min = sign * int(self.tz_string[2:])
-        return timedelta(hours=hour, minutes=min)
+        minutes = sign * int(self.tz_string[2:])
+        return timedelta(hours=hour, minutes=minutes)
 
     def tzname(self, dt):
         """
@@ -287,7 +287,7 @@ class Timezone(tzinfo):
 
 
 class non_continuous_timelapse:
-    def __init__(self, min_date, max_date,
+    def __init__(self, authorized_dates,
                  authorized_hours=DEFAULT_AUTHORIZED_HOURS,
                  authorized_weekdays=DEFAULT_AUTHORIZED_WEEKDAYS):
         """
@@ -309,6 +309,7 @@ class non_continuous_timelapse:
         self.total_days = 0
         self.total_seconds = 0
 
+        min_date, max_date = authorized_dates
         days_lapse = (max_date - min_date).days
 
         cur_date = min_date
@@ -426,16 +427,16 @@ class GitModel:
                 self._unpushed.append(commit)
 
         if filter_score:
-            iter = 0
+            iterator = 0
             filtered_commits = {}
 
             for commit in self._repo.iter_commits():
                 for field_index in range(len(self._columns)):
-                    index = Index(row=iter, column=field_index)
+                    index = Index(row=iterator, column=field_index)
                     if commit not in filtered_commits:
                         filtered_commits[commit] = 0
                     filtered_commits[commit] += filter_score(index)
-                iter += 1
+                iterator += 1
 
             self._commits = []
             for commit in self._repo.iter_commits():
@@ -562,7 +563,7 @@ class GitModel:
         """
         self._merge = merge_state
 
-    def set_columns(self, list):
+    def set_columns(self, column_list):
         """
             Set the fields that will be returned as columns.
 
@@ -570,7 +571,7 @@ class GitModel:
                 A list of commit field names.
         """
         self._columns = []
-        for item in list:
+        for item in column_list:
             if item in NAMES:
                 self._columns.append(item)
 
@@ -822,14 +823,12 @@ class GitModel:
         """
         self._modified = {}
 
-    def reorder_commits(self, min_date, max_date, min_time, max_time, weekdays):
+    def reorder_commits(self, dates, times, weekdays):
         """
             This method reorders the commits given specified timelapses and
             weekdays.
         """
-        timelapse = non_continuous_timelapse(min_date, max_date,
-                                             ((min_time, max_time),),
-                                             weekdays)
+        timelapse = non_continuous_timelapse(dates, times, weekdays)
 
         ## Random method
         #delta = truc_truc.get_total_seconds() / (how_many_commits + 1)
