@@ -355,7 +355,6 @@ class MainWindow(QMainWindow):
                 log_checked = msgBox._ui.logCheckBox.checkState() == Qt.Checked
                 script_checked = msgBox._ui.scriptCheckBox.checkState() == Qt.Checked
 
-                model = self._ui.tableView.model()
                 model.write(log_checked, script_checked)
 
                 # If we have more than 80 commits modified, show progress bar
