@@ -8,7 +8,7 @@
 
 from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, \
                         QSizePolicy, QFileDialog
-from PyQt4.QtCore import SIGNAL, Qt, QThread, QDir, QSettings, QDateTime
+from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDir, QSettings, QDateTime, QVariant
 
 from qGitFilterBranch.main_window_ui import Ui_MainWindow
 from qGitFilterBranch.q_git_model import QGitModel, NAMES
@@ -28,6 +28,11 @@ AVAILABLE_OPTIONS = {'display_email'    : 'Email',
                      'display_weekday'  : 'Weekday'}
 
 
+
+def _connect_button(button, function):
+    QObject.connect(button, SIGNAL("clicked()"), function)
+
+
 def is_top_git_directory(filepath):
     git_path = join(filepath, ".git")
     return exists(git_path)
@@ -42,7 +47,7 @@ def select_git_directory():
         filepath = unicode(QFileDialog.getExistingDirectory(
             None,
             "Open git repository",
-            unicode(settings.value("directory", QDir.homePath()).toString()),
+            unicode(settings.value("directory", QVariant(QDir.homePath()).toString())),
             QFileDialog.ShowDirsOnly
             ))
         if not filepath:
@@ -254,17 +259,13 @@ class MainWindow(QMainWindow):
         """
             Connect the slots to the objects.
         """
-        self.connect(self._ui.cancelButton, SIGNAL("clicked()"),
-                     self.close)
-
-        self.connect(self._ui.applyButton, SIGNAL("clicked()"),
-                     self.apply)
+        _connect_button(self._ui.cancelButton, self.close)
+        _connect_button(self._ui.applyButton, self.apply)
 
         self.connect(self._ui.mergeCheckBox, SIGNAL("stateChanged(int)"),
                      self.merge_clicked)
 
-        self.connect(self._ui.toggleModificationsButton, SIGNAL("clicked()"),
-                     self.toggle_modifications)
+        _connect_button(self._ui.toggleModificationsButton, self.toggle_modifications)
 
         self.connect(self._ui.tableView,
                      SIGNAL("activated(const QModelIndex&)"),
@@ -334,8 +335,8 @@ class MainWindow(QMainWindow):
                          self.apply_filters)
 
         # Connecting the re-order push button to the re-order method.
-        self.connect(self._ui.reOrderPushButton, SIGNAL("clicked()"),
-                     self.reorder_pushed)
+        _connect_button(self._ui.reOrderPushButton, self.reorder_pushed)
+
 
     def apply(self):
         """
@@ -351,19 +352,8 @@ class MainWindow(QMainWindow):
             ret = msgBox.exec_()
 
             if ret:
-                log_check_state = msgBox._ui.logCheckBox.checkState()
-
-                if log_check_state == Qt.Checked:
-                    log_checked = True
-                else:
-                    log_checked = False
-
-                script_check_state = msgBox._ui.scriptCheckBox.checkState()
-
-                if script_check_state == Qt.Checked:
-                    script_checked = True
-                else:
-                    script_checked = False
+                log_checked = msgBox._ui.logCheckBox.checkState() == Qt.Checked
+                script_checked = msgBox._ui.scriptCheckBox.checkState() == Qt.Checked
 
                 model = self._ui.tableView.model()
                 model.write(log_checked, script_checked)
@@ -487,11 +477,7 @@ class MainWindow(QMainWindow):
             option to the model.
         """
         model = self._ui.tableView.model()
-
-        if check_state == Qt.Checked:
-            model.setMerge(True)
-        else:
-            model.setMerge(False)
+        model.setMerge(check_state == Qt.Checked)
 
     def apply_filters(self):
         """
@@ -501,22 +487,32 @@ class MainWindow(QMainWindow):
         model = self._ui.tableView.model()
 
         for checkbox_name in self._filters_values:
-            checkbox = eval("self._ui." + checkbox_name + "FilterCheckBox")
-            check_state = checkbox.checkState()
+            checkbox = self._filterbox_byname(checkbox_name)
 
-            if check_state == Qt.Checked:
-                get_value = self._filters_values[checkbox_name]
-
-                if get_value:
-                    value = get_value()
-                else:
-                    value = None
-
-                model.filter_set(checkbox_name, value)
+            if checkbox.checkState() == Qt.Checked:
+                filter = self._filterbox_byname(checkbox_name)
+                model.filter_set(checkbox_name, filter)
             else:
                 model.filter_unset(checkbox_name)
 
         model.populate()
+
+    def _filterbox_byname(self, name):
+        """
+        Given a filter name, returns corresponding checkbox object
+        """
+        return getattr(self._ui, '%sFilterCheckBox' % name)
+
+    def _filter_byname(self, name):
+        """
+        Given a filter name, returns the filter, or None
+        """
+        getter = self._filters_values[name]
+
+        if getter:
+            return getter()
+
+        return None
 
     def toggle_modifications(self):
         """
