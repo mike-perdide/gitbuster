@@ -291,6 +291,9 @@ class non_continuous_timelapse:
                  authorized_hours=DEFAULT_AUTHORIZED_HOURS,
                  authorized_weekdays=DEFAULT_AUTHORIZED_WEEKDAYS):
         """
+            Simulates a continuous timelapse out of hours, dates and weekdays
+            limits.
+
             :param min_date:
                 datetime object describing the min authorized date
             :param max_date:
@@ -335,10 +338,19 @@ class non_continuous_timelapse:
             raise Exception("The non-continuous timelapse is empty.")
 
     def get_total_seconds(self):
+        """
+            Returns the number of seconds of the simulated timelapse.
+        """
         return self.total_seconds
 
     def datetime_from_seconds(self, seconds):
         """
+            Returns an absolute datetime out of a relative number of seconds
+            since the beggining of the simulated timelapse.
+
+            :param seconds:
+                The relative number of seconds since the beggining of the
+                simulated timelapse.
         """
         keys = self.authorized_ranges.keys()
         keys.sort()
