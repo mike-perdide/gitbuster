@@ -490,7 +490,7 @@ class MainWindow(QMainWindow):
             checkbox = self._filterbox_byname(checkbox_name)
 
             if checkbox.checkState() == Qt.Checked:
-                filter = self._filterbox_byname(checkbox_name)
+                filter = self._filter_byname(checkbox_name)
                 model.filter_set(checkbox_name, filter)
             else:
                 model.filter_unset(checkbox_name)
