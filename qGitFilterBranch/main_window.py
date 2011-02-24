@@ -352,8 +352,9 @@ class MainWindow(QMainWindow):
             ret = msgBox.exec_()
 
             if ret:
-                log_checked = msgBox._ui.logCheckBox.checkState() == Qt.Checked
-                script_checked = msgBox._ui.scriptCheckBox.checkState() == Qt.Checked
+                ui = msgBox._ui
+                log_checked = ui.logCheckBox.checkState() == Qt.Checked
+                script_checked = ui.scriptCheckBox.checkState() == Qt.Checked
 
                 model.write(log_checked, script_checked)
 
