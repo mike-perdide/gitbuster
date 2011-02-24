@@ -455,7 +455,7 @@ class MainWindow(QMainWindow):
 
         model = self._ui.tableView.model()
         model.reorder_commits((min_date, max_date),
-                              (min_time, max_time),
+                              ((min_time, max_time),),
                               weekdays)
 
     def current_branch_changed(self, new_branch_name):
