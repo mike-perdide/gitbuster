@@ -9,7 +9,7 @@
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, \
                          QDateTime, SIGNAL
 from PyQt4.QtGui import QColor
-from qGitFilterBranch.git_model import GitModel, NAMES, TEXT_FIELDS, \
+from gfbi_core.git_model import GitModel, NAMES, TEXT_FIELDS, \
                                 TIME_FIELDS, NOT_EDITABLE_FIELDS, ACTOR_FIELDS
 from datetime import datetime
 
