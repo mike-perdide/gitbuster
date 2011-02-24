@@ -35,18 +35,13 @@ class QGitModel(QAbstractTableModel):
         """
         oldest_commit_parent = self.git_model.oldest_modified_commit_parent()
 
-        if oldest_commit_parent:
-            count = 0
-
-            for commit in self.git_model.get_commits():
-                if commit.hexsha == oldest_commit_parent:
-                    break
-                count += 1
-
-            return count
-
-        else:
+        if not oldest_commit_parent:
             return 0
+
+        for count, commit in enumerate(self.git_model.get_commits()):
+            if commit.hexsha == oldest_commit_parent:
+                return count + 1
+
 
     def populate(self):
         """
@@ -57,18 +52,16 @@ class QGitModel(QAbstractTableModel):
         filters = self._filters
         if filters:
             filter_count = 0
-            if "afterHour" in filters or "beforeHour" in filters:
-                filter_count += 1
-            if "afterDate" in filters or "beforeDate" in filters:
-                filter_count += 1
-            if "afterWeekday" in filters or "beforeWeekday" in filters:
-                filter_count += 1
-            if "nameEmail" in filters:
-                filter_count += 1
-            if "commit" in filters:
-                filter_count += 1
-            if "localOnly" in filters:
-                filter_count += 1
+
+            for word in ("Hour", "Date", "Weekday"):
+                group = "after%s" % word, "before%s" % word
+                if any(item in filters for item in group):
+                    filter_count += 1
+
+            for item in ("nameEmail", "commit", "localOnly"):
+                if item in filters:
+                    filter_count += 1
+
             self.git_model.populate(filter_count, self.filter_score)
         else:
             self.git_model.populate()
