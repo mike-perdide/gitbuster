@@ -78,65 +78,83 @@ class QGitModel(QAbstractTableModel):
         if not index.isValid() or not (0 <= index.row() < self.rowCount()):
             return QVariant()
 
-        commits = self.git_model.get_commits()
-        commit = commits[index.row()]
         column = index.column()
         field_name = self.git_model.get_columns()[column]
 
         if role == Qt.DisplayRole:
-            value = self.git_model.data(index)
-            if field_name in TIME_FIELDS:
-                _tmstmp, _tz = value
-                _datetime = datetime.fromtimestamp(_tmstmp).replace(tzinfo=_tz)
-                if "display_weekday" in self._enabled_options:
-                    date_format = "%d/%m/%Y %H:%M:%S (%a)"
-                else:
-                    date_format = "%d/%m/%Y %H:%M:%S"
-                return QVariant(_datetime.strftime(date_format))
-            elif field_name == "message":
-                return QVariant(value.split("\n")[0])
-            elif field_name in ACTOR_FIELDS:
-                name, email = value
-                if "display_email" in self._enabled_options:
-                    return QVariant("%s <%s>" % (name, email))
-                else:
-                    return QVariant("%s" % name)
-            elif field_name == "hexsha":
-                return QVariant(str(value)[:7])
-            return QVariant(str(value))
+            return self._data_display(index, field_name)
         elif role == Qt.EditRole:
-            value = self.git_model.data(index)
-            if field_name == "message":
-                return QVariant(value)
-            elif field_name in TIME_FIELDS:
-                return value
-            return self.data(index, Qt.DisplayRole)
+            return self._data_edit(index, field_name)
         elif role == Qt.BackgroundColorRole:
-            if self.show_modifications():
-                modified = self.git_model.get_modified()
-                if commit in modified and field_name in modified[commit]:
-                    return QVariant(QColor(Qt.yellow))
-            if self.git_model.is_commit_pushed(commit):
-                return QVariant(QColor(Qt.lightGray))
+            return self._data_background(index, field_name)
         elif role == Qt.ForegroundRole:
-            if "filters" in self._enabled_options and self.filter_score(index):
-                return QVariant(QColor(Qt.red))
+            return self._data_foreground(index, field_name)
         elif role == Qt.ToolTipRole:
-            value = self.git_model.data(index)
-            if field_name == "hexsha":
-                return QVariant(str(value))
-            elif field_name in TIME_FIELDS:
-                _tmstmp, _tz = value
-                _datetime = datetime.fromtimestamp(_tmstmp).replace(tzinfo=_tz)
-                if "display_weekday" in self._enabled_options:
-                    date_format = "%Y-%m-%d %H:%M:%S %Z (%a)"
-                else:
-                    date_format = "%Y-%m-%d %H:%M:%S %Z"
-                return QVariant(_datetime.strftime(date_format))
-            elif field_name == "message":
-                return QVariant(value)
+            return self._data_tooltip(index, field_name)
 
         return QVariant()
+
+    def _data_display(self, index, field_name):
+        value = self.git_model.data(index)
+        if field_name in TIME_FIELDS:
+            _tmstmp, _tz = value
+            _datetime = datetime.fromtimestamp(_tmstmp).replace(tzinfo=_tz)
+            if "display_weekday" in self._enabled_options:
+                date_format = "%d/%m/%Y %H:%M:%S (%a)"
+            else:
+                date_format = "%d/%m/%Y %H:%M:%S"
+            return QVariant(_datetime.strftime(date_format))
+        elif field_name == "message":
+            return QVariant(value.split("\n")[0])
+        elif field_name in ACTOR_FIELDS:
+            name, email = value
+            if "display_email" in self._enabled_options:
+                return QVariant("%s <%s>" % (name, email))
+            else:
+                return QVariant("%s" % name)
+        elif field_name == "hexsha":
+            return QVariant(str(value)[:7])
+        return QVariant(str(value))
+
+    def _data_edit(self, index, field_name):
+        value = self.git_model.data(index)
+        if field_name == "message":
+            return QVariant(value)
+        elif field_name in TIME_FIELDS:
+            return value
+        return self._data_display(index, field_name)
+
+    def _data_background(self, index, field_name):
+        commits = self.git_model.get_commits()
+        commit = commits[index.row()]
+
+        if self.show_modifications():
+            modified = self.git_model.get_modified()
+            if commit in modified and field_name in modified[commit]:
+                return QVariant(QColor(Qt.yellow))
+        if self.git_model.is_commit_pushed(commit):
+            return QVariant(QColor(Qt.lightGray))
+
+    def _data_foreground(self, index, field_name):
+        if "filters" in self._enabled_options and self.filter_score(index):
+            return QVariant(QColor(Qt.red))
+        return QVariant()
+
+    def _data_tooltip(self, index, field_name):
+        value = self.git_model.data(index)
+        if field_name == "hexsha":
+            return QVariant(str(value))
+        elif field_name in TIME_FIELDS:
+            _tmstmp, _tz = value
+            _datetime = datetime.fromtimestamp(_tmstmp).replace(tzinfo=_tz)
+            if "display_weekday" in self._enabled_options:
+                date_format = "%Y-%m-%d %H:%M:%S %Z (%a)"
+            else:
+                date_format = "%Y-%m-%d %H:%M:%S %Z"
+            return QVariant(_datetime.strftime(date_format))
+        elif field_name == "message":
+            return QVariant(value)
+
 
     def filter_set(self, model_filter, value):
         """
