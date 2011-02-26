@@ -1,8 +1,8 @@
 ================
-qGitFilterBranch
+gitbuster
 ================
 
-Python Qt4 frontend for git filter-branch. qGitFilterBranch allows you to :
+Python Qt4 frontend for git filter-branch. gitbuster allows you to :
 
 - use filters to display only the commits matching
     * committed before/after a date (e.g. commits before 01/01/11)
@@ -23,7 +23,7 @@ Python Qt4 frontend for git filter-branch. qGitFilterBranch allows you to :
 --------
 Safe try
 --------
-With the demo.sh you can try qGitFilterBranch in a safe environment. The script
+With the demo.sh you can try gitbuster in a safe environment. The script
 will check that all dependencies are met and install GitPython in a virtualenv.
 That way it won't interfere with your system packaging tools (like apt).
 
@@ -33,15 +33,15 @@ Installing From PyPI
 
 Installing with easy_install::
 
-    $ easy_install qGitFilterBranch
+    $ easy_install gitbuster
 
 -------------------
 Manual Installation
 -------------------
 Download the tarball, then::
 
-    $ tar xvf qGitFilterBranch-0.9b1.tar.gz
-    $ cd qGitFilterBranch
+    $ tar xvf gitbuster-0.9b1.tar.gz
+    $ cd gitbuster
 
 Installing with distutils::
 
@@ -62,13 +62,13 @@ Dependencies:
 - GitPython
 
 
-To build qGitFilterBranch UI files::
+To build gitbuster UI files::
 
-    $ cd qGitFilterBranch/
+    $ cd gitbuster/
     $ make
 
-To launch qGitFilterBranch::
+To launch gitbuster::
 
-    $ export PYTHONPATH=$PYTHONPATH:<path_to_>/qGitFilterBranch
-    $ cd qGitFilterBranch
-    $ ./qGitFilterBranch
+    $ export PYTHONPATH=$PYTHONPATH:<path_to_>/gitbuster
+    $ cd gitbuster
+    $ ./gitbuster
