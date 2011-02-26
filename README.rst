@@ -1,6 +1,7 @@
 =========
 gitbuster
 =========
+Formerly qGitFilterBranch.
 
 " If there's something strange / In your history / Who you gonna call ? / GitBuster! "
 
