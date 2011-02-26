@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# This script will try and run a demo of a project, here qGitFilterBranch.
+# This script will try and run a demo of a project, here gitbuster.
 # It will try not to mess with your installed system thanks to virtualenv.
 # It requires internet access, the first time at least.
 # This script is quite ugly, I know. (C) Feth Arezki feth>at<tuttu.info 2011
@@ -9,11 +9,11 @@
 # # Customization
 
 #Command to fetch project
-fetchcmd="git clone https://github.com/mike-perdide/qGitFilterBranch.git"
+fetchcmd="git clone https://github.com/mike-perdide/gitbuster.git"
 #Command to build project. Escape variables.
-buildcmd="make -C qGitFilterBranch/qGitFilterBranch/"
+buildcmd="make -C gitbuster/gitbuster/"
 #Command to run project. Escape variables.
-runcmd="PYTHONPATH=\$mydir/qGitFilterBranch/ \$mydir/bin/python qGitFilterBranch/qGitFilterBranch/qGitFilterBranch"
+runcmd="PYTHONPATH=\$mydir/gitbuster/ \$mydir/bin/python gitbuster/gitbuster/gitbuster"
 #Pypi deps for the project
 pypideps=gitpython
 
@@ -29,7 +29,7 @@ if [ x`which virtualenv` = "x" ] ; then
     missing=1
     echo "Missing virtualenv. On debian and ubuntu, look for a package named 'python-virtualenv'"
 fi
-#git for fetching and using qGitFilterBranch
+#git for fetching and using gitbuster
 if [ x`which git` = "x" ] ; then
     missing=1
     echo "Missing git. On most systems, look for a package named 'git'"
@@ -44,7 +44,7 @@ if [ x`which gcc` = "x" ] ; then
     missing=1
     echo "Missing gcc. On most systems, look for a package named 'gcc'"
 fi
-#pyuic4 for qGitFilterBranch
+#pyuic4 for gitbuster
 if [ x`which pyuic4` = "x" ] ; then
     missing=1
     echo "Missing pyuic4. On debian/ubuntu systems, look for a package named 'pyqt4-dev-tools'"
@@ -85,7 +85,7 @@ eval $runcmd
 deactivate 2> /dev/null
 EOF
         chmod +x $launcher
-        echo "A script named $launcher was created for your convenience. It will help you start qGitFilterBranch"
+        echo "A script named $launcher was created for your convenience. It will help you start gitbuster"
     ;;
 esac
 exit
@@ -116,5 +116,5 @@ runandcheck "Activating virtualenv" ". ./bin/activate > /dev/null"
 runandcheck "Fetching Pipy deps. Logs in $depslog" "easy_install $pypideps > $depslog"
 runandcheck "Fetching project. Logs in $fetchlog" "$fetchcmd > $fetchlog"
 runandcheck "Building project. Logs in $buildlog" "$buildcmd > $buildlog"
-runandcheck "Starting qGitFilterBranch" "$runcmd"
+runandcheck "Starting gitbuster" "$runcmd"
 

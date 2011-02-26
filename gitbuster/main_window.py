@@ -1,7 +1,7 @@
 # main_window.py
 # Copyright (C) 2010 Julien Miotte <miotte.julien@gmail.com>
 #
-# This module is part of qGitFilterBranch and is released under the GPLv3
+# This module is part of gitbuster and is released under the GPLv3
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
 # -*- coding: utf-8 -*-
@@ -10,10 +10,10 @@ from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, \
                         QSizePolicy, QFileDialog
 from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDir, QSettings, QDateTime, QVariant
 
-from qGitFilterBranch.main_window_ui import Ui_MainWindow
-from qGitFilterBranch.q_git_model import QGitModel, NAMES
-from qGitFilterBranch.q_git_delegate import QGitDelegate
-from qGitFilterBranch.confirm_dialog import ConfirmDialog
+from gitbuster.main_window_ui import Ui_MainWindow
+from gitbuster.q_git_model import QGitModel, NAMES
+from gitbuster.q_git_delegate import QGitDelegate
+from gitbuster.confirm_dialog import ConfirmDialog
 
 import time
 from os.path import join, exists
@@ -38,7 +38,7 @@ def is_top_git_directory(filepath):
     return exists(git_path)
 
 def select_git_directory():
-    settings = QSettings("Noname company yet", "qGitFilterBranch")
+    settings = QSettings("Noname company yet", "gitbuster")
 
     settings.beginGroup("Last run")
 
@@ -112,7 +112,7 @@ class ProgressThread(QThread):
 
 class MainWindow(QMainWindow):
     """
-        Main Window of qGitFilterBranch.
+        Main Window of gitbuster.
     """
 
     def __init__(self, directory=".", debug=False):
