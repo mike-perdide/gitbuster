@@ -1,6 +1,8 @@
-================
+=========
 gitbuster
-================
+=========
+
+" If there's something strange / In your history / Who you gonna call ? / GitBuster! "
 
 Python Qt4 frontend for git filter-branch. gitbuster allows you to :
 
