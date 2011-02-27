@@ -1,6 +1,12 @@
 #!/usr/bin/env python
-from distutils.core import setup
 import ConfigParser
+from sys import argv
+try:
+    from setuptools import setup
+    use_setuptools = True
+except ImportError, err:
+    from distutils.core import setup
+    use_setuptools = False
 
 SETUP_ARGS = {"name"        : ("metadata",),
               "version"     : ("metadata",),
@@ -47,7 +53,22 @@ def generate_setuptools_kwargs_from_setup_cfg():
             else:
                 in_cfg_value = list((in_cfg_value,))
 
+        if arg == "requires" and use_setuptools:
+            arg = "install_requires"
+
+            new_requires_list = []
+            for version in in_cfg_value:
+                version = version.replace(' (', '')
+                version = version.replace(')', '')
+                new_requires_list.append(version)
+
+            in_cfg_value = new_requires_list
+
         kwargs[arg] = in_cfg_value
+
+    if config.has_option("metadata", "description_file"):
+        kwargs["long_description"] = open(config.get("metadata",
+                                                     "description_file")).read()
 
     return kwargs
     
