@@ -8,7 +8,7 @@
 
 from PyQt4.QtCore import Qt, SIGNAL, QDateTime
 from PyQt4.QtGui import QTextEdit, QLineEdit, QDateTimeEdit, QItemDelegate
-from gitbuster.git_model import TEXT_FIELDS, TIME_FIELDS, ACTOR_FIELDS
+from gfbi_core.git_model import TEXT_FIELDS, TIME_FIELDS, ACTOR_FIELDS
 
 class QGitDelegate(QItemDelegate):
 
