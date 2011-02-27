@@ -1,4 +1,4 @@
 include *.txt
 include setup.py
-include qGitFilterBranch/*.py
-include qGitFilterBranch/*_ui.py
+include gitbuster/*.py
+include gitbuster/*_ui.py
