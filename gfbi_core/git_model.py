@@ -1,13 +1,13 @@
 # git_model.py
-# Copyright (C) 2010 Julien Miotte <miotte.julien@gmail.com>
+# Copyright (C) 2011 Julien Miotte <miotte.julien@gmail.com>
 #
-# This module is part of gitbuster and is released under the GPLv3
+# This module is part of gfbi_core and is released under the GPLv3
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
 # -*- coding: utf-8 -*-
 
 from time import mktime
-from datetime import datetime, tzinfo, timedelta, time
+from datetime import datetime
 
 import sys
 try:
@@ -29,15 +29,13 @@ except:
 
 from git.objects.util import altz_to_utctz_str
 from subprocess import Popen, PIPE
-from threading import Thread
-import os
 from os import chdir
-import fcntl
 from random import random
 #from random import uniform
 
-DEFAULT_AUTHORIZED_HOURS = ((time.min, time.max),)
-DEFAULT_AUTHORIZED_WEEKDAYS = (0, 1, 2, 3, 4, 5, 6)
+from gfbi_core.util import Timezone, Index
+from gfbi_core.git_filter_branch_process import git_filter_branch_process
+from gfbi_core.non_continuous_timelapse import non_continuous_timelapse
 
 NAMES = {'actor':'Actor', 'author':'Author',
              'authored_date':'Authored Date', 'committed_date':'Committed Date',
@@ -64,309 +62,6 @@ def add_assign(env_filter, field, value):
     env_filter += "export " + ENV_FIELDS[field] + ";\n"
     env_filter += ENV_FIELDS[field] + "='%s'" % value + ";\n"
     return env_filter
-
-
-class GitFilterBranchProcess(Thread):
-    """
-        Thread meant to execute and follow the progress of the git command
-        process.
-    """
-
-    def __init__(self, parent, args, oldest_commit_modified_parent,
-                 log, script):
-        """
-            Initialization of the GitFilterBranchProcess thread.
-
-            :param parent:
-                GitModel object, parent of this thread.
-            :param args:
-                List of arguments that will be passed on to git filter-branch.
-            :param oldest_commit_modified_parent:
-                The oldest modified commit's parent.
-            :param log:
-                If set to True, the git filter-branch command will be logged.
-            :param script:
-                If set to True, the git filter-branch command will be written in
-                a script that can be distributed to other developpers of the
-                project.
-        """
-        Thread.__init__(self)
-
-        self._args = args
-        if oldest_commit_modified_parent == "HEAD":
-            self._oldest_commit = "HEAD"
-        else:
-            self._oldest_commit = oldest_commit_modified_parent + ".."
-
-        self._log = log
-        self._script = script
-        self._parent = parent
-
-        self._output = []
-        self._errors = []
-        self._progress = None
-        self._finished = False
-
-
-    def run(self):
-        """
-            Main method of the script. Launches the git command and
-            logs/generate scripts if the options are set.
-        """
-        clean_pipe = "|tr '\r' '\n'"
-        command = "git filter-branch "
-        command += self._args + self._oldest_commit
-
-        process = Popen(command + clean_pipe, shell=True,
-                        stdout=PIPE, stderr=PIPE)
-
-        # Setting the stdout file descriptor to non blocking.
-        fcntl.fcntl(
-                process.stdout.fileno(),
-                fcntl.F_SETFL,
-                fcntl.fcntl(process.stdout.fileno(),
-                            fcntl.F_GETFL) | os.O_NONBLOCK,
-            )
-
-        while True:
-            try:
-                line = process.stdout.readline()
-            except IOError, error:
-                continue
-
-            if not line:
-                break
-
-            clean_line = line.replace('\r', '\n')
-            self._output.append(clean_line)
-            if "Rewrite" in clean_line:
-                progress = float(line.split('(')[1].split('/')[0])
-                total = float(line.split('/')[1].split(')')[0])
-                self._progress = progress/total
-
-        process.wait()
-        self._finished = True
-
-        self._errors = process.stderr.readlines()
-        if self._log:
-            log_file = "./gitbuster.log"
-            handle = open(log_file, "a")
-            handle.write("=======================\n")
-            handle.write("Operation date :" +
-                         datetime.now().strftime("%a %b %d %H:%M:%S %Y") +
-                        "\n")
-            handle.write("===== Command: ========\n")
-            handle.write(command + "\n")
-            handle.write("===== git output: =====\n")
-            for line in self._output:
-                handle.write(line.rstrip() + "\n")
-            handle.write("===== git errors: =====\n")
-            for line in self._errors:
-                handle.write(line + "\n")
-            handle.close()
-
-        if self._script:
-            # Generate migration script
-            handle = open("migration.sh", "w")
-            handle.write("#/bin/sh\n# Generated by gitbuster on " +
-                         datetime.now().strftime("%a %b %d %H:%M:%S %Y") +
-                         "\n")
-            handle.write(command + "\n")
-            handle.close()
-
-        if self._errors:
-            for line in self._errors:
-                print line
-        else:
-            self._parent.erase_modifications()
-
-    def progress(self):
-        """
-            Returns the progress percentage
-        """
-        return self._progress
-
-    def output(self):
-        """
-            Returns the output as a list of lines
-        """
-        return list(self._output)
-
-    def errors(self):
-        """
-            Returns the errors as a list of lines
-        """
-        return list(self._errors)
-
-    def is_finished(self):
-        """
-            Returns self._finished
-        """
-        return self._finished
-
-
-class Index:
-    """
-        This mimics the qModelIndex, so that we can use it in the
-        GitModel.data() method when populating the model.
-    """
-
-    def __init__(self, row=0, column=0):
-        """
-            Initialization of the Index object.
-
-            :param row:
-                Row number, integer.
-
-            :param column:
-                Column number, integer.
-        """
-        self._row = row
-        self._column = column
-
-    def row(self):
-        """
-            Returns the row number.
-        """
-        return self._row
-
-    def column(self):
-        """
-            Returns the column number.
-        """
-        return self._column
-
-
-class Timezone(tzinfo):
-    """
-        Timezone class used to preserve the timezone information when handling
-        the commits information.
-    """
-
-    def __init__(self, tz_string):
-        """
-            Initialize the Timezone object with it's string representation.
-
-            :param tz_string:
-                Representation of the offset to UTC of the timezone. (i.e. +0100
-                for CET or -0400 for ECT)
-        """
-        self.tz_string = tz_string
-
-    def utcoffset(self, dt):
-        """
-            Returns the offset to UTC using the string representation of the
-            timezone.
-
-            :return:
-                Timedelta object representing the offset to UTC.
-        """
-        sign = 1 if self.tz_string[0] == '+' else -1
-        hour = sign * int(self.tz_string[1:-2])
-        minutes = sign * int(self.tz_string[2:])
-        return timedelta(hours=hour, minutes=minutes)
-
-    def tzname(self, dt):
-        """
-            Returns the offset to UTC string representation.
-
-            :return:
-                Offset to UTC string representation.
-        """
-        return self.tz_string
-
-    def dst(self, dt):
-        """
-            Returns a timedelta object representing a whole number of minutes
-            with magnitude less than one day.
-
-            :return:
-                timedelta(0)
-        """
-        return timedelta(0)
-
-
-class non_continuous_timelapse:
-    def __init__(self, authorized_dates,
-                 authorized_hours=DEFAULT_AUTHORIZED_HOURS,
-                 authorized_weekdays=DEFAULT_AUTHORIZED_WEEKDAYS):
-        """
-            Simulates a continuous timelapse out of hours, dates and weekdays
-            limits.
-
-            :param min_date:
-                datetime object describing the min authorized date
-            :param max_date:
-                datetime object describing the max authorized date
-            :param authorized_hours:
-                tuple containing 2-tuples of the limits of the authorized time
-                ranges
-            :param authorized_weekdays:
-                tuple containing the authorized weekdays, described by their
-                number in a week starting by monday -> 1.
-        """
-        self.authorized_ranges = {}
-        self.total_days = 0
-        self.total_seconds = 0
-
-        min_date, max_date = authorized_dates
-        days_lapse = (max_date - min_date).days
-
-        cur_date = min_date
-
-        while cur_date != max_date:
-            if cur_date.weekday() in authorized_weekdays:
-                self.total_days += 1
-                for time_min, time_max in authorized_hours:
-                    down_limit = datetime(
-                        cur_date.year, cur_date.month, cur_date.day,
-                        time_min.hour, time_min.minute, time_min.second,
-                        time_min.microsecond)
-                    up_limit = datetime(
-                        cur_date.year, cur_date.month, cur_date.day,
-                        time_max.hour, time_max.minute, time_max.second,
-                        time_max.microsecond)
-
-                    delta = (up_limit - down_limit)
-                    self.authorized_ranges[self.total_seconds] = (down_limit,
-                                                                  up_limit)
-
-                    self.total_seconds += delta.seconds
-
-            cur_date += timedelta(1)
-
-        if not self.authorized_ranges:
-            raise Exception("The non-continuous timelapse is empty.")
-
-    def get_total_seconds(self):
-        """
-            Returns the number of seconds of the simulated timelapse.
-        """
-        return self.total_seconds
-
-    def datetime_from_seconds(self, seconds):
-        """
-            Returns an absolute datetime out of a relative number of seconds
-            since the beggining of the simulated timelapse.
-
-            :param seconds:
-                The relative number of seconds since the beggining of the
-                simulated timelapse.
-        """
-        keys = self.authorized_ranges.keys()
-        keys.sort()
-        keys.reverse()
-
-        stamp = 0
-        for stamp in keys:
-            if seconds > stamp:
-                break
-
-        min_date, max_date = self.authorized_ranges[stamp]
-
-        delta_seconds = seconds - stamp
-        return min_date + timedelta(0, delta_seconds)
-
 
 class GitModel:
     """
@@ -717,16 +412,16 @@ class GitModel:
                 elif field == "message":
             # Behold, thee who wanders in this portion of the source code.  What
             # you see here may look like the ramblings of a deranged man. You
-            # may partially be right, but here me out before lighting the pyre.
+            # may partially be right, but ear me out before lighting the pyre.
             # The command given to the commit-filter argument is to be
             # interpreted in a bash environment. Therefore, if we want to use
             # newlines, we need to use ' quotes. BUT, and that's where I find it
-            # gets hairy. If we already have single quotes in the commit
+            # gets hairy, if we already have single quotes in the commit
             # message, we need to escape it. Since escaping single quotes in
             # single quotes string doesn't work, we need to: close the single
             # quote string, open double quotes string, escape the single quote,
             # close the double quotes string, and then open a new single quote
-            # string for the rest of the commit message.
+            # string for the rest of the commit message. Now light the pyre.
                     value = self._modified[commit][field]
                     message = value.replace('\\', '\\\\')
                     message = message.replace('$', '\\\$')
