@@ -507,7 +507,7 @@ class GitModel:
             if parent:
                 return str(parent.hexsha)
             else:
-                return "HEAD"
+                return None
 
         else:
             return False
