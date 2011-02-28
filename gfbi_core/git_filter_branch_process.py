@@ -8,6 +8,7 @@
 
 from subprocess import Popen, PIPE
 from threading import Thread
+import os
 import fcntl
 
 class git_filter_branch_process(Thread):
@@ -37,7 +38,7 @@ class git_filter_branch_process(Thread):
         Thread.__init__(self)
 
         self._args = args
-        if oldest_commit_modified_parent == "HEAD":
+        if oldest_commit_modified_parent is None:
             self._oldest_commit = "HEAD"
         else:
             self._oldest_commit = oldest_commit_modified_parent + ".."
