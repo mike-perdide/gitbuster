@@ -465,9 +465,9 @@ class GitModel:
 
             oldest_commit_parent = self.oldest_modified_commit_parent()
 
-            self._git_process = GitFilterBranchProcess(self, options,
-                                                       oldest_commit_parent,
-                                                       log, script)
+            self._git_process = git_filter_branch_process(self, options,
+                                                          oldest_commit_parent,
+                                                          log, script)
             self._git_process.start()
 
     def is_finished_writing(self):
