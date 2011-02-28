@@ -489,7 +489,7 @@ class GitModel:
     def oldest_modified_commit_parent(self):
         """
             Returns a string with the oldest modified commit's parent hexsha or
-            HEAD if the oldest modified commit is HEAD.
+            None if the oldest modified commit is the first one.
 
             :return:
                 The hexsha of the last modified commit's parent.
