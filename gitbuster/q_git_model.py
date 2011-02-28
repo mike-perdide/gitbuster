@@ -35,7 +35,7 @@ class QGitModel(QAbstractTableModel):
         """
         oldest_commit_parent = self.git_model.oldest_modified_commit_parent()
 
-        if not oldest_commit_parent:
+        if oldest_commit_parent is False:
             return 0
 
         if oldest_commit_parent is None:
