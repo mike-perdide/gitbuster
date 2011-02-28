@@ -38,10 +38,12 @@ class QGitModel(QAbstractTableModel):
         if not oldest_commit_parent:
             return 0
 
+        if oldest_commit_parent is None:
+            return len(self.git_model.get_commits())
+
         for count, commit in enumerate(self.git_model.get_commits()):
             if commit.hexsha == oldest_commit_parent:
                 return count + 1
-
 
     def populate(self):
         """
