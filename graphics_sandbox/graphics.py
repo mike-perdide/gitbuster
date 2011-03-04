@@ -2,7 +2,7 @@
 from PyQt4.QtGui import QGraphicsScene, QApplication, QWidget, QGraphicsItem, \
         QPainterPath, QBrush, QGraphicsView, QGraphicsSceneDragDropEvent, \
         QFont, QPainter, QColor, QGraphicsTextItem, QPolygonF, QGraphicsObject
-from PyQt4.QtCore import QRectF, Qt, SIGNAL, QString, QPointF, QObject
+from PyQt4.QtCore import QRectF, Qt, SIGNAL, QString, QPointF, QObject, QEvent
 from graphics_widget_ui import Ui_Form
 import sys
 
@@ -29,6 +29,8 @@ class Arrow(QGraphicsItem):
         self.color = BLACK
 
         self.path = QPainterPath()
+        self.setAcceptDrops(True)
+
         
 #        self.rect = QRectF(x_offset + ARROW_BASE_X,
 #                           y_offset - ARROW_HEIGHT,
@@ -46,7 +48,15 @@ class Arrow(QGraphicsItem):
         )
         self.path.addPolygon(polygon)
 
+    def dragEnterEvent(self, event):
+        print "Enter"
 
+    def dragLeaveEvent(self, event):
+        print "Leave"
+    def dragMoveEvent(self, event):
+        print "Move"
+    def dropEvent(self, event):
+        print "Drop"
     def paint(self, painter, option, widget=None):
         painter.setPen(Qt.NoPen)
         painter.setBrush(QBrush(self.color))
@@ -63,6 +73,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
     def __init__(self, x_offset, y_offset, color, commit,
                  background_item=True):
         super(CommitItem, self).__init__()
+        self.setAcceptDrops(True)
 
         if background_item:
             self.setAcceptHoverEvents(True)
@@ -120,6 +131,10 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         self.setX(self.orig_x)
         self.setY(self.orig_y)
 
+    def hoverMoveEvent(self, event):
+        self.emit(SIGNAL("hoveringOverCommitItem(QString*)"),
+                  QString(self.commit.name()))
+
     def hoverEnterEvent(self, event):
         self.emit(SIGNAL("hoveringOverCommitItem(QString*)"),
                   QString(self.commit.name()))
@@ -149,6 +164,42 @@ class Commit(object):
     def name(self):
         return self._name
 
+class Hints(QGraphicsItem):
+
+    def __init__(self, x_offset, y_offset):
+        super(Hints, self).__init__()
+
+        self.x_offset = x_offset
+        self.y_offset = y_offset
+
+        self.path = None
+        self.setup_display()
+
+    def setup_display(self, step=0):
+        steps = ["Press Alt: matching commits mode",
+                 "Keep pressing Alt and hover over a commit",
+                 "That way you can see all the commits that have the same name"]
+        self.path = QPainterPath()
+
+        self.font = QFont()
+        self.font.setFamily("Helvetica")
+        self.font.setPointSize(FONT_SIZE)
+        self.path.addText(
+            self.x_offset,
+            self.y_offset,
+            self.font, QString(steps[step]))
+
+    def boundingRect(self):
+        return self.path.boundingRect()
+
+    def shape(self):
+        return self.path
+
+    def paint(self, painter, option, widget=None):
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QBrush(BLACK))
+        painter.drawPath(self.path)
+
 class GraphicsWidget(QWidget):
 
     def __init__(self, parent=None):
@@ -161,6 +212,7 @@ class GraphicsWidget(QWidget):
         self.view = self._ui.graphicsView
         self.view.setScene(self.scene)
         self.view.setRenderHint(QPainter.Antialiasing)
+        self.matching_commits = False
 
         self.populate()
 
@@ -174,6 +226,11 @@ class GraphicsWidget(QWidget):
         commits["first"] = ("a", "b", "c", "d")
         commits["second"] = ("g", "b", "x", "a")
 
+        self.filter = my_env_filter()
+        self.scene.installEventFilter(self.filter)
+
+        self.hints = Hints(0, -60)
+        self.scene.addItem(self.hints)
         item_x = 0
         color = GREEN
         for branch in commits:
@@ -181,9 +238,9 @@ class GraphicsWidget(QWidget):
 
             for commit_name in commits[branch]:
                 commit = Commit(commit_name*5)
-                commit_background_item = CommitItem(item_x, item_y,
-                                                    color, commit,
-                                                    background_item=True)
+                commit_background_item = CommitItem(item_x, item_y, 
+                            color, commit, 
+                            background_item=True)
                 arrow = Arrow(item_x, item_y, commit_background_item)
                 commit_display_item = CommitItem(item_x, item_y,
                                                  color, commit,
@@ -198,7 +255,18 @@ class GraphicsWidget(QWidget):
             item_x += 270
             color = BLUE
 
+    def set_matching_commits_mode(self, bool):
+        self.matching_commits = bool
+        if bool:
+            self.hints.setup_display(step=1)
+            self.hints.update()
+        else:
+            self.commit_item_finished_hovering()
+
     def connect_signals(self):
+        self.connect(self.filter, SIGNAL("setMatchingMode(boolean)"),
+                     self.set_matching_commits_mode)
+
         for commit_item in self.commit_items:
             self.connect(commit_item,
                          SIGNAL("hoveringOverCommitItem(QString*)"),
@@ -208,14 +276,28 @@ class GraphicsWidget(QWidget):
                          self.commit_item_finished_hovering)
 
     def commit_item_hovered(self, commit_name):
-        for commit_item in self.commit_items:
-            if commit_item.get_name() != commit_name:
-                commit_item.gray(True)
+        if self.matching_commits:
+            self.hints.setup_display(step=2)
+            self.hints.update()
+            for commit_item in self.commit_items:
+                if commit_item.get_name() != commit_name:
+                    commit_item.gray(True)
 
     def commit_item_finished_hovering(self):
         for commit_item in self.commit_items:
             commit_item.gray(False)
 
+class my_env_filter(QGraphicsObject):
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Alt:
+                self.emit(SIGNAL("setMatchingMode(boolean)"), True)
+                return True
+        elif event.type() == QEvent.KeyRelease:
+            if event.key() == Qt.Key_Alt:
+                self.emit(SIGNAL("setMatchingMode(boolean)"), False)
+        return False
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
