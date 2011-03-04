@@ -1,8 +1,8 @@
 
 from PyQt4.QtGui import QGraphicsScene, QApplication, QWidget, QGraphicsItem, \
         QPainterPath, QBrush, QGraphicsView, QGraphicsSceneDragDropEvent, \
-        QFont, QPainter, QColor, QGraphicsTextItem, QPolygonF
-from PyQt4.QtCore import QRectF, Qt, SIGNAL, QString, QPointF
+        QFont, QPainter, QColor, QGraphicsTextItem, QPolygonF, QGraphicsObject
+from PyQt4.QtCore import QRectF, Qt, SIGNAL, QString, QPointF, QObject
 from graphics_widget_ui import Ui_Form
 import sys
 
@@ -18,6 +18,7 @@ FONT_SIZE = 19
 
 GREEN = QColor(0, 150, 0)
 BLACK = QColor(0, 0 ,0)
+GRAY = QColor(150, 150, 150)
 
 class Arrow(QGraphicsItem):
 
@@ -57,13 +58,15 @@ class Arrow(QGraphicsItem):
     def shape(self):
         return self.path
 
-class CommitItem(QGraphicsItem):
+class CommitItem(QGraphicsObject, QGraphicsItem):
 
-    def __init__(self, x_offset, y_offset, commit):
+    def __init__(self, x_offset, y_offset, color, commit):
         super(CommitItem, self).__init__()
+#        QGraphicsItem.__init__(self)
 
-        self.color = GREEN
-        self.setFlags(QGraphicsItem.ItemIsMovable)
+        self.color = self.orig_color = color
+#        self.setFlags(QGraphicsItem.ItemIsMovable)
+        self.setAcceptHoverEvents(True)
 
         self.path = QPainterPath()
 
@@ -79,6 +82,8 @@ class CommitItem(QGraphicsItem):
             y_offset + (COMMIT_HEIGHT + FONT_SIZE) / 2 ,
             self.font, QString(commit.name()))
 
+        self.commit = commit
+
     def boundingRect(self):
         return self.path.boundingRect()
 
@@ -90,8 +95,25 @@ class CommitItem(QGraphicsItem):
         painter.setBrush(QBrush(self.color))
         painter.drawPath(self.path)
 
-    def mouseMoveEvent (self, event):
-        QGraphicsItem.mouseMoveEvent(self, event)
+    def hoverEnterEvent(self, event):
+        self.emit(SIGNAL("hoveringOverCommitItem(QString*)"),
+                  QString(self.commit.name()))
+
+    def hoverLeaveEvent(self, event):
+        self.emit(SIGNAL("finishedHovering(void)"))
+
+    def get_commit(self):
+        return self.commit
+
+    def get_name(self):
+        return self.commit.name()
+
+    def gray(self, bool_value):
+        if bool_value:
+            self.color = GRAY
+        else:
+            self.color = self.orig_color
+        self.update()
 
 class Commit(object):
 
@@ -118,18 +140,50 @@ class GraphicsWidget(QWidget):
 
         self.populate()
 
+        self.connect_signals()
+
     def populate(self):
-        commits = []
-        for name in ("a", "b", "c", "d"):
-            commits.append(Commit(name * 5))
+        self.commit_items = []
 
-        item_x, item_y = 0, 0
-        for commit in commits:
-            commit_item = CommitItem(item_x, item_y, commit)
-            arrow = Arrow(item_x, item_y, commit_item)
-            self.scene.addItem(commit_item)
+        # First branch
+        commits = {}
+        commits["first"] = ("a", "b", "c", "d")
+        commits["second"] = ("g", "b", "x", "t")
 
-            item_y += COMMIT_HEIGHT + ARROW_HEIGHT
+        item_x = 0
+        color = GREEN
+        for branch in commits:
+            item_y = 0
+
+            for commit_name in commits[branch]:
+                commit = Commit(commit_name*5)
+                commit_item = CommitItem(item_x, item_y, color, commit)
+                arrow = Arrow(item_x, item_y, commit_item)
+                self.scene.addItem(commit_item)
+                self.commit_items.append(commit_item)
+
+                item_y += COMMIT_HEIGHT + ARROW_HEIGHT
+
+            item_x += 270
+            color = BLUE
+
+    def connect_signals(self):
+        for commit_item in self.commit_items:
+            self.connect(commit_item,
+                         SIGNAL("hoveringOverCommitItem(QString*)"),
+                         self.commit_item_hovered)
+            self.connect(commit_item,
+                         SIGNAL("finishedHovering(void)"),
+                         self.commit_item_finished_hovering)
+
+    def commit_item_hovered(self, commit_name):
+        for commit_item in self.commit_items:
+            if commit_item.get_name() != commit_name:
+                commit_item.gray(True)
+
+    def commit_item_finished_hovering(self):
+        for commit_item in self.commit_items:
+            commit_item.gray(False)
 
 
 if __name__ == "__main__":
