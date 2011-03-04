@@ -23,10 +23,11 @@ BLACK = QColor(0, 0 ,0)
 GRAY = QColor(150, 150, 150)
 WHITE = QColor(255, 255, 255)
 
-class Arrow(QGraphicsItem):
+class Arrow(QGraphicsObject, QGraphicsItem):
 
     def __init__(self, x_offset, y_offset, parent=None):
-        super(Arrow, self).__init__(parent)
+        super(Arrow, self).__init__(parent=parent)
+        self._parent = parent
 
         self.color = BLACK
 
@@ -76,7 +77,9 @@ class Arrow(QGraphicsItem):
 #        print dir(event.source())
 #        print dir(event)
 #        print dir(event.mimeData())
-#        print event.mimeData().text()
+        # First string is commit hash, second is the branch
+        self._parent.emit(SIGNAL("commitItemInserted(QString*, QString*)"),
+                  QString(event.mimeData().text()), self._parent.branch)
         print "Drop"
 
     def paint(self, painter, option, widget=None):
@@ -92,7 +95,7 @@ class Arrow(QGraphicsItem):
 
 class CommitItem(QGraphicsObject, QGraphicsItem):
 
-    def __init__(self, x_offset, y_offset, color, commit,
+    def __init__(self, x_offset, y_offset, color, commit, branch,
                  background_item=True):
         super(CommitItem, self).__init__()
         self.setAcceptDrops(True)
@@ -100,12 +103,14 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         if background_item:
             self.setAcceptHoverEvents(True)
         else:
-            self.setFlags(QGraphicsItem.ItemIsMovable)
+            self.setFlags(QGraphicsItem.ItemIsMovable |
+                          QGraphicsItem.ItemIsSelectable)
 
         self.x_offset = x_offset
         self.y_offset = y_offset
 
         self.commit = commit
+        self.branch = branch
         self.color = self.orig_color = color
         self.path = self.setup_display(x_offset, y_offset)
 
@@ -144,11 +149,12 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         QGraphicsItem.mousePressEvent(self, event)
         self.being_moved = True
         self.setZValue(100)
+        self.setCursor(Qt.ClosedHandCursor)
 
     def mouseMoveEvent(self, event):
         drag = QDrag(event.widget())
         data = QMimeData()
-        #data.setText(self.commit.name())
+        data.setText(self.commit.name())
 
         drag.setMimeData(data)
 
@@ -192,6 +198,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         print "item drop event"
 
     def hoverMoveEvent(self, event):
+        self.setCursor(Qt.OpenHandCursor)
         self.emit(SIGNAL("hoveringOverCommitItem(QString*)"),
                   QString(self.commit.name()))
 
@@ -268,6 +275,10 @@ class GraphicsWidget(QWidget):
         self._ui = Ui_Form()
         self._ui.setupUi(self)
 
+        self.commits = {}
+        self.commits["first"] =  ["aaaaa", "bbbbb", "ccccc", "ddddd"]
+        self.commits["second"] = ["ggggg", "bbbbb", "xxxxx", "aaaaa"]
+
         self.scene = QGraphicsScene(self)
         self.view = self._ui.graphicsView
         self.view.setScene(self.scene)
@@ -277,15 +288,9 @@ class GraphicsWidget(QWidget):
 
         self.populate()
 
-        self.connect_signals()
-
     def populate(self):
+        self.temp_del_items = []
         self.commit_items = []
-
-        # First branch
-        commits = {}
-        commits["first"] = ("a", "b", "c", "d")
-        commits["second"] = ("g", "b", "x", "a")
 
         self.filter = my_env_filter()
         self.scene.installEventFilter(self.filter)
@@ -294,17 +299,17 @@ class GraphicsWidget(QWidget):
         self.scene.addItem(self.hints)
         item_x = 0
         color = GREEN
-        for branch in commits:
+        for branch in self.commits:
             item_y = 0
 
-            for commit_name in commits[branch]:
-                commit = Commit(commit_name*5)
+            for commit_name in self.commits[branch]:
+                commit = Commit(commit_name)
                 commit_background_item = CommitItem(item_x, item_y, 
-                            color, commit, 
-                            background_item=True)
+                                                    color, commit, branch,
+                                                    background_item=True)
                 arrow = Arrow(item_x, item_y, commit_background_item)
                 commit_display_item = CommitItem(item_x, item_y,
-                                                 color, commit,
+                                                 color, commit, branch,
                                                  background_item=False)
 
                 self.scene.addItem(commit_display_item)
@@ -315,6 +320,14 @@ class GraphicsWidget(QWidget):
 
             item_x += 270
             color = BLUE
+
+        self.connect_signals()
+
+    def clear_scene(self):
+        self.temp_del_items = self.scene.items()
+        for item in self.temp_del_items:
+            self.scene.removeItem(item)
+#            del item
 
     def set_matching_commits_mode(self, bool):
         self.matching_commits = bool
@@ -335,6 +348,15 @@ class GraphicsWidget(QWidget):
             self.connect(commit_item,
                          SIGNAL("finishedHovering(void)"),
                          self.commit_item_finished_hovering)
+            self.connect(commit_item,
+                         SIGNAL("commitItemInserted(QString*, QString*)"),
+                         self.insert_commit)
+
+    def insert_commit(self, name, branch):
+        self.clear_scene()
+        self.commits[str(branch)].append(name)
+        print self.commits
+        self.populate()
 
     def commit_item_hovered(self, commit_name):
         if self.matching_commits:
