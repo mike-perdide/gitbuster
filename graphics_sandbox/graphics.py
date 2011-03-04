@@ -10,13 +10,14 @@ COMMIT_WIDTH = 150
 COMMIT_HEIGHT = 30
 
 ARROW_BASE_WIDTH = 6
-ARROW_TIP_WIDTH = 15
+ARROW_TIP_WIDTH = 10
 ARROW_HEIGHT = 30
 ARROW_BASE_X = (COMMIT_WIDTH - ARROW_BASE_WIDTH) / 2
 
 FONT_SIZE = 19
 
 GREEN = QColor(0, 150, 0)
+BLUE = QColor(0, 0, 150)
 BLACK = QColor(0, 0 ,0)
 GRAY = QColor(150, 150, 150)
 
@@ -26,7 +27,6 @@ class Arrow(QGraphicsItem):
         super(Arrow, self).__init__(parent)
 
         self.color = BLACK
-        self.setFlags(QGraphicsItem.ItemIsMovable)
 
         self.path = QPainterPath()
         
@@ -38,9 +38,9 @@ class Arrow(QGraphicsItem):
         polygon = QPolygonF(
             [QPointF(x_offset + ARROW_BASE_X,                        y_offset),
              QPointF(x_offset + ARROW_BASE_X,                        y_offset - 20),
-             QPointF(x_offset + ARROW_BASE_X - ARROW_TIP_WIDTH / 2,  y_offset - 18),
+             QPointF(x_offset + ARROW_BASE_X - ARROW_TIP_WIDTH / 2,  y_offset - 19),
              QPointF(x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH / 2, y_offset - ARROW_HEIGHT),
-             QPointF(x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH + ARROW_TIP_WIDTH / 2, y_offset - 18),
+             QPointF(x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH + ARROW_TIP_WIDTH / 2, y_offset - 19),
              QPointF(x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,     y_offset - 20),
              QPointF(x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,     y_offset), ]
         )
@@ -123,7 +123,6 @@ class Commit(object):
 
     def name(self):
         return self._name
-
 
 class GraphicsWidget(QWidget):
 
