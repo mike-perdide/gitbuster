@@ -1,25 +1,27 @@
 
 from PyQt4.QtGui import QGraphicsScene, QApplication, QWidget, QGraphicsItem, \
         QPainterPath, QBrush, QGraphicsView, QGraphicsSceneDragDropEvent, \
-        QFont, QPainter, QColor, QGraphicsTextItem, QPolygonF, QGraphicsObject
-from PyQt4.QtCore import QRectF, Qt, SIGNAL, QString, QPointF, QObject, QEvent
+        QFont, QPainter, QColor, QGraphicsTextItem, QPolygonF, QGraphicsObject,\
+        QDrag, QPixmap
+from PyQt4.QtCore import QRectF, Qt, SIGNAL, QString, QPointF, QObject, QEvent, QMimeData, QPoint
 from graphics_widget_ui import Ui_Form
 import sys
 
 COMMIT_WIDTH = 150
-COMMIT_HEIGHT = 30
+COMMIT_HEIGHT = 40
 
 ARROW_BASE_WIDTH = 6
 ARROW_TIP_WIDTH = 10
 ARROW_HEIGHT = 30
 ARROW_BASE_X = (COMMIT_WIDTH - ARROW_BASE_WIDTH) / 2
 
-FONT_SIZE = 15
+FONT_SIZE = 18
 
 GREEN = QColor(0, 150, 0)
 BLUE = QColor(0, 0, 150)
 BLACK = QColor(0, 0 ,0)
 GRAY = QColor(150, 150, 150)
+WHITE = QColor(255, 255, 255)
 
 class Arrow(QGraphicsItem):
 
@@ -30,33 +32,53 @@ class Arrow(QGraphicsItem):
 
         self.path = QPainterPath()
         self.setAcceptDrops(True)
+        self.setAcceptHoverEvents(True)
 
+        self.x_offset = x_offset
+        self.y_offset = y_offset
         
 #        self.rect = QRectF(x_offset + ARROW_BASE_X,
 #                           y_offset - ARROW_HEIGHT,
 #                           ARROW_WIDTH, ARROW_HEIGHT)
 #        self.path.addRect(self.rect)
+        self.setup_display()
 
+    def setup_display(self):
         polygon = QPolygonF(
-            [QPointF(x_offset + ARROW_BASE_X,                        y_offset),
-             QPointF(x_offset + ARROW_BASE_X,                        y_offset - 20),
-             QPointF(x_offset + ARROW_BASE_X - ARROW_TIP_WIDTH / 2,  y_offset - 19),
-             QPointF(x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH / 2, y_offset - ARROW_HEIGHT),
-             QPointF(x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH + ARROW_TIP_WIDTH / 2, y_offset - 19),
-             QPointF(x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,     y_offset - 20),
-             QPointF(x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,     y_offset), ]
+            [QPointF(self.x_offset + ARROW_BASE_X,                        self.y_offset),
+             QPointF(self.x_offset + ARROW_BASE_X,                        self.y_offset - 20),
+             QPointF(self.x_offset + ARROW_BASE_X - ARROW_TIP_WIDTH / 2,  self.y_offset - 19),
+             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH / 2, self.y_offset - ARROW_HEIGHT),
+             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH + ARROW_TIP_WIDTH / 2, self.y_offset - 19),
+             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,     self.y_offset - 20),
+             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,     self.y_offset), ]
         )
         self.path.addPolygon(polygon)
+#    def hoverMoveEvent(self, event):
+#        print "hover arrow move"
+#
+#    def hoverEnterEvent(self, event):
+#        print "hover arrow enter"
+#
+#    def hoverLeaveEvent(self, event):
+#        print "hover arrow leave"
 
     def dragEnterEvent(self, event):
         print "Enter"
 
     def dragLeaveEvent(self, event):
         print "Leave"
+
     def dragMoveEvent(self, event):
         print "Move"
+
     def dropEvent(self, event):
+#        print dir(event.source())
+#        print dir(event)
+#        print dir(event.mimeData())
+#        print event.mimeData().text()
         print "Drop"
+
     def paint(self, painter, option, widget=None):
         painter.setPen(Qt.NoPen)
         painter.setBrush(QBrush(self.color))
@@ -85,26 +107,27 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
 
         self.commit = commit
         self.color = self.orig_color = color
-        self.setup_display()
+        self.path = self.setup_display(x_offset, y_offset)
 
         self.orig_x = self.x()
         self.orig_y = self.y()
 
-    def setup_display(self):
-        self.path = QPainterPath()
+    def setup_display(self, x_offset, y_offset):
+        path = QPainterPath()
 
-        self.rect = QRectF(self.x_offset + 0,
-                           self.y_offset + 0,
-                           COMMIT_WIDTH, COMMIT_HEIGHT)
-        self.path.addRoundedRect(self.rect, 10, 10)
+        self.rect = QRectF(x_offset + 0,
+                      y_offset + 0,
+                      COMMIT_WIDTH, COMMIT_HEIGHT)
+        path.addRoundedRect(self.rect, 10, 10)
 
         self.font = QFont()
         self.font.setFamily("Helvetica")
         self.font.setPointSize(FONT_SIZE)
-        self.path.addText(
-            self.x_offset + (COMMIT_WIDTH - len(self.commit.name()) * FONT_SIZE) / 2 + 4,
-            self.y_offset + (COMMIT_HEIGHT + FONT_SIZE) / 2 ,
+        path.addText(
+            x_offset + (COMMIT_WIDTH - len(self.commit.name()) * (FONT_SIZE - 4)) / 2 + 4,
+            y_offset + (COMMIT_HEIGHT + FONT_SIZE) / 2 ,
             self.font, QString(self.commit.name()))
+        return path
 
     def boundingRect(self):
         return self.path.boundingRect()
@@ -120,16 +143,53 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
     def mousePressEvent(self, event):
         QGraphicsItem.mousePressEvent(self, event)
         self.being_moved = True
+        self.setZValue(100)
 
     def mouseMoveEvent(self, event):
-        QGraphicsItem.mouseMoveEvent(self, event)
+        drag = QDrag(event.widget())
+        data = QMimeData()
+        #data.setText(self.commit.name())
+
+        drag.setMimeData(data)
+
+        #data.setColorData(GREEN)
+        pixmap = QPixmap(COMMIT_WIDTH, COMMIT_HEIGHT)
+        pixmap.fill(WHITE)
+        painter = QPainter(pixmap)
+        painter.translate(0, 0)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QBrush(self.color))
+        painter.drawPath(self.setup_display(0, 0))
+        painter.end()
+
+        pixmap.setMask(pixmap.createHeuristicMask())
+        drag.setPixmap(pixmap)
+        drag.setHotSpot(QPoint(0, 0))
+        drag.start()
+#        QGraphicsItem.mouseMoveEvent(self, event)
+        self.reinit_position()
 
     def mouseReleaseEvent(self, event):
         QGraphicsItem.mouseReleaseEvent(self, event)
         self.being_moved = False
+        self.setZValue(0)
 
+    def reinit_position(self):
         self.setX(self.orig_x)
         self.setY(self.orig_y)
+
+    def dragEnterEvent(self, event):
+        print "item drag enter"
+
+    def dragLeaveEvent(self, event):
+        print "item drag leave"
+
+    def dragMoveEvent(self, event):
+        print "item drag move"
+
+    def dropEvent(self, event):
+        print "item drop event"
 
     def hoverMoveEvent(self, event):
         self.emit(SIGNAL("hoveringOverCommitItem(QString*)"),
@@ -213,6 +273,7 @@ class GraphicsWidget(QWidget):
         self.view.setScene(self.scene)
         self.view.setRenderHint(QPainter.Antialiasing)
         self.matching_commits = False
+        self.view.setAcceptDrops(True)
 
         self.populate()
 
