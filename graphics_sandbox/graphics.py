@@ -14,7 +14,7 @@ ARROW_TIP_WIDTH = 10
 ARROW_HEIGHT = 30
 ARROW_BASE_X = (COMMIT_WIDTH - ARROW_BASE_WIDTH) / 2
 
-FONT_SIZE = 19
+FONT_SIZE = 15
 
 GREEN = QColor(0, 150, 0)
 BLUE = QColor(0, 0, 150)
@@ -60,29 +60,40 @@ class Arrow(QGraphicsItem):
 
 class CommitItem(QGraphicsObject, QGraphicsItem):
 
-    def __init__(self, x_offset, y_offset, color, commit):
+    def __init__(self, x_offset, y_offset, color, commit,
+                 background_item=True):
         super(CommitItem, self).__init__()
-#        QGraphicsItem.__init__(self)
 
+        if background_item:
+            self.setAcceptHoverEvents(True)
+        else:
+            self.setFlags(QGraphicsItem.ItemIsMovable)
+
+        self.x_offset = x_offset
+        self.y_offset = y_offset
+
+        self.commit = commit
         self.color = self.orig_color = color
-#        self.setFlags(QGraphicsItem.ItemIsMovable)
-        self.setAcceptHoverEvents(True)
+        self.setup_display()
 
+        self.orig_x = self.x()
+        self.orig_y = self.y()
+
+    def setup_display(self):
         self.path = QPainterPath()
 
-        self.rect = QRectF(0 + x_offset, 0 + y_offset,
+        self.rect = QRectF(self.x_offset + 0,
+                           self.y_offset + 0,
                            COMMIT_WIDTH, COMMIT_HEIGHT)
         self.path.addRoundedRect(self.rect, 10, 10)
-        
+
         self.font = QFont()
         self.font.setFamily("Helvetica")
         self.font.setPointSize(FONT_SIZE)
         self.path.addText(
-            x_offset + (COMMIT_WIDTH - len(commit.name()) * FONT_SIZE) / 2 + 4,
-            y_offset + (COMMIT_HEIGHT + FONT_SIZE) / 2 ,
-            self.font, QString(commit.name()))
-
-        self.commit = commit
+            self.x_offset + (COMMIT_WIDTH - len(self.commit.name()) * FONT_SIZE) / 2 + 4,
+            self.y_offset + (COMMIT_HEIGHT + FONT_SIZE) / 2 ,
+            self.font, QString(self.commit.name()))
 
     def boundingRect(self):
         return self.path.boundingRect()
@@ -94,6 +105,20 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         painter.setPen(Qt.NoPen)
         painter.setBrush(QBrush(self.color))
         painter.drawPath(self.path)
+
+    def mousePressEvent(self, event):
+        QGraphicsItem.mousePressEvent(self, event)
+        self.being_moved = True
+
+    def mouseMoveEvent(self, event):
+        QGraphicsItem.mouseMoveEvent(self, event)
+
+    def mouseReleaseEvent(self, event):
+        QGraphicsItem.mouseReleaseEvent(self, event)
+        self.being_moved = False
+
+        self.setX(self.orig_x)
+        self.setY(self.orig_y)
 
     def hoverEnterEvent(self, event):
         self.emit(SIGNAL("hoveringOverCommitItem(QString*)"),
@@ -147,7 +172,7 @@ class GraphicsWidget(QWidget):
         # First branch
         commits = {}
         commits["first"] = ("a", "b", "c", "d")
-        commits["second"] = ("g", "b", "x", "t")
+        commits["second"] = ("g", "b", "x", "a")
 
         item_x = 0
         color = GREEN
@@ -156,10 +181,17 @@ class GraphicsWidget(QWidget):
 
             for commit_name in commits[branch]:
                 commit = Commit(commit_name*5)
-                commit_item = CommitItem(item_x, item_y, color, commit)
-                arrow = Arrow(item_x, item_y, commit_item)
-                self.scene.addItem(commit_item)
-                self.commit_items.append(commit_item)
+                commit_background_item = CommitItem(item_x, item_y,
+                                                    color, commit,
+                                                    background_item=True)
+                arrow = Arrow(item_x, item_y, commit_background_item)
+                commit_display_item = CommitItem(item_x, item_y,
+                                                 color, commit,
+                                                 background_item=False)
+
+                self.scene.addItem(commit_display_item)
+                self.scene.addItem(commit_background_item)
+                self.commit_items.append(commit_background_item)
 
                 item_y += COMMIT_HEIGHT + ARROW_HEIGHT
 
