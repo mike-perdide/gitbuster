@@ -197,5 +197,14 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         """
         pass
 
+class HeadCommitItem(CommitItem):
+    """
+        This item represents the HEAD of the branch. It looks like a commitItem
+        but the arrow should be reversed.
 
+    """
+
+    def __init__(self):
+#        super(HeadCommitItem, self).__init__(...)
+        pass
 
