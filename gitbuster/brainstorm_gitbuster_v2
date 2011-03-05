@@ -9,6 +9,9 @@ Si * graphics views:
     Plus facile pour rajouter ou enlever des branches
     Plus facile pour scroller
 
+Plusieurs graphics view:
+    une zone centrale avec des BranchViewWidget draggables pour réorganiser
+
 Zone de hint:
     Peut être un label plutôt qu'une zone de texte
 
