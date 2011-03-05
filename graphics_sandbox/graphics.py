@@ -46,13 +46,13 @@ class Arrow(QGraphicsObject, QGraphicsItem):
 
     def setup_display(self):
         polygon = QPolygonF(
-            [QPointF(self.x_offset + ARROW_BASE_X,                        self.y_offset),
-             QPointF(self.x_offset + ARROW_BASE_X,                        self.y_offset - 20),
-             QPointF(self.x_offset + ARROW_BASE_X - ARROW_TIP_WIDTH / 2,  self.y_offset - 19),
-             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH / 2, self.y_offset - ARROW_HEIGHT),
-             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH + ARROW_TIP_WIDTH / 2, self.y_offset - 19),
-             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,     self.y_offset - 20),
-             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,     self.y_offset), ]
+            [QPointF(self.x_offset + ARROW_BASE_X,                                          COMMIT_HEIGHT + ARROW_HEIGHT + self.y_offset),
+             QPointF(self.x_offset + ARROW_BASE_X,                                          COMMIT_HEIGHT + ARROW_HEIGHT + self.y_offset - 20),
+             QPointF(self.x_offset + ARROW_BASE_X - ARROW_TIP_WIDTH / 2,                    COMMIT_HEIGHT + ARROW_HEIGHT + self.y_offset - 19),
+             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH / 2,                   COMMIT_HEIGHT + ARROW_HEIGHT + self.y_offset - ARROW_HEIGHT),
+             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH + ARROW_TIP_WIDTH / 2, COMMIT_HEIGHT + ARROW_HEIGHT + self.y_offset - 19),
+             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,                       COMMIT_HEIGHT + ARROW_HEIGHT + self.y_offset - 20),
+             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,                       COMMIT_HEIGHT + ARROW_HEIGHT + self.y_offset), ]
         )
         self.path.addPolygon(polygon)
 #    def hoverMoveEvent(self, event):
@@ -75,7 +75,7 @@ class Arrow(QGraphicsObject, QGraphicsItem):
 
     def dropEvent(self, event):
 #        print dir(event.source())
-#        print dir(event)
+#       print dir(event)
 #        print dir(event.mimeData())
         # First string is commit hash, second is the branch
         self._parent.emit(SIGNAL("commitItemInserted(QString*, QString*)"),
@@ -116,6 +116,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
 
         self.orig_x = self.x()
         self.orig_y = self.y()
+        self.setCursor(Qt.OpenHandCursor)
 
     def setup_display(self, x_offset, y_offset):
         path = QPainterPath()
@@ -198,7 +199,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         print "item drop event"
 
     def hoverMoveEvent(self, event):
-        self.setCursor(Qt.OpenHandCursor)
+#        self.setCursor(Qt.OpenHandCursor)
         self.emit(SIGNAL("hoveringOverCommitItem(QString*)"),
                   QString(self.commit.name()))
 
@@ -330,6 +331,7 @@ class GraphicsWidget(QWidget):
 #            del item
 
     def set_matching_commits_mode(self, bool):
+        print "setting matching"
         self.matching_commits = bool
         if bool:
             self.hints.setup_display(step=1)
@@ -338,7 +340,7 @@ class GraphicsWidget(QWidget):
             self.commit_item_finished_hovering()
 
     def connect_signals(self):
-        self.connect(self.filter, SIGNAL("setMatchingMode(boolean)"),
+        self.connect(self.filter, SIGNAL("setMatchingMode(bool)"),
                      self.set_matching_commits_mode)
 
         for commit_item in self.commit_items:
@@ -375,11 +377,11 @@ class my_env_filter(QGraphicsObject):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.KeyPress:
             if event.key() == Qt.Key_Alt:
-                self.emit(SIGNAL("setMatchingMode(boolean)"), True)
+                self.emit(SIGNAL("setMatchingMode(bool)"), True)
                 return True
         elif event.type() == QEvent.KeyRelease:
             if event.key() == Qt.Key_Alt:
-                self.emit(SIGNAL("setMatchingMode(boolean)"), False)
+                self.emit(SIGNAL("setMatchingMode(bool)"), False)
         return False
 
 if __name__ == "__main__":
