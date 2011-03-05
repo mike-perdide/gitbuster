@@ -5,7 +5,7 @@ class Arrow(QGraphicsObject, QGraphicsItem):
         slots on it.
     """
 
-    def __init__(self, x_offset, y_offset, parent=None):
+    def __init__(self, x_offset, y_offset, down_arrow=False, parent=None):
         super(Arrow, self).__init__(parent=parent)
         self._parent = parent
 
@@ -18,25 +18,38 @@ class Arrow(QGraphicsObject, QGraphicsItem):
         self.x_offset = x_offset
         self.y_offset = y_offset
 
+        self.is_down_arrow = down_arrow
+
     def setup_display(self):
         self.path = QPainterPath()
-        polygon = QPolygonF(
-            [QPointF(self.x_offset + ARROW_BASE_X,
-                     COMMIT_HEIGHT + self.y_offset),
-             QPointF(self.x_offset + ARROW_BASE_X,
-                     COMMIT_HEIGHT + self.y_offset + 20),
-             QPointF(self.x_offset + ARROW_BASE_X - ARROW_TIP_WIDTH / 2,
-                     COMMIT_HEIGHT + self.y_offset + 19),
-             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH / 2,
-                     COMMIT_HEIGHT + self.y_offset + ARROW_HEIGHT),
-             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH
-                     + ARROW_TIP_WIDTH / 2,
-                     COMMIT_HEIGHT + self.y_offset + 19),
-             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,
-                     COMMIT_HEIGHT + self.y_offset + 20),
-             QPointF(self.x_offset + ARROW_BASE_X + ARROW_BASE_WIDTH,
-                     COMMIT_HEIGHT + self.y_offset), ]
-        )
+        tot_y_offset = self.y_offset + COMMIT_HEIGHT
+        tot_x_offset = self.x_offset + ARROW_BASE_X
+
+        if self.is_down_arrow:
+            x_y = (
+                (0,                                     0),
+                (0,                                     -20),
+                (- ARROW_TIP_WIDTH/2,                   -19),
+                (ARROW_BASE_WIDTH/2,                    -ARROW_HEIGHT),
+                (ARROW_BASE_WIDTH + ARROW_TIP_WIDTH/2,  -19),
+                (ARROW_BASE_WIDTH,                      -20),
+                (ARROW_BASE_WIDTH,                      0)
+            )
+        else:
+            x_y = (
+                (0,                                     0),
+                (0,                                     20),
+                (- ARROW_TIP_WIDTH/2,                   19),
+                (ARROW_BASE_WIDTH/2,                    ARROW_HEIGHT),
+                (ARROW_BASE_WIDTH + ARROW_TIP_WIDTH/2,  19),
+                (ARROW_BASE_WIDTH,                      20),
+                (ARROW_BASE_WIDTH,                      0)
+            )
+        absolute_x_y = []
+        for x,y in x_y:
+            absolute_x_y.append(tot_x_offset + x, tot_y_offset + y)
+
+        polygon = QPolygonF(absolute_x_y)
         self.path.addPolygon(polygon)
 
     def paint(self, painter, option, widget=None):
