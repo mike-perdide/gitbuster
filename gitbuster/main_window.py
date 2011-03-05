@@ -13,7 +13,7 @@ from gitbuster.main_window_ui import Ui_MainWindow
 from os.path import join, exists
 
 from filter_main_class import FilterMainClass
-#from rebase_main_class import RebaseMainClass
+from rebase_main_class import RebaseMainClass
 
 def is_top_git_directory(filepath):
     git_path = join(filepath, ".git")
@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
         self._ui.setupUi(self)
 
         self.filter_main_class = FilterMainClass(self, directory)
-#        self.rebase_main_class = RebaseMainClass(self, directory)
+        self.rebase_main_class = RebaseMainClass(self, directory)
 
         # Connecting actions
         self.connect(self._ui.actionQuit, SIGNAL("triggered(bool)"),
