@@ -8,7 +8,7 @@
 
 from gitbuster.branch_view_ui import Ui_BranchView
 from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter
-from PyQt4.QtCore import QString
+from PyQt4.QtCore import QString, SIGNAL
 from gitbuster.graphics_items import CommitItem
 
 
@@ -22,6 +22,7 @@ class BranchViewWidget(QWidget):
         self._ui.setupUi(self)
 
         self.branch = branch
+        self.column_offset = 0
 
         self.view = self._ui.graphicsView
         self.scene = QGraphicsScene(self)
@@ -39,14 +40,51 @@ class BranchViewWidget(QWidget):
 
         next_commit_item = None
         for commit in commits[self.branch]:
-            commit_item = CommitItem(commit)
-            self.scene.addItem(commit_item)
+            commit_item = self.add_commit_item(commit)
+
             if next_commit_item is not None:
                 next_commit_item.set_previous(commit_item)
             next_commit_item = commit_item
 
-    def connect_signals(self):
-        pass
+    def add_commit_item(self, commit):
+        """
+            Adds a commit item to the scene and connects the correct signals.
+        """
+        commit_item = CommitItem(commit, self)
+        self.scene.addItem(commit_item)
+
+        self.connect(commit_item,
+                     SIGNAL("commitItemInserted(QString*)"),
+                     self.item_inserted)
+
+        return commit_item
+
+    def get_column_offset(self):
+        return self.column_offset
+
+    def set_column_offset(self, offset):
+        self.column_offset = offset
+
+    def item_inserted(self, inserted_commit_hash):
+        """
+           If we need to insert a commit C between A and B like this:
+                HEAD - B - C - A (initial commit)
+            We just need to do:
+                - set B as the new column end
+                - set C as the below commit of B
+                - set A as the below commit of C
+                - call the move_at_the_column_end method on C
+
+            See also CommitItem.move_at_the_column_end.
+        """
+        new_commit_item = self.add_commit_item(inserted_commit_hash)
+        original_previous = self.sender().get_previous()
+
+        new_commit_item.set_previous(original_previous)
+        self.sender().set_previous(new_commit_item)
+
+        self.sender().set_as_the_new_column_end()
+        self.sender().move_at_the_column_end()
 
 
 class RebaseMainClass():

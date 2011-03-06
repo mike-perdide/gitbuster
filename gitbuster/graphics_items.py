@@ -21,6 +21,8 @@ ARROW_TIP_WIDTH = 10
 ARROW_HEIGHT = 30
 ARROW_BASE_X = (COMMIT_WIDTH - ARROW_BASE_WIDTH) / 2
 
+TOTAL_COMMIT_HEIGHT = COMMIT_HEIGHT + ARROW_HEIGHT
+
 FONT_SIZE = 18
 
 GREEN = QColor(0, 150, 0)
@@ -125,7 +127,9 @@ class Arrow(QGraphicsObject, QGraphicsItem):
                 - tell the main class that some commits have been inserted
                 - move the next commit items
         """
-        pass
+        self.commit_item.emit(
+            SIGNAL("commitItemInserted(QString*)"),
+            QString(event.mimeData().text()))
 
 class CommitItem(QGraphicsObject, QGraphicsItem):
     """
@@ -140,9 +144,8 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         A special comitItem could be HEAD.
             A different color.
     """
-    column_offset = 0
 
-    def __init__(self, name):
+    def __init__(self, name, branch_view):
         """
             In the init method we should:
                 - set the cursor as an open hand
@@ -154,6 +157,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         self.name = name
         self.arrow = None
         self.previous_commit = None
+        self.branch_view = branch_view
 
         self.setAcceptHoverEvents(True)
         self.setFlags(QGraphicsItem.ItemIsMovable)
@@ -272,30 +276,33 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
                 - set A as the below commit of C
                 - call the move_at_the_column_end method on C
         """
-        self.y_offset = CommitItem.column_offset
-        CommitItem.column_offset += ARROW_HEIGHT + COMMIT_HEIGHT
+        self.y_offset = self.branch_view.get_column_offset()
+        self.branch_view.set_column_offset(self.y_offset + TOTAL_COMMIT_HEIGHT)
         self.reset_display()
 
         if self.arrow is not None:
             self.arrow.reset_display()
         if self.previous_commit is not None:
-                self.previous_commit.move_at_the_column_end()
+            self.previous_commit.move_at_the_column_end()
 
     def set_as_the_new_column_end(self):
         """
             This method sets the class parameter "last item coordinates" with
             this item's coordinates.
         """
-        pass
+        self.branch_view.set_column_offset(self.y_offset)
 
     # Organization methods
     def set_previous(self, previous_commit):
         """
-            The previous commit will be under this one.
+            Sets the previous commit that will be under this one in the column.
         """
         self.previous_commit = previous_commit
         if self.arrow is None:
             self.arrow = Arrow(self)
+
+    def get_previous(self):
+        return self.previous_commit
 
 class HeadCommitItem(CommitItem):
     """
