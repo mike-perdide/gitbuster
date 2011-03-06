@@ -36,25 +36,30 @@ class Arrow(QGraphicsObject, QGraphicsItem):
         slots on it.
     """
 
-    def __init__(self, x_offset, y_offset, down_arrow=False, parent=None):
-        super(Arrow, self).__init__(parent=parent)
-        self._parent = parent
+    def __init__(self, commit_item, down_arrow=False):
+        super(Arrow, self).__init__(parent=commit_item)
+        self.commit_item = commit_item
 
         self.color = BLACK
 
-        self.setup_display()
         self.setAcceptDrops(True)
         self.setAcceptHoverEvents(True)
 
-        self.x_offset = x_offset
-        self.y_offset = y_offset
-
         self.is_down_arrow = down_arrow
 
+        self.reset_display()
+
+    def reset_display(self):
+        self.path = self.setup_display()
+        self.update()
+
     def setup_display(self):
-        self.path = QPainterPath()
-        tot_y_offset = self.y_offset + COMMIT_HEIGHT
-        tot_x_offset = self.x_offset + ARROW_BASE_X
+        path = QPainterPath()
+
+        tot_x_offset = ARROW_BASE_X
+
+        y_offset = self.commit_item.y_offset
+        tot_y_offset = y_offset + COMMIT_HEIGHT
 
         if self.is_down_arrow:
             x_y = (
@@ -78,10 +83,12 @@ class Arrow(QGraphicsObject, QGraphicsItem):
             )
         absolute_x_y = []
         for x,y in x_y:
-            absolute_x_y.append(tot_x_offset + x, tot_y_offset + y)
+            absolute_x_y.append(QPointF(tot_x_offset + x, tot_y_offset + y))
 
         polygon = QPolygonF(absolute_x_y)
-        self.path.addPolygon(polygon)
+        path.addPolygon(polygon)
+
+        return path
 
     def paint(self, painter, option, widget=None):
         painter.setPen(Qt.NoPen)
