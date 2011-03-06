@@ -37,9 +37,13 @@ class BranchViewWidget(QWidget):
         commits = {"master": ["aaaa","bbbb","cccc"],
                    "branch": ["dddd","eeee","ffff"] }
 
+        next_commit_item = None
         for commit in commits[self.branch]:
             commit_item = CommitItem(commit)
             self.scene.addItem(commit_item)
+            if next_commit_item is not None:
+                next_commit_item.set_previous(commit_item)
+            next_commit_item = commit_item
 
     def connect_signals(self):
         pass
