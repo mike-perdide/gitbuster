@@ -8,6 +8,7 @@
 
 from gitbuster.branch_view_ui import Ui_BranchView
 from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter
+from PyQt4.QtCore import QString
 from gitbuster.graphics_items import CommitItem
 
 
@@ -29,6 +30,7 @@ class BranchViewWidget(QWidget):
         self.view.setRenderHint(QPainter.Antialiasing)
         self.view.setAcceptDrops(True)
 
+        self._ui.label.setText(QString(branch))
         self.populate()
 
     def populate(self):
