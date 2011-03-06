@@ -152,7 +152,8 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
 
         self.y_offset = 0
         self.name = name
-        self.arrow = Arrow(self)
+        self.arrow = None
+        self.previous_commit = None
 
         self.setAcceptHoverEvents(True)
         self.setFlags(QGraphicsItem.ItemIsMovable)
@@ -274,7 +275,11 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         self.y_offset = CommitItem.column_offset
         CommitItem.column_offset += ARROW_HEIGHT + COMMIT_HEIGHT
         self.reset_display()
-        self.arrow.reset_display()
+
+        if self.arrow is not None:
+            self.arrow.reset_display()
+        if self.previous_commit is not None:
+                self.previous_commit.move_at_the_column_end()
 
     def set_as_the_new_column_end(self):
         """
@@ -282,6 +287,15 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
             this item's coordinates.
         """
         pass
+
+    # Organization methods
+    def set_previous(self, previous_commit):
+        """
+            The previous commit will be under this one.
+        """
+        self.previous_commit = previous_commit
+        if self.arrow is None:
+            self.arrow = Arrow(self)
 
 class HeadCommitItem(CommitItem):
     """
