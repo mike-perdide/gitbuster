@@ -6,18 +6,21 @@
 #
 # -*- coding: utf-8 -*-
 
-from branch_view_ui import Ui_BranchView
+from gitbuster.branch_view_ui import Ui_BranchView
 from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter
+from gitbuster.graphics_items import CommitItem
 
 
 class BranchViewWidget(QWidget):
     """
         This widget should be draggable.
     """
-    def __init__(self):
+    def __init__(self, branch):
         super(QWidget, self).__init__()
         self._ui = Ui_BranchView()
         self._ui.setupUi(self)
+
+        self.branch = branch
 
         self.view = self._ui.graphicsView
         self.scene = QGraphicsScene(self)
@@ -29,64 +32,27 @@ class BranchViewWidget(QWidget):
         self.populate()
 
     def populate(self):
-        self.temp_del_items = []
-        self.commit_items = []
+        commits = {"master": ["aaaa","bbbb","cccc"],
+                   "branch": ["dddd","eeee","ffff"] }
 
-#        item_x = 0
-#        color = 1
-#        for branch in self.commits:
-#            item_y = 0
-#
-#            for commit_name in self.commits[branch]:
-#                commit = Commit(commit_name)
-#                commit_background_item = CommitItem(item_x, item_y, 
-#                                                    color, commit, branch,
-#                                                    background_item=True)
-#                arrow = Arrow(item_x, item_y, commit_background_item)
-#                commit_display_item = CommitItem(item_x, item_y,
-#                                                 color, commit, branch,
-#                                                 background_item=False)
-#
-#                self.scene.addItem(commit_display_item)
-#                self.scene.addItem(commit_background_item)
-#                self.commit_items.append(commit_background_item)
-#
-#                item_y += COMMIT_HEIGHT + ARROW_HEIGHT
-#
-#            item_x += 270
-#            color = BLUE
-
-        self.connect_signals()
-
-    def clear_scene(self):
-        self.temp_del_items = self.scene.items()
-        for item in self.temp_del_items:
-            self.scene.removeItem(item)
-#            del item
+        for commit in commits[self.branch]:
+            commit_item = CommitItem(commit)
+            self.scene.addItem(commit_item)
 
     def connect_signals(self):
         pass
-        #for commit_item in self.commit_items:
-        #    self.connect(commit_item,
-        #                 SIGNAL("hoveringOverCommitItem(QString*)"),
-        #                 self.commit_item_hovered)
-        #    self.connect(commit_item,
-        #                 SIGNAL("finishedHovering(void)"),
-        #                 self.commit_item_finished_hovering)
-        #    self.connect(commit_item,
-        #                 SIGNAL("commitItemInserted(QString*, QString*)"),
-        #                 self.insert_commit)
 
 
 class RebaseMainClass():
 
     def __init__(self, parent, directory):
         self.parent = parent
-        self.parent._ui.graphicsViewLayout.addWidget(BranchViewWidget())
-        self.parent._ui.graphicsViewLayout.addWidget(BranchViewWidget())
-        self.parent._ui.graphicsViewLayout.addWidget(BranchViewWidget())
-        self.parent._ui.graphicsViewLayout.addWidget(BranchViewWidget())
-        self.parent._ui.graphicsViewLayout.addWidget(BranchViewWidget())
+
+        commits = {"master": ["aaaa","bbbb","cccc"],
+                   "branch": ["dddd","eeee","ffff"] }
+
+        for branch in commits:
+            self.parent._ui.graphicsViewLayout.addWidget(BranchViewWidget(branch))
 
     def set_matching_commits_mode(self, bool):
         print "setting matching"
