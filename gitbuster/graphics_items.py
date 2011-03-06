@@ -6,6 +6,30 @@
 #
 # -*- coding: utf-8 -*-
 
+from PyQt4.QtGui import QGraphicsScene, QApplication, QWidget, QGraphicsItem, \
+        QPainterPath, QBrush, QGraphicsView, QGraphicsSceneDragDropEvent, \
+        QFont, QPainter, QColor, QGraphicsTextItem, QPolygonF, QGraphicsObject,\
+        QDrag, QPixmap
+from PyQt4.QtCore import QRectF, Qt, SIGNAL, QString, QPointF, QObject, \
+        QEvent, QMimeData, QPoint
+
+COMMIT_WIDTH = 150
+COMMIT_HEIGHT = 40
+
+ARROW_BASE_WIDTH = 6
+ARROW_TIP_WIDTH = 10
+ARROW_HEIGHT = 30
+ARROW_BASE_X = (COMMIT_WIDTH - ARROW_BASE_WIDTH) / 2
+
+FONT_SIZE = 18
+
+GREEN = QColor(0, 150, 0)
+BLUE = QColor(0, 0, 150)
+BLACK = QColor(0, 0 ,0)
+GRAY = QColor(150, 150, 150)
+WHITE = QColor(255, 255, 255)
+
+
 class Arrow(QGraphicsObject, QGraphicsItem):
     """
         This item need to be derived from QGraphicsObject so that we can connect
