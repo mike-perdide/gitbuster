@@ -143,20 +143,52 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         A special comitItem could be HEAD.
             A different color.
     """
+    column_offset = 0
 
-    def __init__(self):
+    def __init__(self, name):
         """
             In the init method we should:
                 - set the cursor as an open hand
         """
         super(CommitItem, self).__init__()
+        self.orig_color = self.color = BLUE
+
+        self.y_offset = 0
+        self.name = name
+        self.arrow = Arrow(self)
+
+        self.move_at_the_column_end()
 
     # Display methods
+    def reset_display(self):
+        self.path = self.setup_display()
+        self.update()
+
     def setup_display(self):
-        pass
+        """
+            The display should represent the commit short hash and some part of
+            the commit message.
+        """
+        path = QPainterPath()
+
+        self.rect = QRectF(0, self.y_offset + 0, COMMIT_WIDTH, COMMIT_HEIGHT)
+        path.addRoundedRect(self.rect, 10, 10)
+
+        self.font = QFont()
+        self.font.setFamily("Helvetica")
+        self.font.setPointSize(FONT_SIZE)
+        # TODO: change the way the text is displayed. We should be able to know
+        # what will be the size of the displayed text. Maybe QGraphicsText ...
+        path.addText(
+            (COMMIT_WIDTH-len(self.name)*(FONT_SIZE-4))/2 +4,
+            self.y_offset + (COMMIT_HEIGHT + FONT_SIZE) / 2 ,
+            self.font, QString(self.name))
+        return path
 
     def paint(self, painter, option, widget=None):
-        pass
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QBrush(self.color))
+        painter.drawPath(self.path)
 
     def gray(self, bool_value):
         """
@@ -219,7 +251,10 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
                 - set A as the below commit of C
                 - call the move_at_the_column_end method on C
         """
-        pass
+        self.y_offset = CommitItem.column_offset
+        CommitItem.column_offset += ARROW_HEIGHT + COMMIT_HEIGHT
+        self.reset_display()
+        self.arrow.reset_display()
 
     def set_as_the_new_column_end(self):
         """
