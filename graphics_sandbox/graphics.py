@@ -175,7 +175,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         drag.setHotSpot(QPoint(0, 0))
         drag.start()
 #        QGraphicsItem.mouseMoveEvent(self, event)
-        self.reinit_position()
+#        self.reinit_position()
 
     def mouseReleaseEvent(self, event):
         QGraphicsItem.mouseReleaseEvent(self, event)
