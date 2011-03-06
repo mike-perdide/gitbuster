@@ -217,7 +217,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
                 from the main class.
                 - set the cursor as a closed hand.
         """
-        pass
+        self.setCursor(Qt.ClosedHandCursor)
 
     def mouseMoveEvent(self, event):
         """
@@ -255,7 +255,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
             every commit that isn't similar to this one. This behaviour as well
             as the trigger condition will be set in the main class.
         """
-        pass
+        self.setCursor(Qt.OpenHandCursor)
 
     # Position methods
     def move_at_the_column_end(self):
