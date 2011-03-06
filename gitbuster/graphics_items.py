@@ -154,21 +154,24 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         self.name = name
         self.arrow = Arrow(self)
 
+        self.setAcceptHoverEvents(True)
+        self.setFlags(QGraphicsItem.ItemIsMovable)
+
         self.move_at_the_column_end()
 
     # Display methods
     def reset_display(self):
-        self.path = self.setup_display()
+        self.path = self.setup_display(self.y_offset)
         self.update()
 
-    def setup_display(self):
+    def setup_display(self, offset):
         """
             The display should represent the commit short hash and some part of
             the commit message.
         """
         path = QPainterPath()
 
-        self.rect = QRectF(0, self.y_offset + 0, COMMIT_WIDTH, COMMIT_HEIGHT)
+        self.rect = QRectF(0, offset + 0, COMMIT_WIDTH, COMMIT_HEIGHT)
         path.addRoundedRect(self.rect, 10, 10)
 
         self.font = QFont()
@@ -178,7 +181,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         # what will be the size of the displayed text. Maybe QGraphicsText ...
         path.addText(
             (COMMIT_WIDTH-len(self.name)*(FONT_SIZE-4))/2 +4,
-            self.y_offset + (COMMIT_HEIGHT + FONT_SIZE) / 2 ,
+            offset + (COMMIT_HEIGHT + FONT_SIZE) / 2 ,
             self.font, QString(self.name))
         return path
 
@@ -222,7 +225,27 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
             This method should create a QDrag in order for a drag event to
             start.
         """
-        pass
+        drag = QDrag(event.widget())
+        data = QMimeData()
+        data.setText(self.name)
+
+        drag.setMimeData(data)
+
+        #data.setColorData(GREEN)
+        pixmap = QPixmap(COMMIT_WIDTH, COMMIT_HEIGHT)
+        pixmap.fill(WHITE)
+        painter = QPainter(pixmap)
+        painter.translate(0, 0)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(QBrush(self.color))
+        painter.drawPath(self.setup_display(0))
+        painter.end()
+
+        pixmap.setMask(pixmap.createHeuristicMask())
+        drag.setPixmap(pixmap)
+        drag.setHotSpot(QPoint(0, 0))
+        drag.start()
 
     def hoverMoveEvent(self, event):
         """
