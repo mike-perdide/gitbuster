@@ -130,10 +130,7 @@ class Arrow(QGraphicsObject, QGraphicsItem):
 class CommitItem(QGraphicsObject, QGraphicsItem):
     """
         This class should contain:
-            - last coordonates of the column. Since we may have several columns,
-            we may need a list of 2-lists
-        This class may contain:
-            - a reference to the HEAD of each branch
+            - last coordonates of the column.
 
         Instanciated objects should have:
             - a reference to a GitPython commit
