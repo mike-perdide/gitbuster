@@ -96,7 +96,8 @@ class RebaseMainClass():
                    "branch": ["dddd","eeee","ffff"] }
 
         for branch in commits:
-            self.parent._ui.graphicsViewLayout.addWidget(BranchViewWidget(branch))
+            self.parent._ui.graphicsViewLayout.insertWidget(0,
+                                                    BranchViewWidget(branch))
 
     def set_matching_commits_mode(self, bool):
         print "setting matching"
