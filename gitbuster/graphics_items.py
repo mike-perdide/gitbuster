@@ -66,22 +66,22 @@ class Arrow(QGraphicsObject, QGraphicsItem):
         if self.is_down_arrow:
             x_y = (
                 (0,                                     0),
-                (0,                                     -20),
-                (- ARROW_TIP_WIDTH/2,                   -19),
-                (ARROW_BASE_WIDTH/2,                    -ARROW_HEIGHT),
-                (ARROW_BASE_WIDTH + ARROW_TIP_WIDTH/2,  -19),
-                (ARROW_BASE_WIDTH,                      -20),
-                (ARROW_BASE_WIDTH,                      0)
-            )
-        else:
-            x_y = (
-                (0,                                     0),
                 (0,                                     20),
                 (- ARROW_TIP_WIDTH/2,                   19),
                 (ARROW_BASE_WIDTH/2,                    ARROW_HEIGHT),
                 (ARROW_BASE_WIDTH + ARROW_TIP_WIDTH/2,  19),
                 (ARROW_BASE_WIDTH,                      20),
                 (ARROW_BASE_WIDTH,                      0)
+            )
+        else:
+            x_y = (
+                (0,                                     0 + ARROW_HEIGHT),
+                (0,                                     -20 + ARROW_HEIGHT),
+                (- ARROW_TIP_WIDTH/2,                   -19 + ARROW_HEIGHT),
+                (ARROW_BASE_WIDTH/2,                    0),
+                (ARROW_BASE_WIDTH + ARROW_TIP_WIDTH/2,  -19 + ARROW_HEIGHT),
+                (ARROW_BASE_WIDTH,                      -20 + ARROW_HEIGHT),
+                (ARROW_BASE_WIDTH,                      0 + ARROW_HEIGHT)
             )
         absolute_x_y = []
         for x,y in x_y:
