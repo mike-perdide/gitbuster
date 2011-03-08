@@ -49,19 +49,14 @@ class Arrow(QGraphicsObject, QGraphicsItem):
 
         self.is_down_arrow = down_arrow
 
-        self.reset_display()
-
-    def reset_display(self):
-        self.path = self.setup_display()
-        self.update()
+        self.setup_display()
 
     def setup_display(self):
-        path = QPainterPath()
+        self.path = QPainterPath()
 
         tot_x_offset = ARROW_BASE_X
 
-        y_offset = self.commit_item.y_offset
-        tot_y_offset = y_offset + COMMIT_HEIGHT
+        tot_y_offset = COMMIT_HEIGHT
 
         if self.is_down_arrow:
             x_y = (
@@ -88,9 +83,7 @@ class Arrow(QGraphicsObject, QGraphicsItem):
             absolute_x_y.append(QPointF(tot_x_offset + x, tot_y_offset + y))
 
         polygon = QPolygonF(absolute_x_y)
-        path.addPolygon(polygon)
-
-        return path
+        self.path.addPolygon(polygon)
 
     def paint(self, painter, option, widget=None):
         painter.setPen(Qt.NoPen)
@@ -153,7 +146,6 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         super(CommitItem, self).__init__()
         self.orig_color = self.color = BLUE
 
-        self.y_offset = 0
         self.name = name
         self.arrow = None
         self.previous_commit = None
@@ -162,33 +154,28 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         self.setAcceptHoverEvents(True)
         self.setFlags(QGraphicsItem.ItemIsMovable)
 
+        self.setup_display()
         self.move_at_the_column_end()
 
-    # Display methods
-    def reset_display(self):
-        self.path = self.setup_display(self.y_offset)
-        self.update()
-
-    def setup_display(self, offset):
+    def setup_display(self):
         """
             The display should represent the commit short hash and some part of
             the commit message.
         """
-        path = QPainterPath()
+        self.path = QPainterPath()
 
-        self.rect = QRectF(0, offset + 0, COMMIT_WIDTH, COMMIT_HEIGHT)
-        path.addRoundedRect(self.rect, 10, 10)
+        rect = QRectF(0, 0, COMMIT_WIDTH, COMMIT_HEIGHT)
+        self.path.addRoundedRect(rect, 10, 10)
 
-        self.font = QFont()
-        self.font.setFamily("Helvetica")
-        self.font.setPointSize(FONT_SIZE)
+        font = QFont()
+        font.setFamily("Helvetica")
+        font.setPointSize(FONT_SIZE)
         # TODO: change the way the text is displayed. We should be able to know
         # what will be the size of the displayed text. Maybe QGraphicsText ...
-        path.addText(
+        self.path.addText(
             (COMMIT_WIDTH-len(self.name)*(FONT_SIZE-4))/2 +4,
-            offset + (COMMIT_HEIGHT + FONT_SIZE) / 2 ,
-            self.font, QString(self.name))
-        return path
+            (COMMIT_HEIGHT + FONT_SIZE) / 2 ,
+            font, QString(self.name))
 
     def paint(self, painter, option, widget=None):
         painter.setPen(Qt.NoPen)
@@ -244,7 +231,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setPen(Qt.NoPen)
         painter.setBrush(QBrush(self.color))
-        painter.drawPath(self.setup_display(0))
+        painter.drawPath(self.path)
         painter.end()
 
         pixmap.setMask(pixmap.createHeuristicMask())
@@ -276,12 +263,10 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
                 - set A as the below commit of C
                 - call the move_at_the_column_end method on C
         """
-        self.y_offset = self.branch_view.get_column_offset()
-        self.branch_view.set_column_offset(self.y_offset + TOTAL_COMMIT_HEIGHT)
-        self.reset_display()
+        column_offset = self.branch_view.get_column_offset()
+        self.setPos(0, column_offset)
+        self.branch_view.set_column_offset(column_offset + TOTAL_COMMIT_HEIGHT)
 
-        if self.arrow is not None:
-            self.arrow.reset_display()
         if self.previous_commit is not None:
             self.previous_commit.move_at_the_column_end()
 
@@ -290,7 +275,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
             This method sets the class parameter "last item coordinates" with
             this item's coordinates.
         """
-        self.branch_view.set_column_offset(self.y_offset)
+        self.branch_view.set_column_offset(self.y())
 
     # Organization methods
     def set_previous(self, previous_commit):
