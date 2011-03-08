@@ -23,7 +23,7 @@ class BranchViewWidget(QWidget):
         self._ui.setupUi(self)
 
         self.branch = branch
-        self.column_offset = 0
+        self.column_y_offset = 0
 
         self.view = self._ui.graphicsView
         self.scene = QGraphicsScene(self)
@@ -62,11 +62,11 @@ class BranchViewWidget(QWidget):
 
         return commit_item
 
-    def get_column_offset(self):
-        return self.column_offset
+    def get_column_y_offset(self):
+        return self.column_y_offset
 
-    def set_column_offset(self, offset):
-        self.column_offset = offset
+    def set_column_y_offset(self, offset):
+        self.column_y_offset = offset
 
     def item_inserted(self, inserted_commit_hash):
         """
