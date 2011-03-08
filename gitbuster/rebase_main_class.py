@@ -8,8 +8,8 @@
 
 from gitbuster.branch_view_ui import Ui_BranchView
 from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter
-from PyQt4.QtCore import QString, SIGNAL
-from gitbuster.graphics_items import CommitItem
+from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF
+from gitbuster.graphics_items import CommitItem, Arrow
 
 
 class BranchViewWidget(QWidget):
@@ -27,6 +27,7 @@ class BranchViewWidget(QWidget):
         self.view = self._ui.graphicsView
         self.scene = QGraphicsScene(self)
         self.view.setScene(self.scene)
+        self.view.centerOn(QPointF(0, 0))
 
         self.view.setRenderHint(QPainter.Antialiasing)
         self.view.setAcceptDrops(True)
