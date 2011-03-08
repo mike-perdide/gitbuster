@@ -263,9 +263,9 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
                 - set A as the below commit of C
                 - call the move_at_the_column_end method on C
         """
-        column_offset = self.branch_view.get_column_offset()
-        self.setPos(self.x(), column_offset)
-        self.branch_view.set_column_offset(column_offset + TOTAL_COMMIT_HEIGHT)
+        y_offset = self.branch_view.get_column_y_offset()
+        self.setPos(self.x(), y_offset)
+        self.branch_view.set_column_y_offset(y_offset + TOTAL_COMMIT_HEIGHT)
 
         if self.previous_commit is not None:
             self.previous_commit.move_at_the_column_end()
@@ -275,7 +275,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
             This method sets the class parameter "last item coordinates" with
             this item's coordinates.
         """
-        self.branch_view.set_column_offset(self.y())
+        self.branch_view.set_column_y_offset(self.y())
 
     # Organization methods
     def set_previous(self, previous_commit):
