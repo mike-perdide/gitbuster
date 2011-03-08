@@ -264,7 +264,7 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
                 - call the move_at_the_column_end method on C
         """
         column_offset = self.branch_view.get_column_offset()
-        self.setPos(0, column_offset)
+        self.setPos(self.x(), column_offset)
         self.branch_view.set_column_offset(column_offset + TOTAL_COMMIT_HEIGHT)
 
         if self.previous_commit is not None:

@@ -11,6 +11,7 @@ from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter
 from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF
 from gitbuster.graphics_items import CommitItem, Arrow
 
+COLUMN_X_OFFSET = 50
 
 class BranchViewWidget(QWidget):
     """
@@ -53,6 +54,7 @@ class BranchViewWidget(QWidget):
         """
         commit_item = CommitItem(commit, self)
         self.scene.addItem(commit_item)
+        commit_item.moveBy(COLUMN_X_OFFSET, 0)
 
         self.connect(commit_item,
                      SIGNAL("commitItemInserted(QString*)"),
