@@ -29,3 +29,5 @@ How to deal with inserting commits after HEAD or before the first commit ?
 Catcher le drop autour de la flêche:
     jouer avec le roundingRect pour élargir la zone d'impact.
 
+Utiliser une QAnimation pendant le hovering over an arrow.
+Déplacer les QGraphicsItem plutôt que les peindre un peu plus loin.
