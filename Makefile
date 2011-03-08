@@ -12,7 +12,7 @@ clean:
 	rm -f $(UIPY)
 	rm -f *.pyc
 
-install:
+install:	$(UIPY)
 	python -m "distutils2.run" install_dist||python setup.py install
 
 publish:	$(UIPY)
