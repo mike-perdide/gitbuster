@@ -86,6 +86,8 @@ Faut il reimplémenter le MVD pour graphicsView ou utiliser GitPython directemen
 # $ git checkout <oldest_modified_commit_parent> -b tmp_rebase
 # $ git cherry-pick -n <commit_to_change>
 # $ GIT_AUTHOR_NAME="Julien Miotte"; GIT_COMMITTER_NAME="Julien Miotte"; git commit
+# or
+# $ git commit -C <commit_to_insert>
 # (also, see .git/MERGE_MSG at this point)
 #
 # Que se passe-t-il quand on a des modifications dans les deux onglets ?
