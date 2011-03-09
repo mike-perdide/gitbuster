@@ -61,6 +61,9 @@ Faut il reimplémenter le MVD pour graphicsView ou utiliser GitPython directemen
 # Utiliser directement GitPython
 #  + c'est simple
 #  - pas mal de boulot à refaire sur l'affichage des données
+#
+# Si on peut faire des date edits en même temps que du rebasing, il devient intéressant
+# de garder le même modèle pour les deux onglets.
 
 [filter/rebase]
 # On ne doit pas avoir d'opérations de filter et de rebase en même temps
@@ -84,3 +87,6 @@ Faut il reimplémenter le MVD pour graphicsView ou utiliser GitPython directemen
 # $ git cherry-pick -n <commit_to_change>
 # $ GIT_AUTHOR_NAME="Julien Miotte"; GIT_COMMITTER_NAME="Julien Miotte"; git commit
 # (also, see .git/MERGE_MSG at this point)
+#
+# Que se passe-t-il quand on a des modifications dans les deux onglets ?
+# Que se passe-t-il quand on a des modifications sur deux branches ?
