@@ -74,7 +74,13 @@ Faut il reimplémenter le MVD pour graphicsView ou utiliser GitPython directemen
 #   - soit on fait confiance à d'autres éléments, comme le tree hash, MAIS le tree hash
 #   n'est pas un identifiant unique
 #
+# En vérité, il est possible de faire à la fois du cherry-picking en mode rebase et de
+# modifier les champs (en commitant et en exportant les bonnes variables d'env)
 #
+# On doit pouvoir se passer de git filter-rebase, en passant par un git cherry-pick -n
+# puis un git commit avec export GIT_COMMITTER_NAME, GIT_AUTHOR_NAME, etc. 
 # 
-#
-#
+# $ git checkout <oldest_modified_commit_parent> -b tmp_rebase
+# $ git cherry-pick -n <commit_to_change>
+# $ GIT_AUTHOR_NAME="Julien Miotte"; GIT_COMMITTER_NAME="Julien Miotte"; git commit
+# (also, see .git/MERGE_MSG at this point)
