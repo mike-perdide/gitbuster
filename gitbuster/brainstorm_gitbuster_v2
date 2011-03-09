@@ -1,33 +1,50 @@
 IMPORTANT:
+##########
     On parle de l'historique en partant du premier commit du dépôt.
     Si je commite a, puis b, puis c: a est le premier commit.
     Le commit avant b est a, le commit après b est c.
     => rien après HEAD, rien avant le premier commit
 
-Si * graphics views:
-    CommitItem n'a pas besoin de stocker la dernière position de chaque branche
-    Plus facile pour rajouter ou enlever des branches
-    Plus facile pour scroller
 
-Plusieurs graphics view:
-    une zone centrale avec des BranchViewWidget draggables pour réorganiser
+TODOLIST:
+#########
 
-Zone de hint:
-    Peut être un label plutôt qu'une zone de texte
+* Catcher le drop autour de la flêche: jouer avec le roundingRect pour élargir.
+* Utiliser une QAnimation pendant le hovering over an arrow.
 
-How to deal with inserting commits after HEAD or before the first commit ?
-    * before the first commit:
-        J'ai l'impression qu'on ne peut pas avec git rebase changer le premier
-        commit
-        => il faut que le dernier commit n'ai pas de flêche vers le bas.
-        => il faut pouvoir spécifier que le commitItem est le dernier
-    * after HEAD:
-        un commitItem pourrait être utilisé pour représenter HEAD
-        => pas de problème pour catcher le drop
-        => la flêche doit être inversée.
 
-Catcher le drop autour de la flêche:
-    jouer avec le roundingRect pour élargir la zone d'impact.
+DISCUSSIONS FERMÉES:
+####################
 
-Utiliser une QAnimation pendant le hovering over an arrow.
-Déplacer les QGraphicsItem plutôt que les peindre un peu plus loin.
+# Si * graphics views:
+#  CommitItem n'a pas besoin de stocker la dernière position de chaque branche
+#  Plus facile pour rajouter ou enlever des branches
+#  Plus facile pour scroller
+# ADOPTÉ
+
+# Déplacer les QGraphicsItem plutôt que les peindre un peu plus loin.
+# ADOPTÉ
+
+
+DISCUSSIONS EN COURS:
+#####################
+
+# Déplacement des BranchViews :
+#  Une zone centrale avec des BranchViewWidget draggables pour réorganiser
+
+# Zone de hint, conseils, aide qui change selon les actions de l'utilisateur
+#  Recevoir de l'aide adaptée à chaque commande
+#  Peut être un label plutôt qu'une zone de texte dans la graphicsView
+
+# [Drag & Drop]
+#
+# How to deal with inserting commits after HEAD or before the first commit ?
+#     * before the first commit:
+#         J'ai l'impression qu'on ne peut pas avec git rebase changer le premier
+#         commit
+#         => il faut que le dernier commit n'ai pas de flêche vers le bas.
+#         => il faut pouvoir spécifier que le commitItem est le dernier
+#     * after HEAD:
+#         un commitItem pourrait être utilisé pour représenter HEAD
+#         => pas de problème pour catcher le drop
+#         => la flêche doit être inversée.
