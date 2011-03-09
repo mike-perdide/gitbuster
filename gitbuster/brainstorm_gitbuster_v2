@@ -29,16 +29,15 @@ DISCUSSIONS FERMÉES:
 DISCUSSIONS EN COURS:
 #####################
 
-# Déplacement des BranchViews :
+Déplacement des BranchViews :
 #  Une zone centrale avec des BranchViewWidget draggables pour réorganiser
 
-# Zone de hint, conseils, aide qui change selon les actions de l'utilisateur
+Zone de hint, conseils, aide qui change selon les actions de l'utilisateur
 #  Recevoir de l'aide adaptée à chaque commande
 #  Peut être un label plutôt qu'une zone de texte dans la graphicsView
 
-# [Drag & Drop]
-#
-# How to deal with inserting commits after HEAD or before the first commit ?
+[Drag & Drop]
+How to deal with inserting commits after HEAD or before the first commit ?
 #     * before the first commit:
 #         J'ai l'impression qu'on ne peut pas avec git rebase changer le premier
 #         commit
@@ -48,3 +47,34 @@ DISCUSSIONS EN COURS:
 #         un commitItem pourrait être utilisé pour représenter HEAD
 #         => pas de problème pour catcher le drop
 #         => la flêche doit être inversée.
+
+[Model/View]
+Faut il reimplémenter le MVD pour graphicsView ou utiliser GitPython directement ?
+# Utiliser QGraphicsScene(QAbstractItemModel):
+#  + on réutilise tout le formatage des dates, auteurs, messages de commit
+#  + on a un design pattern pour insérer des données
+#  - il faut modifier q_git_model pour pouvoir insérer des nouveaux commits, pour
+#    pouvoir récupérer les blobs
+#  - il faut gérer le process de filter et le process de rebase dans git_model
+#  - du boulot pour faire hériter une scène de QAbstractItemModel
+#
+# Utiliser directement GitPython
+#  + c'est simple
+#  - pas mal de boulot à refaire sur l'affichage des données
+
+[filter/rebase]
+# On ne doit pas avoir d'opérations de filter et de rebase en même temps
+# Raisonnement par l'absurde:
+#   - si on a des modifications filter et rebase en même temps, si on applique filter
+#   - les commits sont réecrits
+#   - comment peut-on faire le lien entre les modifications de rebase et les nouveaux
+#   commits ?
+#   - soit on fait confiance à l'auteur, date, message de commit MAIS ça peut avoir
+#   été changé
+#   - soit on fait confiance à d'autres éléments, comme le tree hash, MAIS le tree hash
+#   n'est pas un identifiant unique
+#
+#
+# 
+#
+#
