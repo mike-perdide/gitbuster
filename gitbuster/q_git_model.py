@@ -33,7 +33,7 @@ class QGitModel(QAbstractTableModel):
             Returns the number of commits to will be rewritten. That means the
             number of commit between HEAD and the oldest modified commit.
         """
-        oldest_commit_parent = self.git_model.oldest_modified_commit_parent()
+        oldest_commit_parent = str(self.git_model.oldest_modified_commit_parent())
 
         if oldest_commit_parent is False:
             return 0
