@@ -99,3 +99,22 @@ Faut il reimplémenter le MVD pour graphicsView ou utiliser GitPython directemen
 # Proposer de corriger les fichiers avec des problèmes de merge.
 # Stocker le diff dans un fichier (diff à appliquer par dessus le diff).
 # Marquer le commit comme résolu, relancer le check.
+
+[gitModel]
+# Nous avons besoin de pouvoir recharger la population du modèle (pour les filtres
+# principalement). Or pour le moment, en faisant cela, on efface self._commits. On
+# est donc pas en mesure de stocker des commits insérés dans self._commits.
+# On peut :
+# * rajouter une liste self._enlarged contenant les commits originaux + insérés
+# * tout mettre dans self._commits mais ne pas l'écraser (problème pour afficher le
+# modèle sans les modifications)
+# Pour toutes les fonctions, si les modifications sont activées, c'est self._enlarged
+# + self._modifications qui devra être affiché, sinon self._commits.
+# (self._modified devient self._modifications)
+
+[commitsSquash]
+# Les commits squashés seront des objets spéciaux, ayant une liste de commits. C'est à
+# l'interface de déterminer si les commits dans la liste sont bien successifs dans le
+# modèle.
+# L'interface permettra d'éditer le nouveau message de commit à partir des messages dec
+# commit des commit squashés.
