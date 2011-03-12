@@ -92,3 +92,10 @@ Faut il reimplémenter le MVD pour graphicsView ou utiliser GitPython directemen
 #
 # Que se passe-t-il quand on a des modifications dans les deux onglets ?
 # Que se passe-t-il quand on a des modifications sur deux branches ?
+
+[diffs&sanity]
+# 1ere solution : appliquer sur une branche temporaire mais ne pas la déplacer sur la
+# branche originale. Retourner le commit sur lequel le merge a échoué.
+# Proposer de corriger les fichiers avec des problèmes de merge.
+# Stocker le diff dans un fichier (diff à appliquer par dessus le diff).
+# Marquer le commit comme résolu, relancer le check.
