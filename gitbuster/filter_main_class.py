@@ -121,8 +121,10 @@ class FilterMainClass():
             :param directory:
                 The git directory.
         """
-        current_branch = self._models[0].get_current_branch()
-        self._model = self._models[str(current_branch)]
+        a_model = QGitModel(directory)
+        current_branch = a_model.get_current_branch()
+
+        self._model = self._models[current_branch]
         self.parent._ui.tableView.setModel(self._model)
         self.parent._ui.tableView.verticalHeader().hide()
         self.parent._ui.tableView.setItemDelegate(QGitDelegate(self.parent._ui.tableView))
@@ -137,7 +139,7 @@ class FilterMainClass():
         self.parent._ui.currentBranchComboBox.clear()
 
         for branch in self._models:
-            self.parent._ui.currentBranchComboBox.addItem("%s" % branch)
+            self.parent._ui.currentBranchComboBox.addItem("%s" % str(branch))
             if branch == current_branch:
                 current_index = index
             index += 1
@@ -344,7 +346,12 @@ class FilterMainClass():
             When the currentBranchComboBox current index is changed, set the
             current branch of the model to the new branch.
         """
-        self._model = self._models[new_branch_name]
+        for branch in self._models:
+            if new_branch_name == str(branch):
+                self._model = self._models[branch]
+                self.parent._ui.tableView.setModel(self._model)
+                self.refresh_checkboxes()
+                break
 
     def merge_clicked(self, check_state):
         """
