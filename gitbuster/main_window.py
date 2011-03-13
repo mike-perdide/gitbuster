@@ -13,8 +13,8 @@ from gitbuster.q_git_model import QGitModel
 
 from os.path import join, exists
 
-from filter_main_class import FilterMainClass
-from rebase_main_class import RebaseMainClass
+from gitbuster.filter_main_class import FilterMainClass
+from gitbuster.rebase_main_class import RebaseMainClass
 
 def is_top_git_directory(filepath):
     git_path = join(filepath, ".git")
