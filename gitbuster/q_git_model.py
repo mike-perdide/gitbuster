@@ -131,8 +131,8 @@ class QGitModel(QAbstractTableModel):
         commit = commits[index.row()]
 
         if self.show_modifications():
-            modified = self.git_model.get_modified()
-            if commit in modified and field_name in modified[commit]:
+            modifications = self.git_model.get_modifications()
+            if commit in modifications and field_name in modifications[commit]:
                 return QVariant(QColor(Qt.yellow))
         if self.git_model.is_commit_pushed(commit):
             return QVariant(QColor(Qt.lightGray))
@@ -438,7 +438,7 @@ class QGitModel(QAbstractTableModel):
 
     def get_modified_count(self):
         "See GitModel for more help."
-        return len(self.git_model.get_modified())
+        return len(self.git_model.get_modifications())
 
     def rowCount(self, parent=QModelIndex()):
         "See GitModel for more help."
