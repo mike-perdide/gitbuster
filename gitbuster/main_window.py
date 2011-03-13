@@ -61,13 +61,14 @@ class MainWindow(QMainWindow):
         self._ui.setupUi(self)
 
         models = {}
-        for branch in model.get_branches():
+        a_model = QGitModel(directory)
+        for branch in a_model.get_branches():
             model = QGitModel(directory)
             model.set_current_branch(branch)
             model.setMerge(True)
             model.enable_option("filters")
             model.populate()
-            models[str(model)] = model
+            models[branch] = model
 
         self.filter_main_class = FilterMainClass(self, directory, models)
         self.rebase_main_class = RebaseMainClass(self, directory, models)

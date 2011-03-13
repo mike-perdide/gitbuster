@@ -92,8 +92,9 @@ class BranchViewWidget(QWidget):
 
 class RebaseMainClass():
 
-    def __init__(self, parent, directory):
+    def __init__(self, parent, directory, models):
         self.parent = parent
+        self._models = models
 
         commits = {"master": ["aaaa","bbbb","cccc"],
                    "branch": ["dddd","eeee","ffff"] }
