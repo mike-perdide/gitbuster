@@ -9,6 +9,7 @@
 from PyQt4.QtGui import QMainWindow, QFileDialog
 from PyQt4.QtCore import QDir, QSettings, QVariant, SIGNAL
 from gitbuster.main_window_ui import Ui_MainWindow
+from gitbuster.q_git_model import QGitModel
 
 from os.path import join, exists
 
@@ -59,8 +60,17 @@ class MainWindow(QMainWindow):
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        self.filter_main_class = FilterMainClass(self, directory)
-        self.rebase_main_class = RebaseMainClass(self, directory)
+        models = {}
+        for branch in model.get_branches():
+            model = QGitModel(directory)
+            model.set_current_branch(branch)
+            model.setMerge(True)
+            model.enable_option("filters")
+            model.populate()
+            models[str(model)] = model
+
+        self.filter_main_class = FilterMainClass(self, directory, models)
+        self.rebase_main_class = RebaseMainClass(self, directory, models)
 
         # Connecting actions
         self.connect(self._ui.actionQuit, SIGNAL("triggered(bool)"),

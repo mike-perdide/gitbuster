@@ -83,8 +83,9 @@ class ProgressThread(QThread):
 
 class FilterMainClass():
 
-    def __init__(self, parent, directory):
+    def __init__(self, parent, directory, models):
         self.parent = parent
+        self._models = models
 
         self._filters_values = {
             "afterWeekday"  : self.parent._ui.afterWeekdayFilterComboBox.currentIndex,
@@ -120,10 +121,8 @@ class FilterMainClass():
             :param directory:
                 The git directory.
         """
-        self._model = QGitModel(directory=directory)
-        self._model.setMerge(True)
-        self._model.enable_option("filters")
-
+        current_branch = self._models[0].get_current_branch()
+        self._model = self._models[str(current_branch)]
         self.parent._ui.tableView.setModel(self._model)
         self.parent._ui.tableView.verticalHeader().hide()
         self.parent._ui.tableView.setItemDelegate(QGitDelegate(self.parent._ui.tableView))
@@ -131,16 +130,14 @@ class FilterMainClass():
         self.parent._ui.tableView.resizeColumnsToContents()
         self.parent._ui.tableView.horizontalHeader().setStretchLastSection(True)
 
-        self._model.populate()
-
         self._checkboxes = {}
         self.create_checkboxes()
 
         index = 0
         self.parent._ui.currentBranchComboBox.clear()
-        current_branch = self._model.get_current_branch()
-        for branch in self._model.get_branches():
-            self.parent._ui.currentBranchComboBox.addItem("%s" % str(branch))
+
+        for branch in self._models:
+            self.parent._ui.currentBranchComboBox.addItem("%s" % branch)
             if branch == current_branch:
                 current_index = index
             index += 1
@@ -347,12 +344,7 @@ class FilterMainClass():
             When the currentBranchComboBox current index is changed, set the
             current branch of the model to the new branch.
         """
-        for branch in self._model.get_branches():
-            if str(branch) == new_branch_name:
-                self._model.set_current_branch(branch)
-                self._model.reset()
-                self._model.populate()
-                break
+        self._model = self._models[new_branch_name]
 
     def merge_clicked(self, check_state):
         """
