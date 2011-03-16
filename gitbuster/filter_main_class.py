@@ -263,12 +263,13 @@ class FilterMainClass():
             When a "column checkbox" is checked or unchecked, we repopulate the
             model so that only the selected columns are displayed.
         """
-        choices = []
         for checkbox_name in AVAILABLE_CHOICES:
+            column_index = AVAILABLE_CHOICES.index(checkbox_name)
             if self._checkboxes[checkbox_name].isChecked():
-                choices.append(checkbox_name)
+                self.parent._ui.tableView.showColumn(column_index)
+            else:
+                self.parent._ui.tableView.hideColumn(column_index)
 
-        self.parent._ui.tableView.model().setColumns(choices)
         self.parent._ui.tableView.resizeColumnsToContents()
         self.parent._ui.tableView.horizontalHeader().setStretchLastSection(True)
 
