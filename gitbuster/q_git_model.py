@@ -415,11 +415,6 @@ class QGitModel(QAbstractTableModel):
         "See GitModel for more help."
         return self.git_model.progress()
 
-    def setColumns(self, column_list):
-        "See GitModel for more help."
-        self.git_model.set_columns(column_list)
-        self.populate()
-
     def setMerge(self, merge_state):
         "See GitModel for more help."
         self.git_model.set_merge(merge_state)
