@@ -8,7 +8,8 @@
 
 from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, \
                         QSizePolicy
-from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDir, QSettings, QDateTime
+from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDir, QSettings, \
+                         QDateTime, QModelIndex
 
 from gitbuster.q_git_model import QGitModel, NAMES
 from gitbuster.q_git_delegate import QGitDelegate
@@ -98,6 +99,8 @@ class FilterMainClass():
             "nameEmail"     : self.parent._ui.nameEmailFilterLineEdit.text,
             "localOnly"     : None
         }
+
+        self._shown_columns = []
 
         self.set_current_directory(directory)
 
@@ -263,10 +266,12 @@ class FilterMainClass():
             When a "column checkbox" is checked or unchecked, we repopulate the
             model so that only the selected columns are displayed.
         """
+        self._shown_columns = []
         for checkbox_name in AVAILABLE_CHOICES:
             column_index = AVAILABLE_CHOICES.index(checkbox_name)
             if self._checkboxes[checkbox_name].isChecked():
                 self.parent._ui.tableView.showColumn(column_index)
+                self._shown_columns.append(column_index)
             else:
                 self.parent._ui.tableView.hideColumn(column_index)
 
@@ -367,18 +372,46 @@ class FilterMainClass():
             When a "filter checkbox" is checked or unchecked, set the filters on
             the model and reset it.
         """
-        model = self.parent._ui.tableView.model()
+        tableView = self.parent._ui.tableView
+        model = tableView.model()
 
+        filters = []
         for checkbox_name in self._filters_values:
             checkbox = self._filterbox_byname(checkbox_name)
 
             if checkbox.checkState() == Qt.Checked:
                 filter = self._filter_byname(checkbox_name)
                 model.filter_set(checkbox_name, filter)
+                filters.append(checkbox_name)
             else:
                 model.filter_unset(checkbox_name)
 
-        model.populate()
+
+        total_filter_score = 0
+        for word in ("Hour", "Date", "Weekday"):
+            group = "after%s" % word, "before%s" % word
+            if any(item in filters for item in group):
+                total_filter_score += 1
+
+        for item in ("nameEmail", "commit", "localOnly"):
+            if item in filters:
+                total_filter_score += 1
+
+
+        for row in xrange(model.rowCount()):
+            tableView.showRow(row)
+
+        if total_filter_score:
+            for row in xrange(model.rowCount()):
+                score = 0
+                for column in self._shown_columns:
+                    index = model.index(row, column)
+                    score += model.filter_score(index)
+
+                if score < total_filter_score:
+                    tableView.hideRow(row)
+
+        tableView.reset()
 
     def _filterbox_byname(self, name):
         """
