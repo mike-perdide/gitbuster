@@ -7,13 +7,13 @@
 # -*- coding: utf-8 -*-
 
 from gitbuster.branch_view_ui import Ui_BranchView
-from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter, QAbstractItemView
+from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter
 from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF
 from gitbuster.graphics_items import CommitItem, Arrow
 
 COLUMN_X_OFFSET = 50
 
-class BranchViewWidget(QAbstractItemView, QWidget):
+class BranchViewWidget(QWidget):
 
     def __init__(self, model):
         super(BranchViewWidget, self).__init__()
@@ -35,202 +35,11 @@ class BranchViewWidget(QAbstractItemView, QWidget):
         self._ui.label.setText("map")
         self.populate()
 
-        self.connect(self.scene, SIGNAL("reset()"), self.reset)
-        self.connect(self, SIGNAL("clearScene"), self.clearScene)
-
-    def visualRect(self, index):
-        """
-            Returns the rectangle on the viewport occupied by the item at index.
-            If your item is displayed in several areas then visualRect should
-            return the primary area that contains index and not the complete
-            area that index might encompasses, touch or cause drawing.
-
-            :return:
-                QRect
-        """
-        return QRect()
-
-    def scrollTo(self, index, hint=QAbstractItemView.EnsureVisible):
-        """
-            Scrolls the view if necessary to ensure that the item at index is
-            visible. The view will try to position the item according to the
-            given hint.
-
-            :param index:
-                QModelIndex
-            :param hint:
-                ScrollHint
-        """
-        pass
-
-    def indexAt(self, point):
-        """
-            Returns the model index of the item at the viewport coordinates
-            point.
-
-            :return:
-                QModelIndex
-            :param point:
-                QPoint
-        """
-        pass
-
-    def moveCursor(self, cursorAction, modifiers):
-        """
-            Returns a QModelIndex object pointing to the next object in the
-            view, based on the given cursorAction and keyboard modifiers
-            specified by modifiers.
-
-            :return:
-                QModelIndex
-            :param cursorAction:
-                CursorAction
-            :param modifiers:
-                Qt.KeyboardModifiers
-        """
-        pass
-
-    def horizontalOffset(self):
-        """
-            Returns the horizontal offset of the view.
-
-            :return:
-                int
-        """
-        return 0
-
-    def verticalOffset(self):
-        """
-            Returns the vertical offset of the view.
-
-            :return:
-                int
-        """
-        return 0
-
-    def isIndexHidden(self, index):
-        """
-            Returns true if the item referred to by the given index is hidden in
-            the view, otherwise returns false.
-
-            Hiding is a view specific feature. For example in TableView a column
-            can be marked as hidden or a row in the TreeView.
-
-            :return:
-                boolean
-            :param index:
-                QModelIndex
-        """
-        pass
-
-    def setSelection(self, rect, command):
-        """
-            Applies the selection flags to the items in or touched by the
-            rectangle, rect.
-
-            When implementing your own itemview setSelection should call
-            selectionModel()->select(selection, flags) where selection is either
-            an empty QModelIndex or a QItemSelection that contains all items
-            that are contained in rect.
-
-            :param rect:
-                QRect
-            :param command:
-                QItemSelectionModel.SelectionFlags
-        """
-        pass
-
-    def visualRegionForSelection(self, selection):
-        """
-            Returns the region from the viewport of the items in the given
-            selection.
-
-            :return:
-                QRegion
-            :param selection:
-                QItemSelection
-        """
-        pass
-
-    def rowsInserted(self, parent, start, end):
-        """
-            This slot is called when rows are inserted. The new rows are those
-            under the given parent from start to end inclusive. The base class
-            implementation calls fetchMore() on the model to check for more
-            data.
-
-            :param parent:
-                QModelIndex
-            :param start:
-                int
-            :param end:
-                int
-        """
-        pass
-
-    def rowAboutToBeRemoved(self, parent, start, end):
-        """
-            This slot is called when rows are about to be removed. The deleted
-            rows are those under the given parent from start to end inclusive.
-
-            :param parent:
-                QModelIndex
-            :param start:
-                int
-            :param end:
-                int
-        """
-        pass
-
-    def dataChanged(self, top_left_index, bottom_right_index):
-        """
-            This slot is called when items are changed in the model. The changed
-            items are those from topLeft to bottomRight inclusive. If just one
-            item is changed topLeft == bottomRight.
-
-            :param top_left_index:
-                QModelIndex
-            :param bottom_right_index:
-                QModelIndex
-        """
-        pass
-
-#    def traverseTroughtIndexes(self, index):
-#        """
-#            :return:
-#                QModelIndex
-#            :param index:
-#                QModelIndex
-#        """
-#        pass
-
-    def toggleRenderHints(self):
-        pass
-    
-    def reset(self):
-        """
-            Reset the internal state of the view.
-
-            Warning: This function will reset open editors, scroll bar
-            positions, selections, etc. Existing changes will not be committed.
-            If you would like to save your changes when resetting the view, you
-            can reimplement this function, commit your changes, and then call
-            the superclass' implementation.
-        """
-        self.emit("clearScene()")
-        pass
-
     def init(self):
         """
             Populate the scene
         """
-        next_commit_item = None
-        for commit in commits["master"]:
-            commit_item = self.add_commit_item(commit)
-
-            if next_commit_item is not None:
-                next_commit_item.set_previous(commit_item)
-            next_commit_item = commit_item
+        pass
 
     def layoutChanged(self):
         pass
