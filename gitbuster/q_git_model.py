@@ -51,22 +51,8 @@ class QGitModel(QAbstractTableModel):
             infos. Moreover, it counts the number of filters that should be
             applied.
         """
-        filters = self._filters
-        if filters:
-            filter_count = 0
+        self.git_model.populate()
 
-            for word in ("Hour", "Date", "Weekday"):
-                group = "after%s" % word, "before%s" % word
-                if any(item in filters for item in group):
-                    filter_count += 1
-
-            for item in ("nameEmail", "commit", "localOnly"):
-                if item in filters:
-                    filter_count += 1
-
-            self.git_model.populate(filter_count, self.filter_score)
-        else:
-            self.git_model.populate()
         self.reset()
 
     def parent(self, index):
