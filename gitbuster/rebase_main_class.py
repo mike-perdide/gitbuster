@@ -66,7 +66,6 @@ class RebaseMainClass:
         _ui = self.parent._ui
         for model in models.values():
             branch_view = BranchViewWidget(model)
-            branch_view.setModel(model)
             _ui.graphicsViewLayout.insertWidget(0, branch_view)
 
     def set_matching_commits_mode(self, bool):
