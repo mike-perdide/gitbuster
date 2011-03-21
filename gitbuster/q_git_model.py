@@ -9,8 +9,9 @@
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, \
                          QDateTime, SIGNAL
 from PyQt4.QtGui import QColor, QGraphicsScene
-from gfbi_core.git_model import GitModel, NAMES, TEXT_FIELDS, \
-                                TIME_FIELDS, NOT_EDITABLE_FIELDS, ACTOR_FIELDS
+from gfbi_core.git_model import GitModel
+from gfbi_core import NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, \
+                      ACTOR_FIELDS
 from datetime import datetime
 
 class QGitModel(QAbstractTableModel):
