@@ -259,33 +259,6 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         self.setCursor(Qt.OpenHandCursor)
 
     # Position methods
-    def move_at_the_column_end(self):
-        """
-            This method should use the CommitItem parameter to find out its
-            coordinates (and therefore be displayed at the end of the column.
-            This should trigger the same method on the next commit.
-            That way, if we need to insert a commit C between A and B like this:
-                HEAD - B - C - A (initial commit)
-            We just need to do:
-                - set B as the new column end
-                - set C as the below commit of B
-                - set A as the below commit of C
-                - call the move_at_the_column_end method on C
-        """
-        y_offset = self.branch_view.get_column_y_offset()
-        self.setPos(self.x(), y_offset)
-        self.branch_view.set_column_y_offset(y_offset + TOTAL_COMMIT_HEIGHT)
-
-        if self.previous_commit is not None:
-            self.previous_commit.move_at_the_column_end()
-
-    def set_as_the_new_column_end(self):
-        """
-            This method sets the class parameter "last item coordinates" with
-            this item's coordinates.
-        """
-        self.branch_view.set_column_y_offset(self.y())
-
     def refresh_position(self):
         """
             This method uses the CommitItem parameter to find out its
