@@ -261,16 +261,9 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
     # Position methods
     def refresh_position(self):
         """
-            This method uses the CommitItem parameter to find out its
-            coordinates (and therefore be displayed at the end of the column.
-            This should trigger the same method on the next commit.
-            That way, if we need to insert a commit C between A and B like this:
-                HEAD - B - C - A (initial commit)
-            We just need to do:
-                - set B as the new column end
-                - set C as the below commit of B
-                - set A as the below commit of C
-                - call the move_at_the_column_end method on C
+            This method uses the next CommitItem position to determine its
+            position. The method then triggers the refresh_position on the
+            previous CommitItem.
         """
         if self.next_commit is not None:
             # There is a commit above this one in the column (this is not HEAD)
