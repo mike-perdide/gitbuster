@@ -432,17 +432,18 @@ class FilterMainClass():
 
     def toggle_modifications(self):
         """
-            When the toggleModifications button is pressed, ask the model to
-            show or hide the modifications.
+            When the toggleModifications button is pressed, change the displayed
+            model.
         """
-        model = self.parent._ui.tableView.model()
-
-        model.toggle_modifications()
-
-        if model.show_modifications():
-            label = "&Hide modifications"
-        else:
+        current_model = self.parent._ui.tableView.model()
+        if current_model == self._model:
+            # if the displayed model is the editable model
+            orig_model = current_model.get_orig_q_git_model()
+            self.parent._ui.tableView.setModel(orig_model)
             label = "&Show modifications"
+        else:
+            self.parent._ui.tableView.setModel(self._model)
+            label = "&Hide modifications"
 
         self.parent._ui.toggleModificationsButton.setText(
             QApplication.translate("MainWindow", label,
