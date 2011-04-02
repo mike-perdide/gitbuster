@@ -16,14 +16,14 @@ from PyQt4.QtCore import QRectF, Qt, SIGNAL, QString, QPointF, QObject, \
 COMMIT_WIDTH = 150
 COMMIT_HEIGHT = 40
 
-ARROW_BASE_WIDTH = 6
+ARROW_BASE_WIDTH = 4
 ARROW_TIP_WIDTH = 10
 ARROW_HEIGHT = 30
 ARROW_BASE_X = (COMMIT_WIDTH - ARROW_BASE_WIDTH) / 2
 
 TOTAL_COMMIT_HEIGHT = COMMIT_HEIGHT + ARROW_HEIGHT
 
-FONT_SIZE = 18
+FONT_SIZE = 12
 
 GREEN = QColor(0, 150, 0)
 BLUE = QColor(0, 0, 150)
@@ -138,24 +138,33 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
             A different color.
     """
 
-    def __init__(self, name, branch_view):
+    def __init__(self, commit, next_commit_item=None):
         """
             In the init method we should:
                 - set the cursor as an open hand
+
+            We need next_commit (the CommitItem above this one in the column) in
+            order to get the column offset when refreshing the position.
+            We need previous_commit (the CommitItem under this one in the
+            column) in order to call refresh_position on it when refreshing
+            this CommitItem position.
         """
         super(CommitItem, self).__init__()
         self.orig_color = self.color = BLUE
 
-        self.name = name
+        self.commit = commit
+#        self.name = commit.hexsha[:7]
+        self.name = commit.message[:18]
         self.arrow = None
+
+        self.next_commit = next_commit_item
         self.previous_commit = None
-        self.branch_view = branch_view
 
         self.setAcceptHoverEvents(True)
         self.setFlags(QGraphicsItem.ItemIsMovable)
 
         self.setup_display()
-        self.move_at_the_column_end()
+        self.refresh_position()
 
     def setup_display(self):
         """
@@ -277,17 +286,47 @@ class CommitItem(QGraphicsObject, QGraphicsItem):
         """
         self.branch_view.set_column_y_offset(self.y())
 
+    def refresh_position(self):
+        """
+            This method uses the CommitItem parameter to find out its
+            coordinates (and therefore be displayed at the end of the column.
+            This should trigger the same method on the next commit.
+            That way, if we need to insert a commit C between A and B like this:
+                HEAD - B - C - A (initial commit)
+            We just need to do:
+                - set B as the new column end
+                - set C as the below commit of B
+                - set A as the below commit of C
+                - call the move_at_the_column_end method on C
+        """
+        if self.next_commit is not None:
+            # There is a commit above this one in the column (this is not HEAD)
+            y_offset = self.next_commit.y() + TOTAL_COMMIT_HEIGHT
+        else:
+            y_offset = TOTAL_COMMIT_HEIGHT # Could be 0, 10 or 20
+
+        self.setPos(self.x(), y_offset)
+
+        if self.previous_commit is not None:
+            self.previous_commit.refresh_position()
+
     # Organization methods
-    def set_previous(self, previous_commit):
+    def set_previous_commit_item(self, previous_commit_item):
         """
             Sets the previous commit that will be under this one in the column.
         """
-        self.previous_commit = previous_commit
+        self.previous_commit = previous_commit_item
         if self.arrow is None:
             self.arrow = Arrow(self)
 
-    def get_previous(self):
+    def get_previous_commit_item(self):
         return self.previous_commit
+
+    def set_next_commit_item(self, next_commit_item):
+        self.next_commit = next_commit_item
+
+    def get_next_commit_item(self):
+        return self.next_commit
 
 class HeadCommitItem(CommitItem):
     """

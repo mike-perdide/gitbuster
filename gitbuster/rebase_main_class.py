@@ -11,7 +11,6 @@ from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter
 from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF
 from gitbuster.graphics_items import CommitItem, Arrow
 
-COLUMN_X_OFFSET = 50
 
 class BranchViewWidget(QWidget):
 
@@ -23,7 +22,7 @@ class BranchViewWidget(QWidget):
         self.column_y_offset = 0
 
         self.view = self._ui.graphicsView
-        self.scene = QGraphicsScene()
+        self.scene = model.get_scene()
 #        self.scene.setModel(model)
         self.view.setScene(self.scene)
         self.view.centerOn(QPointF(0, 0))
@@ -31,8 +30,8 @@ class BranchViewWidget(QWidget):
         self.view.setRenderHint(QPainter.Antialiasing)
         self.view.setAcceptDrops(True)
 
-#        self._ui.label.setText(QString(branch))
-        self._ui.label.setText("map")
+        branch = str(model.get_current_branch())
+        self._ui.label.setText(QString(branch))
         self.populate()
 
     def init(self):
