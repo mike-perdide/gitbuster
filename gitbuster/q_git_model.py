@@ -365,6 +365,10 @@ class QGitModel(QAbstractTableModel):
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.NoItemFlags)
 
+    def get_scene(self):
+        "Returns the scene associated with the model."
+        return self._scene
+
     # Beyond this point, abandon all hope of seeing anything more than "proxying
     # methods" (for instance, progress() calls git_model.progress())
     def get_git_model(self):
