@@ -16,36 +16,29 @@ from datetime import datetime
 
 class QGitModel(QAbstractTableModel):
 
-    def __init__(self, directory="."):
+    def __init__(self, directory=".", model=None):
         """
             Initializes the git model with the repository root directory.
 
+            Here, we allow the QGitEditableModel to set the GitModel used.
+            We do that in order to reduce the number of GitModel instanciated.
+
             :param directory:
                 Root directory of the git repository.
+
+            :param model:
+                As given by QGitEditableModel.get_model().get_orig_model().
+
         """
         QAbstractTableModel.__init__(self, None)
-        self.git_model = GitModel(directory=directory)
+        if not model:
+            self.git_model = GitModel(directory=directory)
+            self.populate()
+        else:
+            self.git_model = model
         self._filters = {}
-        self.populate()
         self._enabled_options = []
         self._scene = QGraphicsScene()
-
-    def get_to_rewrite_count(self):
-        """
-            Returns the number of commits to will be rewritten. That means the
-            number of commit between HEAD and the oldest modified commit.
-        """
-        oldest_commit_parent = str(self.git_model.oldest_modified_commit_parent())
-
-        if oldest_commit_parent is False:
-            return 0
-
-        if oldest_commit_parent is None:
-            return len(self.git_model.get_commits())
-
-        for count, commit in enumerate(self.git_model.get_commits()):
-            if commit.hexsha == oldest_commit_parent:
-                return count + 1
 
     def populate(self):
         """
@@ -53,9 +46,22 @@ class QGitModel(QAbstractTableModel):
             infos. Moreover, it counts the number of filters that should be
             applied.
         """
+        # XXX Should also populate scene.
         self.git_model.populate()
 
         self.reset()
+
+    def populate_scene(self):
+        """
+            Populate the 
+        """
+        next_commit_item = None
+        for commit in self.git_model.get_commits():
+            commit_item = self.add_commit_item(commit)
+
+            if next_commit_item is not None:
+                next_commit_item.set_previous(commit_item)
+            next_commit_item = commit_item
 
     def parent(self, index):
         #returns the parent of the model item with the given index.
@@ -144,7 +150,6 @@ class QGitModel(QAbstractTableModel):
             return QVariant(_datetime.strftime(date_format))
         elif field_name == "message":
             return QVariant(value)
-
 
     def filter_set(self, model_filter, value):
         """
@@ -353,75 +358,22 @@ class QGitModel(QAbstractTableModel):
 
         return QVariant(int(section + 1))
 
-    def setData(self, index, value, role=Qt.EditRole):
-        """
-            Sets the data when the model is modified (qt model method).
-        """
-        if index.isValid() and 0 <= index.row() < self.rowCount():
-            self.git_model.set_data(index, value)
-
-            self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"),
-                      index, index)
-            return True
-        return False
-
-    def insertRows(self, position, rows=1, index=QModelIndex()):
-        print "Inserting rows"
-
-    def removeRows(self, position, rows=1, index=QModelIndex()):
-        print "Removing rows"
-        return True
-
     def flags(self, index):
         """
             Returns the flags for the given index.
         """
+        # XXX varies if editable
         if not index.isValid():
             return Qt.ItemIsEnabled
 
-        column = index.column()
-        field_name = self.git_model.get_columns()[column]
-
-        if field_name in NOT_EDITABLE_FIELDS:
-            return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                                Qt.NoItemFlags)
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                            Qt.ItemIsEditable)
+                            Qt.NoItemFlags)
 
     # Beyond this point, abandon all hope of seeing anything more than "proxying
     # methods" (for instance, progress() calls git_model.progress())
-    def toggle_modifications(self):
-        "See GitModel for more help."
-        self.git_model.toggle_modifications()
-        self.reset()
-
-    def show_modifications(self):
-        "See GitModel for more help."
-        return self.git_model.show_modifications()
-
-    def progress(self):
-        "See GitModel for more help."
-        return self.git_model.progress()
-
-    def setMerge(self, merge_state):
-        "See GitModel for more help."
-        self.git_model.set_merge(merge_state)
-
-    def write(self, log, script):
-        "See GitModel for more help."
-        self.git_model.write(log, script)
-
-    def is_finished_writing(self):
-        "See GitModel for more help."
-        return self.git_model.is_finished_writing()
-
     def get_git_model(self):
         "See GitModel for more help."
         return self.git_model
-
-    def get_modified_count(self):
-        "See GitModel for more help."
-        return len(self.git_model.get_modifications())
 
     def rowCount(self, parent=QModelIndex()):
         "See GitModel for more help."
