@@ -101,6 +101,18 @@ class QEditableGitModel(QGitModel):
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.ItemIsEditable)
 
+    def get_git_model(self):
+        "Returns the editable git_model."
+        return self.git_model
+
+    def get_orig_git_model(self):
+        "Returns the original git_model."
+        return self.git_model.get_orig_model()
+
+    def get_orig_q_git_model(self):
+        "Returns the original q_git_model."
+        return self.orig_q_git_model
+
     # Beyond this point, abandon all hope of seeing anything more than "proxying
     # methods" (for instance, progress() calls git_model.progress())
     def progress(self):
@@ -118,18 +130,6 @@ class QEditableGitModel(QGitModel):
     def is_finished_writing(self):
         "See GitModel for more help."
         return self.git_model.is_finished_writing()
-
-    def get_git_model(self):
-        "Returns the editable git_model."
-        return self.git_model
-
-    def get_orig_git_model(self):
-        "Returns the original git_model."
-        return self.git_model.get_orig_model()
-
-    def get_orig_q_git_model(self):
-        "Returns the original q_git_model."
-        return self.orig_q_git_model
 
     def get_modified_count(self):
         "See GitModel for more help."
