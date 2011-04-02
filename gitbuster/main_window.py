@@ -10,6 +10,7 @@ from PyQt4.QtGui import QMainWindow, QFileDialog
 from PyQt4.QtCore import QDir, QSettings, QVariant, SIGNAL
 from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.q_git_model import QGitModel
+from gitbuster.q_editable_git_model import QEditableGitModel
 
 from os.path import join, exists
 
@@ -63,7 +64,7 @@ class MainWindow(QMainWindow):
         models = {}
         a_model = QGitModel(directory)
         for branch in a_model.get_branches():
-            model = QGitModel(directory)
+            model = QEditableGitModel(directory)
             model.set_current_branch(branch)
             model.setMerge(True)
             model.enable_option("filters")
