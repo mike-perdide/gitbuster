@@ -75,6 +75,16 @@ class QEditableGitModel(QGitModel):
         print "Removing rows"
         return True
 
+    def _data_background(self, index, field_name):
+        commits = self.git_model.get_commits()
+        commit = commits[index.row()]
+
+        modifications = self.git_model.get_modifications()
+        if commit in modifications and field_name in modifications[commit]:
+            return QVariant(QColor(Qt.yellow))
+        else:
+            return QGitModel._data_background(self, index, field_name)
+
     def flags(self, index):
         """
             Returns the flags for the given index.

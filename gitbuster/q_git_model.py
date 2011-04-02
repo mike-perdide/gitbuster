@@ -124,10 +124,6 @@ class QGitModel(QAbstractTableModel):
         commits = self.git_model.get_commits()
         commit = commits[index.row()]
 
-        if self.show_modifications():
-            modifications = self.git_model.get_modifications()
-            if commit in modifications and field_name in modifications[commit]:
-                return QVariant(QColor(Qt.yellow))
         if self.git_model.is_commit_pushed(commit):
             return QVariant(QColor(Qt.lightGray))
 
