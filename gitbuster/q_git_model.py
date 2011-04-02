@@ -13,6 +13,9 @@ from gfbi_core.git_model import GitModel
 from gfbi_core import NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, \
                       ACTOR_FIELDS
 from datetime import datetime
+from gitbuster.graphics_items import CommitItem
+
+COLUMN_X_OFFSET = 50
 
 class QGitModel(QAbstractTableModel):
 
@@ -46,22 +49,33 @@ class QGitModel(QAbstractTableModel):
             infos. Moreover, it counts the number of filters that should be
             applied.
         """
-        # XXX Should also populate scene.
         self.git_model.populate()
+        self.populate_scene()
 
         self.reset()
 
     def populate_scene(self):
         """
-            Populate the 
+            Populate the scene associated with the model.
         """
+        self._scene = QGraphicsScene()
         next_commit_item = None
         for commit in self.git_model.get_commits():
-            commit_item = self.add_commit_item(commit)
+            commit_item = self.add_commit_item(commit, next_commit_item)
 
             if next_commit_item is not None:
-                next_commit_item.set_previous(commit_item)
+                next_commit_item.set_previous_commit_item(commit_item)
             next_commit_item = commit_item
+
+    def add_commit_item(self, commit, next_commit_item):
+        """
+            Adds a commit item to the scene.
+        """
+        commit_item = CommitItem(commit, next_commit_item=next_commit_item)
+        self._scene.addItem(commit_item)
+        commit_item.moveBy(COLUMN_X_OFFSET, 0)
+
+        return commit_item
 
     def parent(self, index):
         #returns the parent of the model item with the given index.
@@ -401,50 +415,3 @@ class QGitModel(QAbstractTableModel):
                                        weekdays)
         self.reset()
 
-    def populate_scene(self):
-        """
-            Populate the 
-        """
-        next_commit_item = None
-        for commit in self.git_model.get_commits():
-            commit_item = self.add_commit_item(commit)
-
-            if next_commit_item is not None:
-                next_commit_item.set_previous(commit_item)
-            next_commit_item = commit_item
-
-    def add_commit_item(self, commit):
-        """
-            Adds a commit item to the scene and connects the correct signals.
-        """
-        commit_item = CommitItem(commit, self)
-        self.scene.addItem(commit_item)
-        commit_item.moveBy(COLUMN_X_OFFSET, 0)
-
-        self.connect(commit_item,
-                     SIGNAL("commitItemInserted(QString*)"),
-                     self.item_inserted)
-
-        return commit_item
-
-    def item_inserted(self, inserted_commit_hash):
-        """
-            USE "Row inserted"
-           If we need to insert a commit C between A and B like this:
-                HEAD - B - C - A (initial commit)
-            We just need to do:
-                - set B as the new column end
-                - set C as the below commit of B
-                - set A as the below commit of C
-                - call the move_at_the_column_end method on C
-
-            See also CommitItem.move_at_the_column_end.
-        """
-        new_commit_item = self.add_commit_item(inserted_commit_hash)
-        original_previous = self.sender().get_previous()
-
-        new_commit_item.set_previous(original_previous)
-        self.sender().set_previous(new_commit_item)
-
-        self.sender().set_as_the_new_column_end()
-        self.sender().move_at_the_column_end()
