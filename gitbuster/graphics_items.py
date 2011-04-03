@@ -32,7 +32,7 @@ GRAY = QColor(150, 150, 150)
 WHITE = QColor(255, 255, 255)
 
 
-class Arrow(QGraphicsObject, QGraphicsItem):
+class Arrow(QGraphicsObject):
     """
         This item need to be derived from QGraphicsObject so that we can connect
         slots on it.
@@ -124,7 +124,7 @@ class Arrow(QGraphicsObject, QGraphicsItem):
             SIGNAL("commitItemInserted(QString*)"),
             QString(event.mimeData().text()))
 
-class CommitItem(QGraphicsObject, QGraphicsItem):
+class CommitItem(QGraphicsObject):
     """
         This class should contain:
             - last coordonates of the column.
