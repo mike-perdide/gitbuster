@@ -238,7 +238,7 @@ class FilterMainClass():
             if checkbox_name in PRE_CHOICE:
                 checkbox.setCheckState(Qt.Checked)
             self.parent.connect(checkbox, SIGNAL("stateChanged(int)"),
-                         self.refresh_checkboxes)
+                                self.refresh_checkboxes)
             iter += 1
 
         for checkbox_name in AVAILABLE_OPTIONS:
