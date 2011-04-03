@@ -36,7 +36,6 @@ class QGitModel(QAbstractTableModel):
         QAbstractTableModel.__init__(self, None)
         if not model:
             self.git_model = GitModel(directory=directory)
-            self.populate()
         else:
             self.git_model = model
         self._filters = {}
