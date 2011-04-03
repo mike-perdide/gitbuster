@@ -35,7 +35,6 @@ class QEditableGitModel(QGitModel):
 
         self.orig_q_git_model = QGitModel(self,
                                           model=self.git_model.get_orig_model())
-        self.populate()
         self._enabled_options = []
         self._scene = QGraphicsScene()
 
