@@ -63,6 +63,7 @@ class MainWindow(QMainWindow):
 
         models = {}
         a_model = QGitModel(directory)
+        self.current_branch = a_model.get_current_branch()
         for branch in a_model.get_branches():
             model = QEditableGitModel(directory)
             model.set_current_branch(branch)
