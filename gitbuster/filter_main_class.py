@@ -124,8 +124,7 @@ class FilterMainClass():
             :param directory:
                 The git directory.
         """
-        a_model = QGitModel(directory)
-        current_branch = a_model.get_current_branch()
+        current_branch = self.parent.current_branch
 
         self._model = self._models[current_branch]
         self.parent._ui.tableView.setModel(self._model)
