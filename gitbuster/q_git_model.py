@@ -74,7 +74,7 @@ class QGitModel(QAbstractTableModel):
         """
             Adds a commit item to the scene.
         """
-        commit_item = CommitItem(commit, next_commit_item=next_commit_item)
+        commit_item = CommitItem(commit, model=self, next_commit_item=next_commit_item)
         self._scene.addItem(commit_item)
         self._commit_items.append(commit_item)
 
