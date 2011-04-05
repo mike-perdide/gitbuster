@@ -850,6 +850,11 @@
           <property name="title">
            <string>Displayed Branches</string>
           </property>
+          <layout class="QGridLayout" name="gridLayout_15">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="branchCheckboxLayout"/>
+           </item>
+          </layout>
          </widget>
         </item>
         <item row="2" column="1" colspan="2">
