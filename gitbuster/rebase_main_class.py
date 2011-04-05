@@ -88,13 +88,13 @@ class RebaseMainClass(QObject):
             for commit_item in model.get_commit_items():
                 QObject.connect(commit_item, signal, self.pressed_commit_item)
 
-    def set_matching_commits_mode(self, bool):
-        self.matching_commits = bool
-        if bool:
-            self.hints.setup_display(step=1)
-            self.hints.update()
-        else:
-            self.commit_item_finished_hovering()
+#    def set_matching_commits_mode(self, bool):
+#        self.matching_commits = bool
+#        if bool:
+#            self.hints.setup_display(step=1)
+#            self.hints.update()
+#        else:
+#            self.commit_item_finished_hovering()
 
     def pressed_commit_item(self, commit_item):
         """
@@ -156,9 +156,3 @@ class RebaseMainClass(QObject):
 #            if event.key() == Qt.Key_Alt:
 #                self.emit(SIGNAL("setMatchingMode(bool)"), False)
 #        return False
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    widget = GraphicsWidget()
-    widget.show()
-    sys.exit(app.exec_())
