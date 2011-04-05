@@ -138,7 +138,7 @@ class CommitItem(QGraphicsObject):
             A different color.
     """
 
-    def __init__(self, commit, next_commit_item=None):
+    def __init__(self, commit, model=None, next_commit_item=None):
         """
             In the init method we should:
                 - set the cursor as an open hand
@@ -153,6 +153,7 @@ class CommitItem(QGraphicsObject):
         self.orig_color = self.color = BLUE
 
         self.commit = commit
+        self._model = model
 #        self.name = commit.hexsha[:7]
         self.name = commit.message[:18]
         self.arrow = None
@@ -165,6 +166,12 @@ class CommitItem(QGraphicsObject):
 
         self.setup_display()
         self.refresh_position()
+
+    def get_commit(self):
+        return self.commit
+
+    def get_model(self):
+        return self._model
 
     def setup_display(self):
         """
