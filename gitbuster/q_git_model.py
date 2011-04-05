@@ -42,6 +42,9 @@ class QGitModel(QAbstractTableModel):
         self._enabled_options = []
         self._scene = QGraphicsScene()
 
+        # Needed in order to connect the signals (using get_commit_items)
+        self._commit_items = []
+
     def populate(self):
         """
             Populates the git model, see git_model.GitModel.populate for more
@@ -53,6 +56,7 @@ class QGitModel(QAbstractTableModel):
 
         self.reset()
 
+    ## Scene stuff
     def populate_scene(self):
         """
             Populate the scene associated with the model.
@@ -72,9 +76,21 @@ class QGitModel(QAbstractTableModel):
         """
         commit_item = CommitItem(commit, next_commit_item=next_commit_item)
         self._scene.addItem(commit_item)
+        self._commit_items.append(commit_item)
+
         commit_item.moveBy(COLUMN_X_OFFSET, 0)
 
         return commit_item
+
+    def get_commit_items(self):
+        """
+            Returns the list containing all the CommitItems.
+            This is useful when we need to connect slots on signals like
+            "pushed()" or "clicked()".
+        """
+        return self._commit_items
+    ##
+
 
     def parent(self, index):
         #returns the parent of the model item with the given index.
