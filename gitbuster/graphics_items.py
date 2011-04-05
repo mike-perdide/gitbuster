@@ -225,6 +225,7 @@ class CommitItem(QGraphicsObject):
                 from the main class.
                 - set the cursor as a closed hand.
         """
+        self.emit(SIGNAL("pressed"), self)
         self.setCursor(Qt.ClosedHandCursor)
 
     def mouseMoveEvent(self, event):

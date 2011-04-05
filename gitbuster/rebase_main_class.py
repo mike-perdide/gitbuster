@@ -7,8 +7,10 @@
 # -*- coding: utf-8 -*-
 
 from gitbuster.branch_view_ui import Ui_BranchView
-from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter
-from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF
+from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter, \
+                        QCheckBox, QApplication
+from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject
+
 from gitbuster.graphics_items import CommitItem, Arrow
 
 
@@ -56,16 +58,35 @@ class BranchViewWidget(QWidget):
         self.column_y_offset = offset
 
 
-class RebaseMainClass:
+class RebaseMainClass(QObject):
 
     def __init__(self, parent, directory, models):
+        QObject.__init__(self, parent)
+
         self.parent = parent
         self._models = models
 
         _ui = self.parent._ui
-        for model in models.values():
+        iter = 0
+
+        for branch, model in models.items():
+            checkbox = QCheckBox(self.parent._ui.centralwidget)
+            checkbox.setText(QApplication.translate("MainWindow",
+                                                str(model.get_current_branch()),
+                                                None, QApplication.UnicodeUTF8))
+            self.parent._ui.branchCheckboxLayout.addWidget(checkbox, iter/2,
+                                                           iter%2, 1, 1)
+            if branch == self.parent.current_branch:
+                checkbox.setCheckState(Qt.Checked)
+
+            iter += 1
+
             branch_view = BranchViewWidget(model)
             _ui.graphicsViewLayout.insertWidget(0, branch_view)
+
+            signal = SIGNAL("pressed")
+            for commit_item in model.get_commit_items():
+                QObject.connect(commit_item, signal, self.pressed_commit_item)
 
     def set_matching_commits_mode(self, bool):
         self.matching_commits = bool
@@ -74,6 +95,37 @@ class RebaseMainClass:
             self.hints.update()
         else:
             self.commit_item_finished_hovering()
+
+    def pressed_commit_item(self, commit_item):
+        """
+            Triggers the display of the detail of commit_item.commit.
+
+            This method is called when the users presses a commitItem (similar
+            to the QPushButton "pushed()" signal).
+        """
+        commit = commit_item.get_commit()
+        model = commit_item.get_model()
+        row = model.row_of(commit)
+
+        ui = self.parent._ui
+        display_widgets_methods = (
+            ('hexsha', ui.hexshaHolderLabel.setText),
+            ('authored_date', ui.authoredDateHolderLabel.setText),
+            ('committed_date', ui.commitDateHolderLabel.setText),
+            ('author', ui.authorHolderLabel.setText),
+            ('committer', ui.commiterHolderLabel.setText),
+            ('message', ui.messageHolderTextEdit.append)
+        )
+
+        model_columns = model.get_columns()
+        print model_columns
+        for col_name, display_method in display_widgets_methods:
+            col = model_columns.index(col_name)
+
+            index = model.index(row, col)
+            data = model.data(index, Qt.DisplayRole)
+
+            display_method(data.toString())
 
 #    def insert_commit(self, name, branch):
 #        self.clear_scene()
