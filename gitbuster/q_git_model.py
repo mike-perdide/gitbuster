@@ -430,3 +430,10 @@ class QGitModel(QAbstractTableModel):
                                        weekdays)
         self.reset()
 
+    def row_of(self, commit):
+        "See GitModel for more help."
+        return self.git_model.row_of(commit)
+
+    def get_columns(self):
+        "See GitModel for more help."
+        return self.git_model.get_columns()
