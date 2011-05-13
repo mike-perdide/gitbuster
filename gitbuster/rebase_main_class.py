@@ -83,7 +83,7 @@ class RebaseMainClass(QWidget):
 
             branch_view = QTableView(self)
             branch_view.setModel(model)
-            for col in xrange(1, 5):
+            for col in xrange(1, 7):
                 branch_view.hideColumn(col)
             branch_view.resizeColumnsToContents()
             branch_view.horizontalHeader().setStretchLastSection(True)

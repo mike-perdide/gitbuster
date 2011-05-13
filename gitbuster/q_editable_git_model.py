@@ -81,23 +81,8 @@ class QEditableGitModel(QGitModel):
                 new_value = value[0]
                 # we're not supporting edition of the timezone yet
 
-            elif field_name in ACTOR_FIELDS:
-                value = value.toString()
-
-                if self.is_enabled("display_email"):
-                    try:
-                        name = value.split(' <')[0]
-                        email = value.split(' <')[1].split('>')[0]
-                    except:
-                        name, email = self.git_model.data(index)
-                else:
-                    orig_name, email = self.git_model.data(index)
-                    name = value
-
-                new_value = (name, email)
-
             else:
-                new_value = value.toString()
+                new_value = unicode(value.toString())
 
             self.git_model.set_data(index, new_value)
             self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"),
