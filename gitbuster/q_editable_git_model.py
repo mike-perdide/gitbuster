@@ -101,15 +101,19 @@ class QEditableGitModel(QGitModel):
             Returns the flags for the given index.
         """
         if not index.isValid():
-            return Qt.ItemIsEnabled
+            return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
+                                Qt.ItemIsDropEnabled|
+                                Qt.NoItemFlags)
 
         column = index.column()
         field_name = self.git_model.get_columns()[column]
 
         if field_name in NOT_EDITABLE_FIELDS:
             return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
+                                Qt.ItemIsDragEnabled|
                                 Qt.NoItemFlags)
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
+                            Qt.ItemIsDragEnabled|
                             Qt.ItemIsEditable)
 
     def get_git_model(self):
