@@ -7,7 +7,8 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, \
-                         QDateTime, SIGNAL
+                         QDateTime, SIGNAL, QMimeData, QByteArray, \
+                         QDataStream, QIODevice, QStringList, QString
 from PyQt4.QtGui import QColor, QGraphicsScene
 from gfbi_core.git_model import GitModel
 from gfbi_core.editable_git_model import EditableGitModel
@@ -178,3 +179,55 @@ class QEditableGitModel(QGitModel):
         self.git_model.reorder_commits(dates, time,
                                        weekdays)
         self.reset()
+
+    def mimeTypes(self):
+        types = QStringList()
+        types.append("application/vnd.text.list")
+        return types
+
+    def mimeData(self, indexes):
+        mime_data = QMimeData()
+        encoded_data = QByteArray()
+
+        stream = QDataStream(encoded_data, QIODevice.WriteOnly)
+
+        for index in indexes:
+            if index.isValid() and index.column() == 0:
+                text = QString(str(self.get_current_branch()) + " ")
+                text += QString(str(index.row()) + " ")
+                text += self.data(index, Qt.DisplayRole).toString()
+                stream.writeQString(text)
+
+        mime_data.setData("application/vnd.text.list", encoded_data)
+        return mime_data
+
+    def dropMimeData(self, mime_data, action, row, column, parent):
+        if action == Qt.IgnoreAction:
+            return True
+
+        if not mime_data.hasFormat("application/vnd.text.list"):
+            return False
+
+        if row == self.rowCount():
+            # It's forbidden to insert before the first commit (last row of the
+            # model).
+            return False
+
+        if row != -1:
+            begin_row = row
+        else:
+            return False
+
+        encoded_data = mime_data.data("application/vnd.text.list")
+        stream = QDataStream(encoded_data, QIODevice.ReadOnly)
+        new_items = QStringList()
+        rows = 0
+
+        while not stream.atEnd():
+            text = stream.readQString()
+            new_items.append(text)
+            rows += 1
+
+        self.insertRows(begin_row, rows, QModelIndex())
+
+        return True
