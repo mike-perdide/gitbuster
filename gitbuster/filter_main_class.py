@@ -262,8 +262,9 @@ class FilterMainClass():
 
     def refresh_checkboxes(self):
         """
-            When a "column checkbox" is checked or unchecked, we repopulate the
-            model so that only the selected columns are displayed.
+            When a "column checkbox" is checked or unchecked, we change the
+            view's displayed columns model so that only the selected columns are
+            displayed.
         """
         self._shown_columns = []
         for checkbox_name in AVAILABLE_CHOICES:
