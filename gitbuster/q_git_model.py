@@ -131,12 +131,6 @@ class QGitModel(QAbstractTableModel):
             return QVariant(_datetime.strftime(date_format))
         elif field_name == "message":
             return QVariant(value.split("\n")[0])
-        elif field_name in ACTOR_FIELDS:
-            name, email = value
-            if "display_email" in self._enabled_options:
-                return QVariant("%s <%s>" % (name, email))
-            else:
-                return QVariant("%s" % name)
         elif field_name == "hexsha":
             return QVariant(str(value)[:7])
         return QVariant(str(value))
@@ -346,8 +340,8 @@ class QGitModel(QAbstractTableModel):
         elif field_name in ACTOR_FIELDS:
             if "nameEmail" in filters:
                 match = str(filters["nameEmail"])
-                name, email = self.git_model.data(index)
-                if match and (match in name or match in email):
+                value = self.git_model.data(index)
+                if match and (match in value):
                     return 1
 
         elif field_name in TEXT_FIELDS:

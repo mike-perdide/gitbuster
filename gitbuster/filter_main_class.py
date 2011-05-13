@@ -21,11 +21,11 @@ from datetime import datetime
 
 AVAILABLE_CHOICES = ['hexsha',
                      'authored_date', 'committed_date',
-                     'author', 'committer',
+                     'author', 'author_email',
+                     'committer', 'committer_email',
                      'message']
 PRE_CHOICE = ['hexsha', 'authored_date', 'author', 'message']
-AVAILABLE_OPTIONS = {'display_email'    : 'Email',
-                     'display_weekday'  : 'Weekday'}
+AVAILABLE_OPTIONS = {'display_weekday'  : 'Weekday'}
 
 
 def _connect_button(button, function):
