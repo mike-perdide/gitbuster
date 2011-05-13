@@ -8,7 +8,7 @@
 
 from gitbuster.branch_view_ui import Ui_BranchView
 from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter, \
-                        QCheckBox, QApplication
+                        QCheckBox, QApplication, QTableView
 from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject
 
 from gitbuster.graphics_items import CommitItem, Arrow
@@ -58,7 +58,7 @@ class BranchViewWidget(QWidget):
         self.column_y_offset = offset
 
 
-class RebaseMainClass(QObject):
+class RebaseMainClass(QWidget):
 
     def __init__(self, parent, directory, models):
         QObject.__init__(self, parent)
@@ -81,7 +81,18 @@ class RebaseMainClass(QObject):
 
             iter += 1
 
-            branch_view = BranchViewWidget(model)
+            branch_view = QTableView(self)
+            branch_view.setModel(model)
+            for col in xrange(1, 5):
+                branch_view.hideColumn(col)
+            branch_view.resizeColumnsToContents()
+            branch_view.horizontalHeader().setStretchLastSection(True)
+            branch_view.setSelectionMode(branch_view.ExtendedSelection)
+            branch_view.setDragDropMode(branch_view.DragDrop)
+            branch_view.setSelectionBehavior(branch_view.SelectRows)
+            branch_view.setEditTriggers(branch_view.NoEditTriggers)
+
+            # Insert the view in the window's layout
             _ui.graphicsViewLayout.insertWidget(0, branch_view)
 
             signal = SIGNAL("pressed")
