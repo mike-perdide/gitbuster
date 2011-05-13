@@ -6,7 +6,7 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import Qt, SIGNAL, QDateTime
+from PyQt4.QtCore import Qt, SIGNAL, QDateTime, QVariant
 from PyQt4.QtGui import QTextEdit, QLineEdit, QDateTimeEdit, QItemDelegate
 from gfbi_core import TEXT_FIELDS, TIME_FIELDS, ACTOR_FIELDS
 
@@ -63,26 +63,14 @@ class QGitDelegate(QItemDelegate):
         field_name = columns[index.column()]
 
         if field_name in TEXT_FIELDS:
-            model.setData(index, unicode(str(editor.toPlainText())))
+            data = QVariant(editor.toPlainText())
         elif field_name in TIME_FIELDS:
-            model.setData(index, editor.dateTime().toTime_t())
+            data = (editor.dateTime().toTime_t(),
+                    model.data(index, Qt.EditRole)[1])
         elif field_name in ACTOR_FIELDS:
-            value = unicode(str(editor.text()))
+            data = QVariant(editor.text())
 
-            if model.is_enabled("display_email"):
-                try:
-                    name = value.split(' <')[0]
-                    email = value.split(' <')[1].split('>')[0]
-                except:
-                    name = ""
-                    email = ""
-                finally:
-                    if name != "" and email != "":
-                        model.setData(index, (name, email))
-            else:
-                orig_name, orig_email = model.get_git_model().data(index)
-                name = value
-                model.setData(index, (name, orig_email))
+        model.setData(index, data)
 
         if self._selected_indexes:
             edited_column = index.column()

@@ -73,8 +73,33 @@ class QEditableGitModel(QGitModel):
             Sets the data when the model is modified (qt model method).
         """
         if index.isValid() and 0 <= index.row() < self.rowCount():
-            self.git_model.set_data(index, value)
+            column = index.column()
+            field_name = self.git_model.get_columns()[column]
 
+            if field_name in TIME_FIELDS:
+                # set only the first element of the tuple, seconds to epoch
+                new_value = value[0]
+                # we're not supporting edition of the timezone yet
+
+            elif field_name in ACTOR_FIELDS:
+                value = value.toString()
+
+                if self.is_enabled("display_email"):
+                    try:
+                        name = value.split(' <')[0]
+                        email = value.split(' <')[1].split('>')[0]
+                    except:
+                        name, email = self.git_model.data(index)
+                else:
+                    orig_name, email = self.git_model.data(index)
+                    name = value
+
+                new_value = (name, email)
+
+            else:
+                new_value = value.toString()
+
+            self.git_model.set_data(index, new_value)
             self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"),
                       index, index)
             return True
