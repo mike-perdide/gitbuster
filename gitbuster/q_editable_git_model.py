@@ -19,7 +19,7 @@ from gitbuster.q_git_model import QGitModel
 
 class QEditableGitModel(QGitModel):
 
-    def __init__(self, directory="."):
+    def __init__(self, directory=".", models_dict=[]):
         """
             Initializes the git model with the repository root directory.
 
@@ -38,6 +38,8 @@ class QEditableGitModel(QGitModel):
                                           model=self.git_model.get_orig_model())
         self._enabled_options = []
         self._scene = QGraphicsScene()
+
+        self._all_models_dict = models_dict
 
     def add_commit_item(self, commit, next_commit_item):
         """
@@ -238,5 +240,23 @@ class QEditableGitModel(QGitModel):
             rows += 1
 
         self.insertRows(begin_row, rows, QModelIndex())
+        insert_row = begin_row
+
+        for item in new_items:
+            item_branch, item_row_s = str(item).split(' ')
+            item_row = int(item_row_s)
+
+            for (branch, model) in self._all_models_dict.items():
+                if branch.name == item_branch:
+                    item_model = model
+
+            for column, field in enumerate(self.get_columns()):
+                item_index = self.index(item_row, column, QModelIndex())
+                data = model.data(item_index, Qt.EditRole)
+
+                index = self.index(insert_row, column, QModelIndex())
+                self.setData(index, data)
+
+            insert_row += 1
 
         return True
