@@ -77,10 +77,7 @@ class QEditableGitModel(QGitModel):
             field_name = self.git_model.get_columns()[column]
 
             if field_name in TIME_FIELDS:
-                # set only the first element of the tuple, seconds to epoch
-                new_value = value[0]
-                # we're not supporting edition of the timezone yet
-
+                new_value = value
             else:
                 new_value = unicode(value.toString())
 
