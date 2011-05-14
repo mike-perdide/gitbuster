@@ -205,8 +205,7 @@ class QEditableGitModel(QGitModel):
         for index in indexes:
             if index.isValid() and index.column() == 0:
                 text = QString(str(self.get_current_branch()) + " ")
-                text += QString(str(index.row()) + " ")
-                text += self.data(index, Qt.DisplayRole).toString()
+                text += QString(str(index.row()))
                 stream.writeQString(text)
 
         mime_data.setData("application/vnd.text.list", encoded_data)
