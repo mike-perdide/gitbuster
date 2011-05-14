@@ -88,7 +88,9 @@ class QEditableGitModel(QGitModel):
         return False
 
     def insertRows(self, position, rows=1, index=QModelIndex()):
-        print "Inserting rows"
+        self.beginInsertRows(QModelIndex(), position, position + rows - 1)
+        self.git_model.insert_rows(position, rows)
+        self.endInsertRows()
 
     def removeRows(self, position, rows=1, index=QModelIndex()):
         print "Removing rows"
