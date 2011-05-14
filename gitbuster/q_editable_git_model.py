@@ -53,23 +53,6 @@ class QEditableGitModel(QGitModel):
 
         return commit_item
 
-    def get_to_rewrite_count(self):
-        """
-            Returns the number of commits to will be rewritten. That means the
-            number of commit between HEAD and the oldest modified commit.
-        """
-        oldest_commit_parent = str(self.git_model.oldest_modified_commit_parent())
-
-        if oldest_commit_parent is False:
-            return 0
-
-        if oldest_commit_parent is None:
-            return len(self.git_model.get_commits())
-
-        for count, commit in enumerate(self.git_model.get_commits()):
-            if commit.hexsha == oldest_commit_parent:
-                return count + 1
-
     def setData(self, index, value, role=Qt.EditRole):
         """
             Sets the data when the model is modified (qt model method).
@@ -190,6 +173,11 @@ class QEditableGitModel(QGitModel):
         self.git_model.reorder_commits(dates, time,
                                        weekdays)
         self.reset()
+
+    def get_to_rewrite_count(self):
+        "See GitModel for more help."
+        return self.git_model.get_to_rewrite_count()
+
 
     def mimeTypes(self):
         types = QStringList()
