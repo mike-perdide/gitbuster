@@ -21,10 +21,10 @@ from datetime import datetime
 
 AVAILABLE_CHOICES = ['hexsha',
                      'authored_date', 'committed_date',
-                     'author', 'author_email',
-                     'committer', 'committer_email',
+                     'author_name', 'author_email',
+                     'committer_name', 'committer_email',
                      'message']
-PRE_CHOICE = ['hexsha', 'authored_date', 'author', 'message']
+PRE_CHOICE = ['hexsha', 'authored_date', 'author_name', 'message']
 AVAILABLE_OPTIONS = {'display_weekday'  : 'Weekday'}
 
 
