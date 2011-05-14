@@ -11,11 +11,11 @@
 #Command to fetch project
 fetchcmd="git clone https://github.com/mike-perdide/gitbuster.git"
 #Command to build project. Escape variables.
-buildcmd="make -C gitbuster/gitbuster/"
+buildcmd="make -C gitbuster/"
 #Command to run project. Escape variables.
 runcmd="PYTHONPATH=\$mydir/gitbuster/ \$mydir/bin/python gitbuster/gitbuster/gitbuster"
 #Pypi deps for the project
-pypideps=gitpython
+pypideps=gfbi_core
 
 # # end of customization
 
