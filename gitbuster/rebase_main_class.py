@@ -8,7 +8,8 @@
 
 from gitbuster.branch_view_ui import Ui_BranchView
 from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter, \
-                        QCheckBox, QApplication, QTableView, QLabel
+                        QCheckBox, QApplication, QTableView, QLabel, \
+                        QKeySequence, QShortcut
 from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject
 
 from gitbuster.graphics_items import CommitItem, Arrow
@@ -112,6 +113,27 @@ class RebaseMainClass(QWidget):
             QObject.connect(checkbox,
                             SIGNAL("stateChanged(int)"),
                             self.checkboxClicked)
+
+            shortcut = QShortcut(QKeySequence(QKeySequence.Delete), branch_view)
+            QObject.connect(shortcut, SIGNAL("activated()"), self.removeRows)
+
+    def removeRows(self):
+        """
+            When <Del> is pressed, this method removes the selected rows of the
+            table view.
+
+            We delete the rows starting with the last one, in order to use the
+            correct indexes.
+        """
+        branch_view = self.sender().parentWidget()
+        selected_indexes = branch_view.selectedIndexes()
+        ordered_list = []
+        for index in selected_indexes:
+            if index.isValid() and index.row() not in ordered_list:
+                ordered_list.insert(0, index.row())
+
+        for row in ordered_list:
+            branch_view.model().removeRows(row)
 
     def checkboxClicked(self, value):
         checkbox = self.sender()
