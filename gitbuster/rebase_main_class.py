@@ -112,12 +112,12 @@ class RebaseMainClass(QWidget):
             self._checkboxes[checkbox] = (label, branch_view)
             QObject.connect(checkbox,
                             SIGNAL("stateChanged(int)"),
-                            self.checkboxClicked)
+                            self.checkbox_clicked)
 
         shortcut = QShortcut(QKeySequence(QKeySequence.Delete), self)
-        QObject.connect(shortcut, SIGNAL("activated()"), self.removeRows)
+        QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
 
-    def removeRows(self):
+    def remove_rows(self):
         """
             When <Del> is pressed, this method removes the selected rows of the
             table view.
@@ -136,7 +136,7 @@ class RebaseMainClass(QWidget):
                 for row in ordered_list:
                     branch_view.model().removeRows(row)
 
-    def checkboxClicked(self, value):
+    def checkbox_clicked(self, value):
         checkbox = self.sender()
         for widget in self._checkboxes[checkbox]:
             widget.setVisible(value)
