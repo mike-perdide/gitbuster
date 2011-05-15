@@ -885,14 +885,7 @@
     <addaction name="actionChange_repository"/>
     <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuOptions">
-    <property name="title">
-     <string>&amp;Options</string>
-    </property>
-    <addaction name="actionI_was_never_here"/>
-   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuOptions"/>
   </widget>
   <action name="actionChange_repository">
    <property name="text">
