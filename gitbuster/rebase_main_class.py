@@ -10,7 +10,7 @@ from gitbuster.branch_view_ui import Ui_BranchView
 from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter, \
                         QCheckBox, QApplication, QTableView, QLabel, \
                         QKeySequence, QShortcut
-from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject
+from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject, QModelIndex
 
 from gitbuster.graphics_items import CommitItem, Arrow
 
@@ -90,6 +90,9 @@ class RebaseMainClass(QWidget):
             branch_view.setSelectionBehavior(branch_view.SelectRows)
             branch_view.setEditTriggers(branch_view.NoEditTriggers)
 
+            QObject.connect(branch_view, SIGNAL("activated(const QModelIndex&)"),
+                            self.commit_clicked)
+
             label = QLabel(self)
             label.setText(branch.name)
 
@@ -147,6 +150,32 @@ class RebaseMainClass(QWidget):
         checkbox = self.sender()
         for widget in self._checkboxes[checkbox]:
             widget.setVisible(value)
+
+    def commit_clicked(self, index):
+        branch_view = self.focused_branch_view()
+        _ui = self.parent._ui
+        model = branch_view.model()
+        row = index.row()
+
+        labels = {
+            'hexsha' :          _ui.hexshaHolderLabel,
+            'authored_date' :   _ui.authoredDateHolderLabel,
+            'committed_date' :  _ui.commitDateHolderLabel,
+            'author_name' :     _ui.authorHolderLabel,
+            'committer_name' :  _ui.committerHolderLabel,
+            'message' :         _ui.messageHolderTextEdit
+        }
+
+        for field in labels:
+            column = model.get_columns().index(field)
+            index = model.index(row, column, QModelIndex())
+
+            if "date" in field:
+                data = model.data(index, Qt.DisplayRole)
+            else:
+                data = model.data(index, Qt.EditRole)
+
+            labels[field].setText(data.toString())
 
 #    def set_matching_commits_mode(self, bool):
 #        self.matching_commits = bool
