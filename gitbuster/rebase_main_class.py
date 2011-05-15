@@ -117,6 +117,14 @@ class RebaseMainClass(QWidget):
         shortcut = QShortcut(QKeySequence(QKeySequence.Delete), self)
         QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
 
+    def focused_branch_view(self):
+        """
+            Returns the branch_view that has the focus.
+        """
+        for label, branch_view in self._checkboxes.values():
+            if branch_view.hasFocus():
+                return branch_view
+
     def remove_rows(self):
         """
             When <Del> is pressed, this method removes the selected rows of the
@@ -125,16 +133,15 @@ class RebaseMainClass(QWidget):
             We delete the rows starting with the last one, in order to use the
             correct indexes.
         """
-        for label, branch_view in self._checkboxes.values():
-            if branch_view.hasFocus():
-                selected_indexes = branch_view.selectedIndexes()
-                ordered_list = []
-                for index in selected_indexes:
-                    if index.isValid() and index.row() not in ordered_list:
-                        ordered_list.insert(0, index.row())
+        branch_view = self.focused_branch_view()
+        selected_indexes = branch_view.selectedIndexes()
+        ordered_list = []
+        for index in selected_indexes:
+            if index.isValid() and index.row() not in ordered_list:
+                ordered_list.insert(0, index.row())
 
-                for row in ordered_list:
-                    branch_view.model().removeRows(row)
+        for row in ordered_list:
+            branch_view.model().removeRows(row)
 
     def checkbox_clicked(self, value):
         checkbox = self.sender()
