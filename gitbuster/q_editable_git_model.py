@@ -229,9 +229,12 @@ class QEditableGitModel(QGitModel):
             new_items.append(text)
             rows += 1
 
-        self.insertRows(begin_row, rows, QModelIndex())
+        # We're going to store the data to be inserted in a dictionnary before
+        # inserting the rows. This is to avoid problems when copying rows from
+        # a model to somewhere above in the same model. The insertion of rows
+        # causes a shift of all the rows, including the ones to be copied from.
+        data_to_be_inserted = {}
         insert_row = begin_row
-
         for item in new_items:
             item_branch, item_row_s = str(item).split(' ')
             item_row = int(item_row_s)
@@ -243,9 +246,17 @@ class QEditableGitModel(QGitModel):
             for column, field in enumerate(self.get_columns()):
                 item_index = self.index(item_row, column, QModelIndex())
                 data = item_model.data(item_index, Qt.EditRole)
+                data_to_be_inserted[(insert_row, column)] = data
 
+            insert_row += 1
+
+        self.insertRows(begin_row, rows, QModelIndex())
+        insert_row = begin_row
+
+        for item in new_items:
+            for column, field in enumerate(self.get_columns()):
                 index = self.index(insert_row, column, QModelIndex())
-                self.setData(index, data)
+                self.setData(index, data_to_be_inserted[(insert_row, column)])
 
             insert_row += 1
 
