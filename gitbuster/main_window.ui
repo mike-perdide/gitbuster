@@ -653,25 +653,8 @@
        <attribute name="title">
         <string>Rebase</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_12" columnstretch="0,0,0,0,0,4,0,0,0,0">
-        <item row="0" column="3" rowspan="2" colspan="7">
-         <layout class="QHBoxLayout" name="graphicsViewLayout">
-          <item>
-           <spacer name="horizontalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item row="2" column="3" colspan="6">
+       <layout class="QGridLayout" name="gridLayout_12" columnstretch="0,0,0,0,0,0">
+        <item row="2" column="3" colspan="2">
          <spacer name="horizontalSpacer_4">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -684,7 +667,7 @@
           </property>
          </spacer>
         </item>
-        <item row="2" column="9">
+        <item row="2" column="5">
          <widget class="QPushButton" name="rebaseApplyButton">
           <property name="text">
            <string>Apply</string>
@@ -876,6 +859,9 @@
            <string>Refresh</string>
           </property>
          </widget>
+        </item>
+        <item row="0" column="3" rowspan="2" colspan="3">
+         <layout class="QGridLayout" name="viewLayout"/>
         </item>
        </layout>
       </widget>
