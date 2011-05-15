@@ -8,7 +8,7 @@
 
 from gitbuster.branch_view_ui import Ui_BranchView
 from PyQt4.QtGui import QWidget, QGraphicsObject, QGraphicsScene, QPainter, \
-                        QCheckBox, QApplication, QTableView
+                        QCheckBox, QApplication, QTableView, QLabel
 from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject
 
 from gitbuster.graphics_items import CommitItem, Arrow
@@ -65,6 +65,7 @@ class RebaseMainClass(QWidget):
 
         self.parent = parent
         self._models = models
+        self._checkboxes = {}
 
         _ui = self.parent._ui
         iter = 0
@@ -72,14 +73,10 @@ class RebaseMainClass(QWidget):
         for branch, model in models.items():
             checkbox = QCheckBox(self.parent._ui.centralwidget)
             checkbox.setText(QApplication.translate("MainWindow",
-                                                str(model.get_current_branch()),
+                                                branch.name,
                                                 None, QApplication.UnicodeUTF8))
             self.parent._ui.branchCheckboxLayout.addWidget(checkbox, iter/2,
                                                            iter%2, 1, 1)
-            if branch == self.parent.current_branch:
-                checkbox.setCheckState(Qt.Checked)
-
-            iter += 1
 
             branch_view = QTableView(self)
             branch_view.setModel(model)
@@ -92,12 +89,34 @@ class RebaseMainClass(QWidget):
             branch_view.setSelectionBehavior(branch_view.SelectRows)
             branch_view.setEditTriggers(branch_view.NoEditTriggers)
 
+            label = QLabel(self)
+            label.setText(branch.name)
+
             # Insert the view in the window's layout
-            _ui.graphicsViewLayout.insertWidget(0, branch_view)
+            _ui.viewLayout.addWidget(label, 0, iter)
+            _ui.viewLayout.addWidget(branch_view, 1, iter)
+
+            iter += 1
+
+            if branch == self.parent.current_branch:
+                checkbox.setCheckState(Qt.Checked)
+            else:
+                branch_view.hide()
+                label.hide()
 
             signal = SIGNAL("pressed")
             for commit_item in model.get_commit_items():
                 QObject.connect(commit_item, signal, self.pressed_commit_item)
+
+            self._checkboxes[checkbox] = (label, branch_view)
+            QObject.connect(checkbox,
+                            SIGNAL("stateChanged(int)"),
+                            self.checkboxClicked)
+
+    def checkboxClicked(self, value):
+        checkbox = self.sender()
+        for widget in self._checkboxes[checkbox]:
+            widget.setVisible(value)
 
 #    def set_matching_commits_mode(self, bool):
 #        self.matching_commits = bool
