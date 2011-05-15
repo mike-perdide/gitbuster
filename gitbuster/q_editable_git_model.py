@@ -78,7 +78,9 @@ class QEditableGitModel(QGitModel):
         self.endInsertRows()
 
     def removeRows(self, position, rows=1, index=QModelIndex()):
-        print "Removing rows"
+        self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
+        self.git_model.remove_rows(position, rows)
+        self.endRemoveRows()
         return True
 
     def _data_background(self, index, field_name):
