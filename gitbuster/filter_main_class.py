@@ -430,18 +430,17 @@ class FilterMainClass():
 
         return None
 
-    def toggle_modifications(self):
+    def toggle_modifications(self, show_modifications):
         """
             When the toggleModifications button is pressed, change the displayed
             model.
         """
-        current_model = self.parent._ui.tableView.model()
-        if current_model == self._model:
-            # if the displayed model is the editable model
-            orig_model = current_model.get_orig_q_git_model()
-            self.parent._ui.tableView.setModel(orig_model)
-        else:
+        if show_modifications:
             self.parent._ui.tableView.setModel(self._model)
+        else:
+            # if the displayed model is the editable model
+            orig_model = self._model.get_orig_q_git_model()
+            self.parent._ui.tableView.setModel(orig_model)
 
     def show_progress_bar(self):
         """
