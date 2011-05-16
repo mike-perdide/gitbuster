@@ -9,7 +9,7 @@
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, \
                          QDateTime, SIGNAL, QMimeData, QByteArray, \
                          QDataStream, QIODevice, QStringList, QString
-from PyQt4.QtGui import QColor, QGraphicsScene
+from PyQt4.QtGui import QColor
 from gfbi_core.git_model import GitModel
 from gfbi_core.editable_git_model import EditableGitModel
 from gfbi_core import NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, \
@@ -37,21 +37,8 @@ class QEditableGitModel(QGitModel):
         self.orig_q_git_model = QGitModel(self,
                                           model=self.git_model.get_orig_model())
         self._enabled_options = []
-        self._scene = QGraphicsScene()
 
         self._all_models_dict = models_dict
-
-    def add_commit_item(self, commit, next_commit_item):
-        """
-            Adds a commit item to the scene and connects the correct signals.
-        """
-        commit_item = QGitModel.add_commit_item(self, commit, next_commit_item)
-
-        self.connect(commit_item,
-                     SIGNAL("commitItemInserted(QString*)"),
-                     self.item_inserted)
-
-        return commit_item
 
     def setData(self, index, value, role=Qt.EditRole, ignore_history=False):
         """

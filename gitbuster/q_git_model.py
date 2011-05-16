@@ -8,7 +8,7 @@
 
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, \
                          QDateTime, SIGNAL
-from PyQt4.QtGui import QColor, QGraphicsScene
+from PyQt4.QtGui import QColor
 from gfbi_core.git_model import GitModel
 from gfbi_core import NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, \
                       ACTOR_FIELDS
@@ -40,10 +40,6 @@ class QGitModel(QAbstractTableModel):
             self.git_model = model
         self._filters = {}
         self._enabled_options = []
-        self._scene = QGraphicsScene()
-
-        # Needed in order to connect the signals (using get_commit_items)
-        self._commit_items = []
 
     def populate(self):
         """
@@ -52,45 +48,7 @@ class QGitModel(QAbstractTableModel):
             applied.
         """
         self.git_model.populate()
-        self.populate_scene()
-
         self.reset()
-
-    ## Scene stuff
-    def populate_scene(self):
-        """
-            Populate the scene associated with the model.
-        """
-        self._scene = QGraphicsScene()
-        next_commit_item = None
-        for commit in self.git_model.get_commits():
-            commit_item = self.add_commit_item(commit, next_commit_item)
-
-            if next_commit_item is not None:
-                next_commit_item.set_previous_commit_item(commit_item)
-            next_commit_item = commit_item
-
-    def add_commit_item(self, commit, next_commit_item):
-        """
-            Adds a commit item to the scene.
-        """
-        commit_item = CommitItem(commit, model=self, next_commit_item=next_commit_item)
-        self._scene.addItem(commit_item)
-        self._commit_items.append(commit_item)
-
-        commit_item.moveBy(COLUMN_X_OFFSET, 0)
-
-        return commit_item
-
-    def get_commit_items(self):
-        """
-            Returns the list containing all the CommitItems.
-            This is useful when we need to connect slots on signals like
-            "pushed()" or "clicked()".
-        """
-        return self._commit_items
-    ##
-
 
     def parent(self, index):
         #returns the parent of the model item with the given index.
@@ -387,10 +345,6 @@ class QGitModel(QAbstractTableModel):
 
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
                             Qt.NoItemFlags)
-
-    def get_scene(self):
-        "Returns the scene associated with the model."
-        return self._scene
 
     # Beyond this point, abandon all hope of seeing anything more than "proxying
     # methods" (for instance, progress() calls git_model.progress())
