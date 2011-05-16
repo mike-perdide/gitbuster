@@ -163,6 +163,7 @@ class QEditableGitModel(QGitModel):
 
     def reorder_commits(self, dates, time, weekdays):
         "See GitModel for more help."
+        self.start_history_event()
         self.git_model.reorder_commits(dates, time,
                                        weekdays)
         self.reset()
