@@ -17,9 +17,11 @@ from os.path import join, exists
 from gitbuster.filter_main_class import FilterMainClass
 from gitbuster.rebase_main_class import RebaseMainClass
 
+
 def is_top_git_directory(filepath):
     git_path = join(filepath, ".git")
     return exists(git_path)
+
 
 def select_git_directory():
     settings = QSettings("Noname company yet", "gitbuster")
@@ -62,8 +64,10 @@ class MainWindow(QMainWindow):
         self._ui.setupUi(self)
 
         models = {}
+
         a_model = QGitModel(directory)
         self.current_branch = a_model.get_current_branch()
+
         for branch in a_model.get_branches():
             model = QEditableGitModel(directory=directory, models_dict=models)
             model.set_current_branch(branch)
@@ -109,12 +113,15 @@ class MainWindow(QMainWindow):
         activated_index = self._ui.mainTabWidget.currentIndex()
         if activated_index == 0:
             opened_model_index = self._ui.currentBranchComboBox.currentIndex()
+
             self._history.append((activated_index, opened_model_index, model))
+
         else:
             checkboxes = []
             for checkbox in self.rebase_main_class._checkboxes:
                 if checkbox.isChecked():
                     checkboxes.append(checkbox)
+
             self._history.append((activated_index, checkboxes, model))
 
     def undo_history(self):
