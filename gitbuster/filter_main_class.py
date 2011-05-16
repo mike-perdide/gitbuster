@@ -348,10 +348,14 @@ class FilterMainClass():
             When the currentBranchComboBox current index is changed, set the
             current branch of the model to the new branch.
         """
-        for branch in self._models:
-            if new_branch_name == str(branch):
-                self._model = self._models[branch]
-                self.parent._ui.tableView.setModel(self._model)
+        for branch, model in self._models.items():
+            if new_branch_name == branch.name:
+                self._model = model
+                if self.parent._modifications_shown:
+                    self.parent._ui.tableView.setModel(model)
+                else:
+                    orig_model = model.get_orig_q_git_model()
+                    self.parent._ui.tableView.setModel(orig_model)
                 self.refresh_checkboxes()
                 break
 
