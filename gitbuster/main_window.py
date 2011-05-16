@@ -212,8 +212,8 @@ class MainWindow(QMainWindow):
             QApplication.translate("MainWindow", label,
                                    None, QApplication.UnicodeUTF8))
 
-        self.filter_main_class.toggle_modifications()
-#        self.rebase_main_class.toggle_modifications()
+        self.filter_main_class.toggle_modifications(self._modifications_shown)
+        self.rebase_main_class.toggle_modifications(self._modifications_shown)
 
     def apply(self):
         """

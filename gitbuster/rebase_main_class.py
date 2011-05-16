@@ -67,7 +67,7 @@ class RebaseMainClass(QWidget):
                 branch_view.hide()
                 label.hide()
 
-            self._checkboxes[checkbox] = (label, branch_view)
+            self._checkboxes[checkbox] = (label, branch_view, model)
             QObject.connect(checkbox,
                             SIGNAL("stateChanged(int)"),
                             self.checkbox_clicked)
@@ -103,8 +103,9 @@ class RebaseMainClass(QWidget):
 
     def checkbox_clicked(self, value):
         checkbox = self.sender()
-        for widget in self._checkboxes[checkbox]:
-            widget.setVisible(value)
+        label, branch_view, model = self._checkboxes[checkbox]
+        label.setVisible(value)
+        branch_view.setVisible(value)
 
     def commit_clicked(self, index):
         branch_view = self.focused_branch_view()
@@ -131,3 +132,14 @@ class RebaseMainClass(QWidget):
                 data = model.data(index, Qt.EditRole)
 
             labels[field].setText(data.toString())
+
+    def toggle_modifications(self, show_modifications):
+        """
+            When the toggleModifications button is pressed, change the displayed
+            model.
+        """
+        for label, branch_view, model in self._checkboxes.values():
+            if show_modifications:
+                branch_view.setModel(model)
+            else:
+                branch_view.setModel(model.get_orig_q_git_model())
