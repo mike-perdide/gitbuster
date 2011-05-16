@@ -48,6 +48,9 @@ class RebaseMainClass(QWidget):
             QObject.connect(branch_view,
                             SIGNAL("activated(const QModelIndex&)"),
                             self.commit_clicked)
+            QObject.connect(branch_view,
+                            SIGNAL("clicked(const QModelIndex&)"),
+                            self.commit_clicked)
 
             label = QLabel(self)
             label.setText(branch.name)
