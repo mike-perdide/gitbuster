@@ -174,6 +174,7 @@ class QEditableGitModel(QGitModel):
     def start_history_event(self):
         "See GitModel for more help."
         self.git_model.start_history_event()
+        self.emit(SIGNAL("newHistoryEvent"))
 
     def undo_history(self):
         "See GitModel for more help."

@@ -6,8 +6,8 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QMainWindow, QFileDialog
-from PyQt4.QtCore import QDir, QSettings, QVariant, SIGNAL
+from PyQt4.QtGui import QMainWindow, QFileDialog, QShortcut, QKeySequence
+from PyQt4.QtCore import QDir, QSettings, QVariant, SIGNAL, QObject
 from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.q_git_model import QGitModel
 from gitbuster.q_editable_git_model import QEditableGitModel
@@ -72,8 +72,14 @@ class MainWindow(QMainWindow):
             model.populate()
             models[branch] = model
 
+            QObject.connect(model, SIGNAL("newHistoryEvent"),
+                            self.new_history_event)
+
         self.filter_main_class = FilterMainClass(self, directory, models)
         self.rebase_main_class = RebaseMainClass(self, directory, models)
+
+        self._history = []
+        self._last_history_event = -1
 
         # Connecting actions
         self.connect(self._ui.actionQuit, SIGNAL("triggered(bool)"),
@@ -82,6 +88,78 @@ class MainWindow(QMainWindow):
         self.connect(self._ui.actionChange_repository,
                      SIGNAL("triggered(bool)"),
                      self.change_directory)
+
+        shortcut = QShortcut(QKeySequence(QKeySequence.Undo), self)
+        QObject.connect(shortcut, SIGNAL("activated()"), self.undo_history)
+
+        shortcut = QShortcut(QKeySequence(QKeySequence.Redo), self)
+        QObject.connect(shortcut, SIGNAL("activated()"), self.redo_history)
+
+    def new_history_event(self):
+        """
+            When a history event occurs, we store the tab index, the displayed
+            models and the model that was modified.
+        """
+        while self._last_history_event < len(self._history) - 1:
+            self._history.pop()
+
+        self._last_history_event += 1
+
+        model = self.sender()
+        activated_index = self._ui.mainTabWidget.currentIndex()
+        if activated_index == 0:
+            opened_model_index = self._ui.currentBranchComboBox.currentIndex()
+            self._history.append((activated_index, opened_model_index, model))
+        else:
+            checkboxes = []
+            for checkbox in self.rebase_main_class._checkboxes:
+                if checkbox.isChecked():
+                    checkboxes.append(checkbox)
+            self._history.append((activated_index, checkboxes, model))
+
+    def undo_history(self):
+        """
+            Reverts the history one event back, application wide.
+        """
+        if self._last_history_event >= 0:
+            model = self.reproduce_history_conditions()
+            model.undo_history()
+
+            if self._last_history_event > -1:
+                self._last_history_event -= 1
+
+    def redo_history(self):
+        """
+            Replays the history one event forward, application wide.
+        """
+        if self._last_history_event < len(self._history) - 1:
+            model = self.reproduce_history_conditions()
+            model.redo_history()
+
+            self._last_history_event += 1
+
+    def reproduce_history_conditions(self):
+        """
+            This method reproduces the settings of the application stored when
+            the history event occured.
+
+            :return:
+                The model that was modified.
+        """
+        tab_index, index_or_checkboxes, model = \
+                self._history[self._last_history_event]
+
+        self._ui.mainTabWidget.setCurrentIndex(tab_index)
+        if tab_index == 0:
+            self._ui.currentBranchComboBox.setCurrentIndex(index_or_checkboxes)
+        else:
+            for checkbox in self.rebase_main_class._checkboxes:
+                if checkbox in index_or_checkboxes:
+                    checkbox.setChecked(True)
+                else:
+                    checkbox.setChecked(False)
+
+        return model
 
     def set_current_directory(self, directory):
         """
