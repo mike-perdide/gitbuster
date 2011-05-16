@@ -6,7 +6,8 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QMainWindow, QFileDialog, QShortcut, QKeySequence
+from PyQt4.QtGui import QMainWindow, QFileDialog, QShortcut, QKeySequence, \
+                        QApplication
 from PyQt4.QtCore import QDir, QSettings, QVariant, SIGNAL, QObject
 from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.q_git_model import QGitModel
@@ -65,6 +66,7 @@ class MainWindow(QMainWindow):
         self._ui.setupUi(self)
 
         self._models = {}
+        self._modifications_shown = True
 
         a_model = QGitModel(directory)
         self.current_branch = a_model.get_current_branch()
@@ -103,6 +105,9 @@ class MainWindow(QMainWindow):
 
         QObject.connect(self._ui.applyButton, SIGNAL("clicked()"),
                         self.apply)
+
+        QObject.connect(self._ui.toggleModificationsButton, SIGNAL("clicked()"),
+                        self.toggle_modifications)
 
     def new_history_event(self):
         """
@@ -191,6 +196,24 @@ class MainWindow(QMainWindow):
         directory = select_git_directory()
         if directory:
             self.set_current_directory(directory)
+
+    def toggle_modifications(self):
+        """
+            When the toggleModifications button is pressed, change the displayed
+            model.
+        """
+        if self._modifications_shown:
+            label = "&Show modifications"
+        else:
+            label = "&Hide modifications"
+
+        self._modifications_shown = not self._modifications_shown
+        self._ui.toggleModificationsButton.setText(
+            QApplication.translate("MainWindow", label,
+                                   None, QApplication.UnicodeUTF8))
+
+        self.filter_main_class.toggle_modifications()
+#        self.rebase_main_class.toggle_modifications()
 
     def apply(self):
         """

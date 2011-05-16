@@ -155,8 +155,6 @@ class FilterMainClass():
         self.parent.connect(self.parent._ui.mergeCheckBox, SIGNAL("stateChanged(int)"),
                      self.merge_clicked)
 
-        _connect_button(self.parent._ui.toggleModificationsButton, self.toggle_modifications)
-
         self.parent.connect(self.parent._ui.tableView,
                      SIGNAL("activated(const QModelIndex&)"),
                      self.parent._ui.tableView.edit)
@@ -438,14 +436,8 @@ class FilterMainClass():
             # if the displayed model is the editable model
             orig_model = current_model.get_orig_q_git_model()
             self.parent._ui.tableView.setModel(orig_model)
-            label = "&Show modifications"
         else:
             self.parent._ui.tableView.setModel(self._model)
-            label = "&Hide modifications"
-
-        self.parent._ui.toggleModificationsButton.setText(
-            QApplication.translate("MainWindow", label,
-                                   None, QApplication.UnicodeUTF8))
 
     def show_progress_bar(self):
         """
