@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>860</width>
-    <height>810</height>
+    <width>1077</width>
+    <height>708</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -81,12 +81,6 @@
           </attribute>
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
-          </attribute>
-          <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="horizontalHeaderStretchLastSection">
-           <bool>true</bool>
           </attribute>
          </widget>
         </item>
@@ -434,15 +428,15 @@
                 </item>
                 <item row="0" column="3">
                  <widget class="QTimeEdit" name="reOrderMaxTimeEdit">
-                  <property name="displayFormat">
-                   <string>hh:mm</string>
-                  </property>
                   <property name="time">
                    <time>
                     <hour>23</hour>
                     <minute>59</minute>
                     <second>0</second>
                    </time>
+                  </property>
+                  <property name="displayFormat">
+                   <string>hh:mm</string>
                   </property>
                  </widget>
                 </item>
@@ -847,7 +841,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>912</width>
+     <width>1077</width>
      <height>23</height>
     </rect>
    </property>
