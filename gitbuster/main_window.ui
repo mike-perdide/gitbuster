@@ -30,7 +30,7 @@
        <attribute name="title">
         <string>Filter</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,1,0,0,0" columnstretch="0,1">
+       <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,1,0,0" columnstretch="0,1">
         <item row="0" column="0" colspan="2">
          <layout class="QGridLayout" name="checkboxLayout"/>
         </item>
@@ -588,28 +588,8 @@
        <attribute name="title">
         <string>Rebase</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_12" columnstretch="0,0,0,0,0,0">
-        <item row="2" column="3" colspan="2">
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>818</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="5">
-         <widget class="QPushButton" name="rebaseApplyButton">
-          <property name="text">
-           <string>Apply</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="3">
+       <layout class="QGridLayout" name="gridLayout_12" columnstretch="0,0,0,0">
+        <item row="1" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBox">
           <property name="minimumSize">
            <size>
@@ -757,7 +737,7 @@
           </layout>
          </widget>
         </item>
-        <item row="0" column="0" colspan="3">
+        <item row="0" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBox_2">
           <property name="minimumSize">
            <size>
@@ -775,8 +755,11 @@
           </layout>
          </widget>
         </item>
-        <item row="2" column="1" colspan="2">
-         <spacer name="horizontalSpacer_7">
+        <item row="0" column="2" rowspan="2" colspan="2">
+         <layout class="QGridLayout" name="viewLayout"/>
+        </item>
+        <item row="2" column="2">
+         <spacer name="horizontalSpacer_4">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -787,16 +770,6 @@
            </size>
           </property>
          </spacer>
-        </item>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="rebaseRefreshButton">
-          <property name="text">
-           <string>Refresh</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3" rowspan="2" colspan="3">
-         <layout class="QGridLayout" name="viewLayout"/>
         </item>
        </layout>
       </widget>
