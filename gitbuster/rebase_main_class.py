@@ -90,7 +90,8 @@ class RebaseMainClass(QWidget):
             branch_view.setSelectionBehavior(branch_view.SelectRows)
             branch_view.setEditTriggers(branch_view.NoEditTriggers)
 
-            QObject.connect(branch_view, SIGNAL("activated(const QModelIndex&)"),
+            QObject.connect(branch_view,
+                            SIGNAL("activated(const QModelIndex&)"),
                             self.commit_clicked)
 
             label = QLabel(self)
@@ -119,6 +120,22 @@ class RebaseMainClass(QWidget):
 
         shortcut = QShortcut(QKeySequence(QKeySequence.Delete), self)
         QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
+
+        shortcut = QShortcut(QKeySequence(QKeySequence.Undo), self)
+        QObject.connect(shortcut, SIGNAL("activated()"), self.undo_history)
+
+        shortcut = QShortcut(QKeySequence(QKeySequence.Redo), self)
+        QObject.connect(shortcut, SIGNAL("activated()"), self.redo_history)
+
+    def undo_history(self):
+        branch_view = self.focused_branch_view()
+        model = branch_view.model()
+        model.undo_history()
+
+    def redo_history(self):
+        branch_view = self.focused_branch_view()
+        model = branch_view.model()
+        model.redo_history()
 
     def focused_branch_view(self):
         """

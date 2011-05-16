@@ -53,11 +53,14 @@ class QEditableGitModel(QGitModel):
 
         return commit_item
 
-    def setData(self, index, value, role=Qt.EditRole):
+    def setData(self, index, value, role=Qt.EditRole, ignore_history=False):
         """
             Sets the data when the model is modified (qt model method).
         """
         if index.isValid() and 0 <= index.row() < self.rowCount():
+            if not ignore_history:
+                self.start_history_event()
+
             column = index.column()
             field_name = self.git_model.get_columns()[column]
 
@@ -181,6 +184,20 @@ class QEditableGitModel(QGitModel):
         "See GitModel for more help."
         return self.git_model.get_to_rewrite_count()
 
+    def start_history_event(self):
+        "See GitModel for more help."
+        self.git_model.start_history_event()
+
+    def undo_history(self):
+        "See GitModel for more help."
+        self.git_model.undo_history()
+        self.reset()
+
+    def redo_history(self):
+        "See GitModel for more help."
+        self.git_model.redo_history()
+        self.reset()
+
 
     def mimeTypes(self):
         types = QStringList()
@@ -250,13 +267,16 @@ class QEditableGitModel(QGitModel):
 
             insert_row += 1
 
+        self.start_history_event()
+
         self.insertRows(begin_row, rows, QModelIndex())
         insert_row = begin_row
 
         for item in new_items:
             for column, field in enumerate(self.get_columns()):
                 index = self.index(insert_row, column, QModelIndex())
-                self.setData(index, data_to_be_inserted[(insert_row, column)])
+                self.setData(index, data_to_be_inserted[(insert_row, column)],
+                             ignore_history=True)
 
             insert_row += 1
 
