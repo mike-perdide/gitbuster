@@ -13,7 +13,6 @@ from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDir, QSettings, \
 
 from gitbuster.q_git_model import QGitModel, NAMES
 from gitbuster.q_git_delegate import QGitDelegate
-from gitbuster.confirm_dialog import ConfirmDialog
 
 import time
 from datetime import datetime
@@ -152,7 +151,6 @@ class FilterMainClass():
             Connect the slots to the objects.
         """
         _connect_button(self.parent._ui.cancelButton, self.parent.close)
-        _connect_button(self.parent._ui.applyButton, self.apply)
 
         self.parent.connect(self.parent._ui.mergeCheckBox, SIGNAL("stateChanged(int)"),
                      self.merge_clicked)
@@ -448,37 +446,6 @@ class FilterMainClass():
         self.parent._ui.toggleModificationsButton.setText(
             QApplication.translate("MainWindow", label,
                                    None, QApplication.UnicodeUTF8))
-
-    def apply(self):
-        """
-            Write the modifications to the git repository.
-        """
-        model = self.parent._ui.tableView.model()
-        modified_commits_count = model.get_modified_count()
-        if modified_commits_count > 0:
-            to_rewrite_count = model.get_to_rewrite_count()
-
-            msgBox = ConfirmDialog(modified_count=modified_commits_count,
-                                   to_rewrite_count=to_rewrite_count)
-            ret = msgBox.exec_()
-
-            if ret:
-                ui = msgBox._ui
-                log_checked = ui.logCheckBox.checkState() == Qt.Checked
-                script_checked = ui.scriptCheckBox.checkState() == Qt.Checked
-
-                model.write(log_checked, script_checked)
-
-                # If we have more than 80 commits modified, show progress bar
-                if to_rewrite_count > 80:
-                    progress_bar = self.parent._ui.progressBar
-                    self.progress_thread = ProgressThread(progress_bar, model)
-                    self.progress_thread.start()
-                else:
-                    # Wait a few milliseconds and before repopulating the model
-                    while not model.is_finished_writing():
-                        time.sleep(0.2)
-                    model.populate()
 
     def show_progress_bar(self):
         """
