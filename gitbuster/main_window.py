@@ -11,6 +11,7 @@ from PyQt4.QtCore import QDir, QSettings, QVariant, SIGNAL, QObject
 from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.q_git_model import QGitModel
 from gitbuster.q_editable_git_model import QEditableGitModel
+from gitbuster.confirm_dialog import ConfirmDialog
 
 from os.path import join, exists
 
@@ -63,24 +64,25 @@ class MainWindow(QMainWindow):
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        models = {}
+        self._models = {}
 
         a_model = QGitModel(directory)
         self.current_branch = a_model.get_current_branch()
 
         for branch in a_model.get_branches():
-            model = QEditableGitModel(directory=directory, models_dict=models)
+            model = QEditableGitModel(directory=directory,
+                                      models_dict=self._models)
             model.set_current_branch(branch)
             model.setMerge(True)
             model.enable_option("filters")
             model.populate()
-            models[branch] = model
+            self._models[branch] = model
 
             QObject.connect(model, SIGNAL("newHistoryEvent"),
                             self.new_history_event)
 
-        self.filter_main_class = FilterMainClass(self, directory, models)
-        self.rebase_main_class = RebaseMainClass(self, directory, models)
+        self.filter_main_class = FilterMainClass(self, directory, self._models)
+        self.rebase_main_class = RebaseMainClass(self, directory, self._models)
 
         self._history = []
         self._last_history_event = -1
@@ -98,6 +100,9 @@ class MainWindow(QMainWindow):
 
         shortcut = QShortcut(QKeySequence(QKeySequence.Redo), self)
         QObject.connect(shortcut, SIGNAL("activated()"), self.redo_history)
+
+        QObject.connect(self._ui.applyButton, SIGNAL("clicked()"),
+                        self.apply)
 
     def new_history_event(self):
         """
@@ -186,3 +191,30 @@ class MainWindow(QMainWindow):
         directory = select_git_directory()
         if directory:
             self.set_current_directory(directory)
+
+    def apply(self):
+        """
+            Write the modifications to the git repository.
+        """
+        if True in [model.get_modified_count() > 0
+                    for model in self._models.values()]:
+            msgBox = ConfirmDialog(self._models)
+            ret = msgBox.exec_()
+
+#            if ret:
+#                ui = msgBox._ui
+#                log_checked = ui.logCheckBox.checkState() == Qt.Checked
+#                script_checked = ui.scriptCheckBox.checkState() == Qt.Checked
+#
+#                model.write(log_checked, script_checked)
+#
+#                # If we have more than 80 commits modified, show progress bar
+#                if to_rewrite_count > 80:
+#                    progress_bar = self.parent._ui.progressBar
+#                    self.progress_thread = ProgressThread(progress_bar, model)
+#                    self.progress_thread.start()
+#                else:
+#                    # Wait a few milliseconds and before repopulating the model
+#                    while not model.is_finished_writing():
+#                        time.sleep(0.2)
+#                    model.populate()
