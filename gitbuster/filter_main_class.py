@@ -7,7 +7,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtGui import QApplication, QCheckBox, QSpacerItem, QSizePolicy
-from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDateTime, QModelIndex
+from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDateTime
 
 from gitbuster.q_git_model import NAMES
 from gitbuster.q_git_delegate import QGitDelegate
