@@ -14,7 +14,7 @@ from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject, QModelIndex
 from gitbuster.graphics_items import CommitItem, Arrow
 
 
-class RebaseMainClass(QWidget):
+class RebaseMainClass(QObject):
 
     def __init__(self, parent, directory, models):
         QObject.__init__(self, parent)
