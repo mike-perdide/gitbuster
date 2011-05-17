@@ -27,7 +27,7 @@ class QEditableGitModel(QGitModel):
             Non editable QGitModel can be initialized with a GitModel(to limit
             the number of GitModels).
         """
-        QGitModel.__init__(self)
+        QGitModel.__init__(self, directory=directory)
 
         # Overwrite the non editable git_model set in QGitModel.__init__
         self.git_model = EditableGitModel(directory=directory)
