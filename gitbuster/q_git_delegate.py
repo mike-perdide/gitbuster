@@ -41,7 +41,6 @@ class QGitDelegate(QItemDelegate):
     def commitAndCloseEditor(self):
         editor = self.sender()
         if isinstance(editor, (QTextEdit, QLineEdit)):
-            self.emit(SIGNAL("commitData(QWidget*)"), editor)
             self.emit(SIGNAL("closeEditor(QWidget*)"), editor)
 
     def setEditorData(self, editor, index):
@@ -57,7 +56,7 @@ class QGitDelegate(QItemDelegate):
             _q_datetime.setTime_t(timestamp)
             editor.setDateTime(_q_datetime)
 
-    def setModelData(self, editor, model, index):
+    def setModelData(self, editor, model, index, ignore_history=False):
         model = index.model()
         columns = model.get_git_model().get_columns()
         field_name = columns[index.column()]
@@ -70,6 +69,11 @@ class QGitDelegate(QItemDelegate):
         elif field_name in ACTOR_FIELDS:
             data = QVariant(editor.text())
 
+        if not ignore_history:
+            # Start a new history event, only for the first modified index.
+            # That way, an undo will undo all the selected indexes.
+            model.start_history_event()
+
         model.setData(index, data)
 
         if self._selected_indexes:
@@ -80,4 +84,5 @@ class QGitDelegate(QItemDelegate):
 
             for selected_index in selected_indexes:
                 if selected_index.column() == edited_column:
-                    self.setModelData(editor, model, selected_index)
+                    self.setModelData(editor, model, selected_index,
+                                      ignore_history=True)

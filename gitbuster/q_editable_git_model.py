@@ -38,14 +38,11 @@ class QEditableGitModel(QGitModel):
 
         self._all_models_dict = models_dict
 
-    def setData(self, index, value, role=Qt.EditRole, ignore_history=False):
+    def setData(self, index, value, role=Qt.EditRole):
         """
             Sets the data when the model is modified (qt model method).
         """
         if index.isValid() and 0 <= index.row() < self.rowCount():
-            if not ignore_history:
-                self.start_history_event()
-
             column = index.column()
             field_name = self.git_model.get_columns()[column]
 
@@ -275,8 +272,7 @@ class QEditableGitModel(QGitModel):
         for item in new_items:
             for column, field in enumerate(self.get_columns()):
                 index = self.index(insert_row, column, QModelIndex())
-                self.setData(index, data_to_be_inserted[(insert_row, column)],
-                             ignore_history=True)
+                self.setData(index, data_to_be_inserted[(insert_row, column)])
 
             insert_row += 1
 
