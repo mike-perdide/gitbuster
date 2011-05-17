@@ -11,6 +11,7 @@ from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDateTime, QModelIndex
 
 from gitbuster.q_git_model import NAMES
 from gitbuster.q_git_delegate import QGitDelegate
+from gitbuster.util import _connect_button
 
 import time
 from datetime import datetime
@@ -23,11 +24,6 @@ AVAILABLE_CHOICES = ['hexsha',
                      'message']
 PRE_CHOICE = ['hexsha', 'authored_date', 'author_name', 'message']
 AVAILABLE_OPTIONS = {'display_weekday'  : 'Weekday'}
-
-
-def _connect_button(button, function):
-    " Simple method that connects buttons, using the clicked() signal "
-    QObject.connect(button, SIGNAL("clicked()"), function)
 
 
 class ProgressThread(QThread):
@@ -152,8 +148,6 @@ class FilterMainClass():
             Connect the slots to the objects.
         """
         connect = QObject.connect
-
-        _connect_button(self.gui.cancelButton, self.parent.close)
 
         connect(self.gui.mergeCheckBox, SIGNAL("stateChanged(int)"),
                 self.merge_clicked)
