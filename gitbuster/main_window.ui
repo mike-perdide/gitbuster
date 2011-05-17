@@ -92,10 +92,10 @@
           <item row="1" column="0">
            <widget class="QCheckBox" name="mergeCheckBox">
             <property name="text">
-             <string>Merge Committed and Authored notions (advised)</string>
+             <string>Update committed date/author when authored date/author is changed</string>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
