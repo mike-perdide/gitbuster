@@ -6,47 +6,18 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QMainWindow, QFileDialog, QShortcut, QKeySequence, \
+from PyQt4.QtGui import QMainWindow, QShortcut, QKeySequence, \
                         QApplication
-from PyQt4.QtCore import QDir, QSettings, QVariant, SIGNAL, QObject
+from PyQt4.QtCore import SIGNAL, QObject
 from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.q_git_model import QGitModel
 from gitbuster.q_editable_git_model import QEditableGitModel
 from gitbuster.confirm_dialog import ConfirmDialog
-from gitbuster.util import _connect_button
-
-from os.path import join, exists
+from gitbuster.util import _connect_button, select_git_directory
+from gitbuster.progress_thread import ProgressThread
 
 from gitbuster.filter_main_class import FilterMainClass
 from gitbuster.rebase_main_class import RebaseMainClass
-
-
-def is_top_git_directory(filepath):
-    git_path = join(filepath, ".git")
-    return exists(git_path)
-
-
-def select_git_directory():
-    settings = QSettings("Noname company yet", "gitbuster")
-
-    settings.beginGroup("Last run")
-
-    filepath = '/'
-    while not is_top_git_directory(filepath):
-        filepath = unicode(QFileDialog.getExistingDirectory(
-            None,
-            "Open git repository",
-            unicode(settings.value("directory", QVariant(QDir.homePath()).toString())),
-            QFileDialog.ShowDirsOnly
-            ))
-        if not filepath:
-            return filepath
-
-    settings.setValue("directory", filepath)
-    settings.endGroup()
-    settings.sync()
-
-    return filepath
 
 
 class MainWindow(QMainWindow):

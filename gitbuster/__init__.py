@@ -7,7 +7,8 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtGui import QApplication
-from gitbuster.main_window import MainWindow, select_git_directory
+from gitbuster.main_window import MainWindow
+from gitbuster.util import select_git_directory, is_top_git_directory
 import sys
 
 
@@ -15,7 +16,10 @@ def main():
     " This method launches gitbuster."
     app = QApplication(sys.argv)
 
-    filepath = select_git_directory()
+    if len(sys.argv) == 2 and is_top_git_directory(sys.argv[1]):
+        filepath = sys.argv[1]
+    else:
+        filepath = select_git_directory()
 
     if filepath:
         window = MainWindow(directory=filepath, debug=True)
