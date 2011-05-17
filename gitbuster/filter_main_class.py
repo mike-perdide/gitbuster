@@ -52,8 +52,6 @@ class FilterMainClass():
 
         self.connect_slots()
 
-        self.gui.progressBar.hide()
-
         # Initialize the dateEdit widgets
         dateedits = [self.gui.beforeDateFilterDateEdit,
                      self.gui.afterDateFilterDateEdit,
@@ -105,14 +103,6 @@ class FilterMainClass():
         connect(self.gui.tableView,
                 SIGNAL("activated(const QModelIndex&)"),
                 self.gui.tableView.edit)
-
-        # Catching progress bar signals.
-        connect(self.gui.progressBar, SIGNAL("starting"),
-                                                    self.show_progress_bar)
-        connect(self.gui.progressBar, SIGNAL("update(int)"),
-                                                    self.update_progress_bar)
-        connect(self.gui.progressBar, SIGNAL("stopping"),
-                                                    self.hide_progress_bar)
 
         # Change current branch when the currentBranchComboBox current index is
         # changed.
@@ -372,30 +362,3 @@ class FilterMainClass():
             # if the displayed model is the editable model
             orig_model = self._model.get_orig_q_git_model()
             self.gui.tableView.setModel(orig_model)
-
-    def show_progress_bar(self):
-        """
-            Shows the progress bar representing the progress of the writing
-            process.
-        """
-        self.gui.progressBar.show()
-        self.gui.applyButton.setDisabled(True)
-        self.gui.cancelButton.setDisabled(True)
-
-    def update_progress_bar(self, value):
-        """
-            Updates the progress bar with a value.
-
-            :param value:
-                Progression of the write process, between 0 and 100
-        """
-        self.gui.progressBar.setValue(value)
-
-    def hide_progress_bar(self):
-        """
-            Hide the progress bar representing the progress of the writing
-            process.
-        """
-        self.gui.progressBar.hide()
-        self.gui.applyButton.setEnabled(True)
-        self.gui.cancelButton.setEnabled(True)

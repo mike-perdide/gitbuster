@@ -60,6 +60,8 @@ class MainWindow(QMainWindow):
         self._history = []
         self._last_history_event = -1
 
+        self._ui.progressBar.hide()
+
         self.connect_slots()
 
     def connect_slots(self):
@@ -71,6 +73,14 @@ class MainWindow(QMainWindow):
         _connect_button(self._ui.cancelButton, self.close)
         _connect_button(self._ui.toggleModificationsButton,
                                                self.toggle_modifications)
+
+        # Catching progress bar signals.
+        self.connect(self._ui.progressBar, SIGNAL("starting"),
+                                                    self.show_progress_bar)
+        self.connect(self._ui.progressBar, SIGNAL("update(int)"),
+                                                    self.update_progress_bar)
+        self.connect(self._ui.progressBar, SIGNAL("stopping"),
+                                                    self.hide_progress_bar)
 
         # Connecting actions
         self.connect(self._ui.actionQuit, SIGNAL("triggered(bool)"),
@@ -210,3 +220,30 @@ class MainWindow(QMainWindow):
                                                       log_checked,
                                                       script_checked)
                 self.progress_thread.start()
+
+    def show_progress_bar(self):
+        """
+            Shows the progress bar representing the progress of the writing
+            process.
+        """
+        self._ui.progressBar.show()
+        self._ui.applyButton.setDisabled(True)
+        self._ui.cancelButton.setDisabled(True)
+
+    def update_progress_bar(self, value):
+        """
+            Updates the progress bar with a value.
+
+            :param value:
+                Progression of the write process, between 0 and 100
+        """
+        self._ui.progressBar.setValue(value)
+
+    def hide_progress_bar(self):
+        """
+            Hide the progress bar representing the progress of the writing
+            process.
+        """
+        self._ui.progressBar.hide()
+        self._ui.applyButton.setEnabled(True)
+        self._ui.cancelButton.setEnabled(True)
