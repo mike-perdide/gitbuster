@@ -72,8 +72,7 @@ class MainWindow(QMainWindow):
         self.current_branch = a_model.get_current_branch()
 
         for branch in a_model.get_branches():
-            model = QEditableGitModel(directory=directory,
-                                      models_dict=self._models)
+            model = QEditableGitModel(self._models, directory=directory)
             model.set_current_branch(branch)
             model.setMerge(True)
             model.enable_option("filters")

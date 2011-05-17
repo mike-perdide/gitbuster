@@ -17,9 +17,10 @@ from gfbi_core import NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, \
 from datetime import datetime
 from gitbuster.q_git_model import QGitModel
 
+
 class QEditableGitModel(QGitModel):
 
-    def __init__(self, directory=".", models_dict=[]):
+    def __init__(self, models_dict, directory="."):
         """
             Initializes the git model with the repository root directory.
 
