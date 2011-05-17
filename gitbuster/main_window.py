@@ -13,6 +13,7 @@ from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.q_git_model import QGitModel
 from gitbuster.q_editable_git_model import QEditableGitModel
 from gitbuster.confirm_dialog import ConfirmDialog
+from gitbuster.util import _connect_button
 
 from os.path import join, exists
 
@@ -88,6 +89,18 @@ class MainWindow(QMainWindow):
         self._history = []
         self._last_history_event = -1
 
+        self.connect_slots()
+
+    def connect_slots(self):
+        """
+            Connect the slots to the objects.
+        """
+        # Bottom bar connections
+        _connect_button(self._ui.applyButton, self.apply)
+        _connect_button(self._ui.cancelButton, self.close)
+        _connect_button(self._ui.toggleModificationsButton,
+                                               self.toggle_modifications)
+
         # Connecting actions
         self.connect(self._ui.actionQuit, SIGNAL("triggered(bool)"),
                      self.close)
@@ -101,12 +114,6 @@ class MainWindow(QMainWindow):
 
         shortcut = QShortcut(QKeySequence(QKeySequence.Redo), self)
         QObject.connect(shortcut, SIGNAL("activated()"), self.redo_history)
-
-        QObject.connect(self._ui.applyButton, SIGNAL("clicked()"),
-                        self.apply)
-
-        QObject.connect(self._ui.toggleModificationsButton, SIGNAL("clicked()"),
-                        self.toggle_modifications)
 
     def new_history_event(self):
         """

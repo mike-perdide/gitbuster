@@ -10,6 +10,7 @@ from PyQt4.QtGui import QApplication
 from gitbuster.main_window import MainWindow, select_git_directory
 import sys
 
+
 def main():
     app = QApplication(sys.argv)
 
