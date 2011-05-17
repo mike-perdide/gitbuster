@@ -152,6 +152,7 @@ class FilterMainClass():
         connect(self.gui.mergeCheckBox, SIGNAL("stateChanged(int)"),
                 self.merge_clicked)
 
+        # This can't be done using edit triggers : edit when enter is pressed
         connect(self.gui.tableView,
                 SIGNAL("activated(const QModelIndex&)"),
                 self.gui.tableView.edit)
