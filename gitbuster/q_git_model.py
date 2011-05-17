@@ -90,8 +90,8 @@ class QGitModel(QAbstractTableModel):
         elif field_name == "message":
             return QVariant(value.split("\n")[0])
         elif field_name == "hexsha":
-            return QVariant(str(value)[:7])
-        return QVariant(str(value))
+            return QVariant(value[:7])
+        return QVariant(value)
 
     def _data_edit(self, index, field_name):
         value = self.git_model.data(index)
