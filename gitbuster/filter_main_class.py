@@ -7,13 +7,12 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtGui import QApplication, QCheckBox, QSpacerItem, QSizePolicy
-from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDateTime
+from PyQt4.QtCore import SIGNAL, QObject, Qt, QDateTime
 
 from gitbuster.q_git_model import NAMES
 from gitbuster.q_git_delegate import QGitDelegate
 from gitbuster.util import _connect_button
 
-import time
 from datetime import datetime
 
 
@@ -24,56 +23,6 @@ AVAILABLE_CHOICES = ['hexsha',
                      'message']
 PRE_CHOICE = ['hexsha', 'authored_date', 'author_name', 'message']
 AVAILABLE_OPTIONS = {'display_weekday'  : 'Weekday'}
-
-
-class ProgressThread(QThread):
-    """
-        Thread checking on the git command process, rewriting the
-        git repository.
-    """
-
-    def __init__(self, progress_bar, model):
-        """
-            Initializes the thread with the progress bar widget and the
-            qGitModel used.
-
-            :param progress_bar:
-                Progress bar widdget used to display the progression of the
-                git command process.
-            :param model:
-                The qGitModel used in the MainWindow's view.
-        """
-        QThread.__init__(self)
-
-        self._progress_bar = progress_bar
-        self._model = model
-
-    def run(self):
-        """
-            Run method of the thread. Will check on the git command process
-            progress regularly and updates the progress bar widget.
-        """
-        model = self._model
-        progress_bar = self._progress_bar
-
-        progress_bar.emit(SIGNAL("starting"))
-        progress_bar.emit(SIGNAL("update(int)"), 0)
-
-        while not model.is_finished_writing():
-            # While the git filter-branch command isn't finished, update the
-            # progress bar with the process progress.
-            progress = model.progress()
-
-            if progress:
-                progress_bar.emit(SIGNAL("update(int)"), int(progress * 100))
-            time.sleep(0.5)
-
-        progress_bar.emit(SIGNAL("update(int)"), 100)
-        time.sleep(0.2)
-        progress_bar.emit(SIGNAL("stopping"))
-
-        # Repopulate the model after the filter-branch is done.
-        model.populate()
 
 
 class FilterMainClass():
