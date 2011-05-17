@@ -201,20 +201,12 @@ class MainWindow(QMainWindow):
             msgBox = ConfirmDialog(self._models)
             ret = msgBox.exec_()
 
-#            if ret:
-#                ui = msgBox._ui
-#                log_checked = ui.logCheckBox.checkState() == Qt.Checked
-#                script_checked = ui.scriptCheckBox.checkState() == Qt.Checked
-#
-#                model.write(log_checked, script_checked)
-#
-#                # If we have more than 80 commits modified, show progress bar
-#                if to_rewrite_count > 80:
-#                    progress_bar = self.parent._ui.progressBar
-#                    self.progress_thread = ProgressThread(progress_bar, model)
-#                    self.progress_thread.start()
-#                else:
-#                    # Wait a few milliseconds and before repopulating the model
-#                    while not model.is_finished_writing():
-#                        time.sleep(0.2)
-#                    model.populate()
+            if ret:
+                log_checked = msgBox.log_checked()
+                script_checked = msgBox.script_checked()
+
+                self.progress_thread = ProgressThread(self._ui.progressBar,
+                                                      msgBox.checked_models(),
+                                                      log_checked,
+                                                      script_checked)
+                self.progress_thread.start()
