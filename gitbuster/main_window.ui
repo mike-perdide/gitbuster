@@ -569,8 +569,8 @@
        <attribute name="title">
         <string>Rebase</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_12" columnstretch="0,0,0,0">
-        <item row="1" column="0" colspan="2">
+       <layout class="QGridLayout" name="gridLayout_12" columnstretch="0,0,0,0,0">
+        <item row="2" column="0" rowspan="2" colspan="2">
          <widget class="QGroupBox" name="groupBox">
           <property name="minimumSize">
            <size>
@@ -903,7 +903,7 @@
           </layout>
          </widget>
         </item>
-        <item row="0" column="0" colspan="2">
+        <item row="1" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBox_2">
           <property name="minimumSize">
            <size>
@@ -921,10 +921,10 @@
           </layout>
          </widget>
         </item>
-        <item row="0" column="2" rowspan="2" colspan="2">
+        <item row="1" column="3" rowspan="3" colspan="2">
          <layout class="QGridLayout" name="viewLayout"/>
         </item>
-        <item row="2" column="2">
+        <item row="0" column="3">
          <spacer name="horizontalSpacer_4">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -932,7 +932,20 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
-            <height>20</height>
+            <height>0</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="2">
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>0</width>
+            <height>40</height>
            </size>
           </property>
          </spacer>
