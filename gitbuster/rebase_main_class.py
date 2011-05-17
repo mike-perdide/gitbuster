@@ -93,13 +93,18 @@ class RebaseMainClass(QWidget):
         """
         branch_view = self.focused_branch_view()
         selected_indexes = branch_view.selectedIndexes()
+        model = branch_view.model()
+
         ordered_list = []
         for index in selected_indexes:
             if index.isValid() and index.row() not in ordered_list:
                 ordered_list.insert(0, index.row())
 
+        if ordered_list:
+            model.start_history_event()
+
         for row in ordered_list:
-            branch_view.model().removeRows(row)
+            model.removeRows(row)
 
     def checkbox_clicked(self, value):
         checkbox = self.sender()
