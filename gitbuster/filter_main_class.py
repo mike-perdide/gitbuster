@@ -6,12 +6,10 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QMainWindow, QApplication, QCheckBox, QSpacerItem, \
-                        QSizePolicy
-from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDir, QSettings, \
-                         QDateTime, QModelIndex
+from PyQt4.QtGui import QApplication, QCheckBox, QSpacerItem, QSizePolicy
+from PyQt4.QtCore import SIGNAL, QObject, Qt, QThread, QDateTime, QModelIndex
 
-from gitbuster.q_git_model import QGitModel, NAMES
+from gitbuster.q_git_model import NAMES
 from gitbuster.q_git_delegate import QGitDelegate
 
 import time
@@ -28,6 +26,7 @@ AVAILABLE_OPTIONS = {'display_weekday'  : 'Weekday'}
 
 
 def _connect_button(button, function):
+    " Simple method that connects buttons, using the clicked() signal "
     QObject.connect(button, SIGNAL("clicked()"), function)
 
 
@@ -87,31 +86,34 @@ class FilterMainClass():
         self.parent = parent
         self._models = models
 
+        self.gui = self.parent._ui
         self._filters_values = {
-            "afterWeekday"  : self.parent._ui.afterWeekdayFilterComboBox.currentIndex,
-            "beforeWeekday" : self.parent._ui.beforeWeekdayFilterComboBox.currentIndex,
-            "beforeDate"    : self.parent._ui.beforeDateFilterDateEdit.date,
-            "afterDate"     : self.parent._ui.afterDateFilterDateEdit.date,
-            "beforeHour"    : self.parent._ui.beforeHourFilterTimeEdit.time,
-            "afterHour"     : self.parent._ui.afterHourFilterTimeEdit.time,
-            "commit"        : self.parent._ui.commitFilterLineEdit.text,
-            "nameEmail"     : self.parent._ui.nameEmailFilterLineEdit.text,
+            "afterWeekday"  : self.gui.afterWeekdayFilterComboBox.currentIndex,
+            "beforeWeekday" : self.gui.beforeWeekdayFilterComboBox.currentIndex,
+            "beforeDate"    : self.gui.beforeDateFilterDateEdit.date,
+            "afterDate"     : self.gui.afterDateFilterDateEdit.date,
+            "beforeHour"    : self.gui.beforeHourFilterTimeEdit.time,
+            "afterHour"     : self.gui.afterHourFilterTimeEdit.time,
+            "commit"        : self.gui.commitFilterLineEdit.text,
+            "nameEmail"     : self.gui.nameEmailFilterLineEdit.text,
             "localOnly"     : None
         }
 
         self._shown_columns = []
+        self._checkboxes = {}
+        self._model = None
 
         self.set_current_directory(directory)
 
         self.connect_slots()
 
-        self.parent._ui.progressBar.hide()
+        self.gui.progressBar.hide()
 
         # Initialize the dateEdit widgets
-        dateedits = [self.parent._ui.beforeDateFilterDateEdit,
-                     self.parent._ui.afterDateFilterDateEdit,
-                     self.parent._ui.reOrderMinDateEdit,
-                     self.parent._ui.reOrderMaxDateEdit]
+        dateedits = [self.gui.beforeDateFilterDateEdit,
+                     self.gui.afterDateFilterDateEdit,
+                     self.gui.reOrderMinDateEdit,
+                     self.gui.reOrderMaxDateEdit]
 
         for dateedit in dateedits:
             dateedit.setDateTime(QDateTime.currentDateTime())
@@ -126,96 +128,81 @@ class FilterMainClass():
         current_branch = self.parent.current_branch
 
         self._model = self._models[current_branch]
-        self.parent._ui.tableView.setModel(self._model)
-        self.parent._ui.tableView.verticalHeader().hide()
-        self.parent._ui.tableView.setItemDelegate(QGitDelegate(self.parent._ui.tableView))
+        self.gui.tableView.setModel(self._model)
+        self.gui.tableView.verticalHeader().hide()
+        self.gui.tableView.setItemDelegate(QGitDelegate(self.gui.tableView))
 
-        self.parent._ui.tableView.resizeColumnsToContents()
-        self.parent._ui.tableView.horizontalHeader().setStretchLastSection(True)
+        self.gui.tableView.resizeColumnsToContents()
+        self.gui.tableView.horizontalHeader().setStretchLastSection(True)
 
-        self._checkboxes = {}
         self.create_checkboxes()
 
         index = 0
-        self.parent._ui.currentBranchComboBox.clear()
+        self.gui.currentBranchComboBox.clear()
 
         for branch in self._models:
-            self.parent._ui.currentBranchComboBox.addItem("%s" % str(branch))
+            self.gui.currentBranchComboBox.addItem("%s" % str(branch))
             if branch == current_branch:
                 current_index = index
             index += 1
-        self.parent._ui.currentBranchComboBox.setCurrentIndex(current_index)
+        self.gui.currentBranchComboBox.setCurrentIndex(current_index)
 
     def connect_slots(self):
         """
             Connect the slots to the objects.
         """
-        _connect_button(self.parent._ui.cancelButton, self.parent.close)
+        connect = QObject.connect
 
-        self.parent.connect(self.parent._ui.mergeCheckBox, SIGNAL("stateChanged(int)"),
-                     self.merge_clicked)
+        _connect_button(self.gui.cancelButton, self.parent.close)
 
-        self.parent.connect(self.parent._ui.tableView,
-                     SIGNAL("activated(const QModelIndex&)"),
-                     self.parent._ui.tableView.edit)
+        connect(self.gui.mergeCheckBox, SIGNAL("stateChanged(int)"),
+                self.merge_clicked)
+
+        connect(self.gui.tableView,
+                SIGNAL("activated(const QModelIndex&)"),
+                self.gui.tableView.edit)
 
         # Catching progress bar signals.
-        self.parent.connect(self.parent._ui.progressBar, SIGNAL("starting"),
-                     self.show_progress_bar)
-
-        self.parent.connect(self.parent._ui.progressBar, SIGNAL("update(int)"),
-                     self.update_progress_bar)
-
-        self.parent.connect(self.parent._ui.progressBar, SIGNAL("stopping"),
-                     self.hide_progress_bar)
+        connect(self.gui.progressBar, SIGNAL("starting"),
+                                                    self.show_progress_bar)
+        connect(self.gui.progressBar, SIGNAL("update(int)"),
+                                                    self.update_progress_bar)
+        connect(self.gui.progressBar, SIGNAL("stopping"),
+                                                    self.hide_progress_bar)
 
         # Change current branch when the currentBranchComboBox current index is
         # changed.
-        self.parent.connect(self.parent._ui.currentBranchComboBox,
-                     SIGNAL("currentIndexChanged(const QString&)"),
-                     self.current_branch_changed)
+        connect(self.gui.currentBranchComboBox,
+                SIGNAL("currentIndexChanged(const QString&)"),
+                self.current_branch_changed)
 
         # Apply filters when filter edit widgets are edited or when the filter
         # checkboxes are ticked.
-        box_widgets = (self.parent._ui.afterWeekdayFilterComboBox,
-                       self.parent._ui.beforeWeekdayFilterComboBox)
-        for widget in box_widgets:
-            self.parent.connect(widget, SIGNAL("currentIndexChanged (int)"),
-                         self.apply_filters)
-
-        time_edit_widgets = (self.parent._ui.afterHourFilterTimeEdit,
-                             self.parent._ui.beforeHourFilterTimeEdit)
-        for widget in time_edit_widgets:
-            self.parent.connect(widget, SIGNAL("timeChanged (const QTime&)"),
-                         self.apply_filters)
-
-        date_edit_widgets = (self.parent._ui.afterDateFilterDateEdit,
-                             self.parent._ui.beforeDateFilterDateEdit)
-        for widget in date_edit_widgets:
-            self.parent.connect(widget, SIGNAL("dateChanged (const QDate&)"),
-                         self.apply_filters)
-
-        line_edit_widgets = (self.parent._ui.nameEmailFilterLineEdit,
-                             self.parent._ui.commitFilterLineEdit)
-        for widget in line_edit_widgets:
-            self.parent.connect(widget, SIGNAL("returnPressed()"),
-                         self.apply_filters)
-
-        filter_checkbox_widgets = (self.parent._ui.afterWeekdayFilterCheckBox,
-                                   self.parent._ui.beforeWeekdayFilterCheckBox,
-                                   self.parent._ui.afterHourFilterCheckBox,
-                                   self.parent._ui.beforeHourFilterCheckBox,
-                                   self.parent._ui.afterDateFilterCheckBox,
-                                   self.parent._ui.beforeDateFilterCheckBox,
-                                   self.parent._ui.nameEmailFilterCheckBox,
-                                   self.parent._ui.commitFilterCheckBox,
-                                   self.parent._ui.localOnlyFilterCheckBox)
-        for widget in filter_checkbox_widgets:
-            self.parent.connect(widget, SIGNAL("stateChanged(int)"),
-                         self.apply_filters)
+        filters_widgets = {
+            "currentIndexChanged (int)" : (self.gui.afterWeekdayFilterComboBox,
+                                          self.gui.beforeWeekdayFilterComboBox),
+            "timeChanged (const QTime&)": (self.gui.afterHourFilterTimeEdit,
+                                           self.gui.beforeHourFilterTimeEdit),
+            "dateChanged (const QDate&)": (self.gui.afterDateFilterDateEdit,
+                                           self.gui.beforeDateFilterDateEdit),
+            "returnPressed()"           : (self.gui.nameEmailFilterLineEdit,
+                                           self.gui.commitFilterLineEdit),
+            "stateChanged(int)"         : (self.gui.afterWeekdayFilterCheckBox,
+                                           self.gui.beforeWeekdayFilterCheckBox,
+                                           self.gui.afterHourFilterCheckBox,
+                                           self.gui.beforeHourFilterCheckBox,
+                                           self.gui.afterDateFilterCheckBox,
+                                           self.gui.beforeDateFilterCheckBox,
+                                           self.gui.nameEmailFilterCheckBox,
+                                           self.gui.commitFilterCheckBox,
+                                           self.gui.localOnlyFilterCheckBox),
+        }
+        for signal, widgets in filters_widgets.items():
+            for widget in widgets:
+                connect(widget, SIGNAL(signal), self.apply_filters)
 
         # Connecting the re-order push button to the re-order method.
-        _connect_button(self.parent._ui.reOrderPushButton, self.reorder_pushed)
+        _connect_button(self.gui.reOrderPushButton, self.reorder_pushed)
 
     def create_checkboxes(self):
         """
@@ -223,10 +210,10 @@ class FilterMainClass():
             displayed or what options should be set to the model (i.e. should we
             display the weekday, etc.)
         """
-        iter = 0
+        count = 0
         for checkbox_name in AVAILABLE_CHOICES:
-            checkbox = QCheckBox(self.parent._ui.centralwidget)
-            self.parent._ui.checkboxLayout.addWidget(checkbox, 0, iter, 1, 1)
+            checkbox = QCheckBox(self.gui.centralwidget)
+            self.gui.checkboxLayout.addWidget(checkbox, 0, count, 1, 1)
             self._checkboxes[checkbox_name] = checkbox
             checkbox.setText(QApplication.translate("MainWindow",
                                                     NAMES[checkbox_name], None,
@@ -235,11 +222,11 @@ class FilterMainClass():
                 checkbox.setCheckState(Qt.Checked)
             self.parent.connect(checkbox, SIGNAL("stateChanged(int)"),
                                 self.refresh_checkboxes)
-            iter += 1
+            count += 1
 
         for checkbox_name in AVAILABLE_OPTIONS:
-            checkbox = QCheckBox(self.parent._ui.centralwidget)
-            self.parent._ui.checkboxLayout.addWidget(checkbox, 0, iter, 1, 1)
+            checkbox = QCheckBox(self.gui.centralwidget)
+            self.gui.checkboxLayout.addWidget(checkbox, 0, count, 1, 1)
             self._checkboxes[checkbox_name] = checkbox
             checkbox.setText(QApplication.translate("MainWindow",
                                         AVAILABLE_OPTIONS[checkbox_name], None,
@@ -248,11 +235,11 @@ class FilterMainClass():
                 checkbox.setCheckState(Qt.Checked)
             self.parent.connect(checkbox, SIGNAL("stateChanged(int)"),
                          self.refresh_display_options)
-            iter += 1
+            count += 1
 
-        spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding,
+        spacer_item = QSpacerItem(40, 20, QSizePolicy.Expanding,
                                  QSizePolicy.Minimum)
-        self.parent._ui.checkboxLayout.addItem(spacerItem, 0, iter, 1, 1)
+        self.gui.checkboxLayout.addItem(spacer_item, 0, count, 1, 1)
         self.refresh_checkboxes()
         self.refresh_display_options()
 
@@ -266,38 +253,38 @@ class FilterMainClass():
         for checkbox_name in AVAILABLE_CHOICES:
             column_index = AVAILABLE_CHOICES.index(checkbox_name)
             if self._checkboxes[checkbox_name].isChecked():
-                self.parent._ui.tableView.showColumn(column_index)
+                self.gui.tableView.showColumn(column_index)
                 self._shown_columns.append(column_index)
             else:
-                self.parent._ui.tableView.hideColumn(column_index)
+                self.gui.tableView.hideColumn(column_index)
 
-        self.parent._ui.tableView.resizeColumnsToContents()
-        self.parent._ui.tableView.horizontalHeader().setStretchLastSection(True)
+        self.gui.tableView.resizeColumnsToContents()
+        self.gui.tableView.horizontalHeader().setStretchLastSection(True)
 
     def refresh_display_options(self):
         """
             When a "display option" is checked or unchecked, we set the display
             options on the model.
         """
-        model = self.parent._ui.tableView.model()
+        model = self.gui.tableView.model()
         for option_name in AVAILABLE_OPTIONS:
             if self._checkboxes[option_name].isChecked():
                 model.enable_option(option_name)
             else:
                 model.disable_option(option_name)
 
-        self.parent._ui.tableView.resizeColumnsToContents()
-        self.parent._ui.tableView.horizontalHeader().setStretchLastSection(True)
+        self.gui.tableView.resizeColumnsToContents()
+        self.gui.tableView.horizontalHeader().setStretchLastSection(True)
 
     def reorder_pushed(self):
         """
             The user asks for the automatic re-order of the commits.
         """
-        q_max_date = self.parent._ui.reOrderMaxDateEdit.date()
-        q_min_date = self.parent._ui.reOrderMinDateEdit.date()
+        q_max_date = self.gui.reOrderMaxDateEdit.date()
+        q_min_date = self.gui.reOrderMinDateEdit.date()
 
-        q_max_time = self.parent._ui.reOrderMaxTimeEdit.time()
-        q_min_time = self.parent._ui.reOrderMinTimeEdit.time()
+        q_max_time = self.gui.reOrderMaxTimeEdit.time()
+        q_min_time = self.gui.reOrderMinTimeEdit.time()
 
         error = ""
         if not q_max_date >= q_min_date:
@@ -305,18 +292,18 @@ class FilterMainClass():
         elif not q_max_time >= q_min_time:
             error = "Min time is greater than max time."
         if error:
-            self.parent._ui.reOrderErrorsLabel.setText(
+            self.gui.reOrderErrorsLabel.setText(
                 QApplication.translate("MainWindow", error,
                                        None, QApplication.UnicodeUTF8))
             return
 
-        checkboxes = {self.parent._ui.reOrderWeekdayMondayCheckBox : 0,
-                      self.parent._ui.reOrderWeekdayTuesdayCheckBox : 1,
-                      self.parent._ui.reOrderWeekdayWednesdayCheckBox : 2,
-                      self.parent._ui.reOrderWeekdayThursdayCheckBox : 3,
-                      self.parent._ui.reOrderWeekdayFridayCheckBox : 4,
-                      self.parent._ui.reOrderWeekdaySaturdayCheckBox : 5,
-                      self.parent._ui.reOrderWeekdaySundayCheckBox : 6,
+        checkboxes = {self.gui.reOrderWeekdayMondayCheckBox : 0,
+                      self.gui.reOrderWeekdayTuesdayCheckBox : 1,
+                      self.gui.reOrderWeekdayWednesdayCheckBox : 2,
+                      self.gui.reOrderWeekdayThursdayCheckBox : 3,
+                      self.gui.reOrderWeekdayFridayCheckBox : 4,
+                      self.gui.reOrderWeekdaySaturdayCheckBox : 5,
+                      self.gui.reOrderWeekdaySundayCheckBox : 6,
         }
         weekdays = []
         for checkbox in checkboxes:
@@ -338,7 +325,7 @@ class FilterMainClass():
         min_time = datetime(2000, 1, 1, q_min_time.hour(),
                             q_min_time.minute(), q_min_time.second())
 
-        model = self.parent._ui.tableView.model()
+        model = self.gui.tableView.model()
         model.reorder_commits((min_date, max_date),
                               ((min_time, max_time),),
                               weekdays)
@@ -352,10 +339,10 @@ class FilterMainClass():
             if new_branch_name == branch.name:
                 self._model = model
                 if self.parent._modifications_shown:
-                    self.parent._ui.tableView.setModel(model)
+                    self.gui.tableView.setModel(model)
                 else:
                     orig_model = model.get_orig_q_git_model()
-                    self.parent._ui.tableView.setModel(orig_model)
+                    self.gui.tableView.setModel(orig_model)
                 self.refresh_checkboxes()
                 break
 
@@ -364,7 +351,7 @@ class FilterMainClass():
             When the "merge checkbox" is checked or unchecked, pass on the
             option to the model.
         """
-        model = self.parent._ui.tableView.model()
+        model = self.gui.tableView.model()
         model.setMerge(check_state == Qt.Checked)
 
     def apply_filters(self):
@@ -372,16 +359,16 @@ class FilterMainClass():
             When a "filter checkbox" is checked or unchecked, set the filters on
             the model and reset it.
         """
-        tableView = self.parent._ui.tableView
-        model = tableView.model()
+        table_view = self.gui.tableView
+        model = table_view.model()
 
         filters = []
         for checkbox_name in self._filters_values:
             checkbox = self._filterbox_byname(checkbox_name)
 
             if checkbox.checkState() == Qt.Checked:
-                filter = self._filter_byname(checkbox_name)
-                model.filter_set(checkbox_name, filter)
+                _filter = self._filter_byname(checkbox_name)
+                model.filter_set(checkbox_name, _filter)
                 filters.append(checkbox_name)
             else:
                 model.filter_unset(checkbox_name)
@@ -399,7 +386,7 @@ class FilterMainClass():
 
 
         for row in xrange(model.rowCount()):
-            tableView.showRow(row)
+            table_view.showRow(row)
 
         if total_filter_score:
             for row in xrange(model.rowCount()):
@@ -409,15 +396,15 @@ class FilterMainClass():
                     score += model.filter_score(index)
 
                 if score < total_filter_score:
-                    tableView.hideRow(row)
+                    table_view.hideRow(row)
 
-        tableView.reset()
+        table_view.reset()
 
     def _filterbox_byname(self, name):
         """
         Given a filter name, returns corresponding checkbox object
         """
-        return getattr(self.parent._ui, '%sFilterCheckBox' % name)
+        return getattr(self.gui, '%sFilterCheckBox' % name)
 
     def _filter_byname(self, name):
         """
@@ -436,20 +423,20 @@ class FilterMainClass():
             model.
         """
         if show_modifications:
-            self.parent._ui.tableView.setModel(self._model)
+            self.gui.tableView.setModel(self._model)
         else:
             # if the displayed model is the editable model
             orig_model = self._model.get_orig_q_git_model()
-            self.parent._ui.tableView.setModel(orig_model)
+            self.gui.tableView.setModel(orig_model)
 
     def show_progress_bar(self):
         """
             Shows the progress bar representing the progress of the writing
             process.
         """
-        self.parent._ui.progressBar.show()
-        self.parent._ui.applyButton.setDisabled(True)
-        self.parent._ui.cancelButton.setDisabled(True)
+        self.gui.progressBar.show()
+        self.gui.applyButton.setDisabled(True)
+        self.gui.cancelButton.setDisabled(True)
 
     def update_progress_bar(self, value):
         """
@@ -458,13 +445,13 @@ class FilterMainClass():
             :param value:
                 Progression of the write process, between 0 and 100
         """
-        self.parent._ui.progressBar.setValue(value)
+        self.gui.progressBar.setValue(value)
 
     def hide_progress_bar(self):
         """
             Hide the progress bar representing the progress of the writing
             process.
         """
-        self.parent._ui.progressBar.hide()
-        self.parent._ui.applyButton.setEnabled(True)
-        self.parent._ui.cancelButton.setEnabled(True)
+        self.gui.progressBar.hide()
+        self.gui.applyButton.setEnabled(True)
+        self.gui.cancelButton.setEnabled(True)

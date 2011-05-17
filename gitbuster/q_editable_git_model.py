@@ -10,11 +10,8 @@ from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, \
                          QDateTime, SIGNAL, QMimeData, QByteArray, \
                          QDataStream, QIODevice, QStringList, QString
 from PyQt4.QtGui import QColor
-from gfbi_core.git_model import GitModel
 from gfbi_core.editable_git_model import EditableGitModel
-from gfbi_core import NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, \
-                      ACTOR_FIELDS
-from datetime import datetime
+from gfbi_core import TIME_FIELDS, NOT_EDITABLE_FIELDS
 from gitbuster.q_git_model import QGitModel
 
 
@@ -36,7 +33,7 @@ class QEditableGitModel(QGitModel):
         self.git_model = EditableGitModel(directory=directory)
 
         self.orig_q_git_model = QGitModel(self,
-                                          model=self.git_model.get_orig_model())
+                                        model=self.git_model.get_orig_model())
         self._enabled_options = []
 
         self._all_models_dict = models_dict
@@ -64,18 +61,31 @@ class QEditableGitModel(QGitModel):
         return False
 
     def insertRows(self, position, rows=1, index=QModelIndex()):
+        """
+            Inserts a given number of rows in the model, starting at the given
+            position.
+        """
         self.beginInsertRows(QModelIndex(), position, position + rows - 1)
         self.git_model.insert_rows(position, rows)
         self.endInsertRows()
         return True
 
     def removeRows(self, position, rows=1, index=QModelIndex()):
+        """
+            Removes a given number of rows in the model, starting at the given
+            position.
+        """
         self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
         self.git_model.remove_rows(position, rows)
         self.endRemoveRows()
         return True
 
     def _data_background(self, index, field_name):
+        """
+            Returns a yellow background that should be displayed for the given
+            index if the index is modified, or calls the QGitModel method
+            instead.
+        """
         commits = self.git_model.get_commits()
         commit = commits[index.row()]
 
@@ -90,19 +100,19 @@ class QEditableGitModel(QGitModel):
             Returns the flags for the given index.
         """
         if not index.isValid():
-            return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                                Qt.ItemIsDropEnabled|
+            return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
+                                Qt.ItemIsDropEnabled |
                                 Qt.NoItemFlags)
 
         column = index.column()
         field_name = self.git_model.get_columns()[column]
 
         if field_name in NOT_EDITABLE_FIELDS:
-            return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                                Qt.ItemIsDragEnabled|
+            return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
+                                Qt.ItemIsDragEnabled |
                                 Qt.NoItemFlags)
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                            Qt.ItemIsDragEnabled|
+        return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
+                            Qt.ItemIsDragEnabled |
                             Qt.ItemIsEditable)
 
     def get_git_model(self):
@@ -140,8 +150,8 @@ class QEditableGitModel(QGitModel):
         self.sender().set_as_the_new_column_end()
         self.sender().move_at_the_column_end()
 
-    # Beyond this point, abandon all hope of seeing anything more than "proxying
-    # methods" (for instance, progress() calls git_model.progress())
+    # Beyond this point, abandon all hope of seeing anything more than
+    # "proxying methods" (for instance, progress() calls git_model.progress())
     def progress(self):
         "See GitModel for more help."
         return self.git_model.progress()
