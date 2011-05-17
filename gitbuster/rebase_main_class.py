@@ -34,7 +34,7 @@ class RebaseMainClass(QObject):
             self.parent._ui.branchCheckboxLayout.addWidget(checkbox, iter/2,
                                                            iter%2, 1, 1)
 
-            branch_view = QTableView(self)
+            branch_view = QTableView(parent)
             branch_view.setModel(model)
             for col in xrange(1, 7):
                 branch_view.hideColumn(col)
@@ -52,7 +52,7 @@ class RebaseMainClass(QObject):
                             SIGNAL("clicked(const QModelIndex&)"),
                             self.commit_clicked)
 
-            label = QLabel(self)
+            label = QLabel(parent)
             label.setText(branch.name)
 
             # Insert the view in the window's layout
@@ -72,7 +72,7 @@ class RebaseMainClass(QObject):
                             SIGNAL("stateChanged(int)"),
                             self.checkbox_clicked)
 
-        shortcut = QShortcut(QKeySequence(QKeySequence.Delete), self)
+        shortcut = QShortcut(QKeySequence(QKeySequence.Delete), parent)
         QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
 
     def focused_branch_view(self):
