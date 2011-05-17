@@ -92,7 +92,7 @@
           <item row="1" column="0">
            <widget class="QCheckBox" name="mergeCheckBox">
             <property name="text">
-             <string>Update committed date/author when authored date/author is changed</string>
+             <string>Update committed date/committer when authored date/author is changed</string>
             </property>
             <property name="checked">
              <bool>false</bool>
