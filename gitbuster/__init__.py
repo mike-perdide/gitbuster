@@ -12,13 +12,14 @@ import sys
 
 
 def main():
+    " This method launches gitbuster."
     app = QApplication(sys.argv)
 
     filepath = select_git_directory()
 
     if filepath:
-        a = MainWindow(directory=filepath, debug=True)
-        a.show()
+        window = MainWindow(directory=filepath, debug=True)
+        window.show()
         sys.exit(app.exec_())
     else:
         sys.exit(1)
