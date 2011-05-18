@@ -76,9 +76,6 @@ class ProgressThread(QThread):
 
             finished_writing_models += 1
 
-            # Repopulate the model after the writing is done.
-            model.populate()
-
         if self._use_progress_bar:
             progress_bar.emit(SIGNAL("update(int)"), 100)
             time.sleep(0.2)
