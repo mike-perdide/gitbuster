@@ -1055,12 +1055,36 @@
    </widget>
    <addaction name="menuFile"/>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionApply"/>
+   <addaction name="separator"/>
+   <addaction name="action_Hide_modifications"/>
+   <addaction name="actionShow_modifications"/>
+   <addaction name="separator"/>
+   <addaction name="actionUndo"/>
+   <addaction name="actionRedo"/>
+   <addaction name="separator"/>
+   <addaction name="actionQuit"/>
+  </widget>
   <action name="actionChange_repository">
    <property name="text">
     <string>Change &amp;repository</string>
    </property>
   </action>
   <action name="actionQuit">
+   <property name="icon">
+    <iconset resource="gitbuster.qrc">
+     <normaloff>:/images/images/system-log-out.svg</normaloff>:/images/images/system-log-out.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;Quit</string>
    </property>
@@ -1071,6 +1095,60 @@
   <action name="actionI_was_never_here">
    <property name="text">
     <string>&amp;I was never here</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="gitbuster.qrc">
+     <normaloff>:/images/images/mightyman_UndoRed.svg</normaloff>:/images/images/mightyman_UndoRed.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="gitbuster.qrc">
+     <normaloff>:/images/images/mightyman_RedoGreen.svg</normaloff>:/images/images/mightyman_RedoGreen.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="actionApply">
+   <property name="icon">
+    <iconset resource="gitbuster.qrc">
+     <normaloff>:/images/images/jean_victor_balin_check.svg</normaloff>:/images/images/jean_victor_balin_check.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Apply</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="action_Hide_modifications">
+   <property name="icon">
+    <iconset resource="gitbuster.qrc">
+     <normaloff>:/images/images/Hide.svg</normaloff>:/images/images/Hide.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Hide modifications</string>
+   </property>
+  </action>
+  <action name="actionShow_modifications">
+   <property name="icon">
+    <iconset resource="gitbuster.qrc">
+     <normaloff>:/images/images/Show.svg</normaloff>:/images/images/Show.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Show modifications</string>
    </property>
   </action>
  </widget>
@@ -1112,7 +1190,9 @@
   <tabstop>cancelButton</tabstop>
   <tabstop>tabWidget</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="gitbuster.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>reOrderMinDateEdit</sender>
