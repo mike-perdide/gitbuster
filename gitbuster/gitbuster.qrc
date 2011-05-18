@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="images">
+    <file>images/Show.svg</file>
+    <file>images/Hide.svg</file>
+    <file>images/system-log-out.svg</file>
+    <file>images/mightyman_RedoGreen.svg</file>
+    <file>images/mightyman_UndoRed.svg</file>
+    <file>images/jean_victor_balin_check.svg</file>
+  </qresource>
+</RCC>
