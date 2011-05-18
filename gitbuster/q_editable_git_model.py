@@ -85,9 +85,12 @@ class QEditableGitModel(QGitModel):
         """
         commits = self.git_model.get_commits()
         commit = commits[index.row()]
+        conflicting_commit = self.git_model.get_conflicting_commit()
 
         modifications = self.git_model.get_modifications()
-        if commit in modifications and field_name in modifications[commit]:
+        if conflicting_commit is not None and commit == conflicting_commit:
+            return QVariant(QColor(Qt.red))
+        elif commit in modifications and field_name in modifications[commit]:
             return QVariant(QColor(Qt.yellow))
         else:
             return QGitModel._data_background(self, index, field_name)
