@@ -83,18 +83,19 @@ class MainWindow(QMainWindow):
                                                     self.hide_progress_bar)
 
         # Connecting actions
-        self.connect(self._ui.actionQuit, SIGNAL("triggered(bool)"),
-                     self.close)
-
         self.connect(self._ui.actionChange_repository,
                      SIGNAL("triggered(bool)"),
                      self.change_directory)
 
-        shortcut = QShortcut(QKeySequence(QKeySequence.Undo), self)
-        QObject.connect(shortcut, SIGNAL("activated()"), self.undo_history)
+        action_shortcuts = (
+            (self._ui.actionUndo, QKeySequence.Undo, self.undo_history),
+            (self._ui.actionRedo, QKeySequence.Redo, self.redo_history),
+            (self._ui.actionQuit, QKeySequence.Quit, self.close))
+        for action, shortcut, slot in action_shortcuts:
+            action.setShortcut(shortcut)
+            QObject.connect(action, SIGNAL("triggered()"), slot)
 
-        shortcut = QShortcut(QKeySequence(QKeySequence.Redo), self)
-        QObject.connect(shortcut, SIGNAL("activated()"), self.redo_history)
+        QObject.connect(self._ui.actionApply, SIGNAL("triggered()"), self.apply)
 
     def new_history_event(self):
         """
