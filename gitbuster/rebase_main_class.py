@@ -8,7 +8,7 @@
 
 from gitbuster.branch_view_ui import Ui_BranchView
 from PyQt4.QtGui import QWidget, QCheckBox, QApplication, QTableView, QLabel, \
-                        QKeySequence, QShortcut
+                        QKeySequence, QShortcut, QMenu
 from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject, QModelIndex
 
 from gitbuster.graphics_items import CommitItem, Arrow
