@@ -2,6 +2,7 @@ SRCDIRS = gitbuster
 GENTARGETS = all clean test
 
 $(GENTARGETS): $(SRCDIRS)
+	#Make recursion
 	$(MAKE) -C $< $@
 
 install:	all
