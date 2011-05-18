@@ -1049,7 +1049,18 @@
     <addaction name="actionChange_repository"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionApply"/>
+    <addaction name="action_Hide_modifications"/>
+    <addaction name="actionShow_modifications"/>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -1088,11 +1099,6 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionI_was_never_here">
-   <property name="text">
-    <string>&amp;I was never here</string>
-   </property>
-  </action>
   <action name="actionUndo">
    <property name="icon">
     <iconset resource="gitbuster.qrc">
@@ -1100,9 +1106,6 @@
    </property>
    <property name="text">
     <string>Undo</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Z</string>
    </property>
   </action>
   <action name="actionRedo">
@@ -1112,9 +1115,6 @@
    </property>
    <property name="text">
     <string>Redo</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Y</string>
    </property>
   </action>
   <action name="actionApply">
