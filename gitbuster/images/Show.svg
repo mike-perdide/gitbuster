@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="177.66031"
+   height="179.73958"
+   id="svg4172"
+   version="1.1"
+   inkscape:version="0.48.1 r9760"
+   sodipodi:docname="zoomicons.svg">
+  <defs
+     id="defs4174" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.0925"
+     inkscape:cx="-12.791482"
+     inkscape:cy="89.869783"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1324"
+     inkscape:window-height="823"
+     inkscape:window-x="81"
+     inkscape:window-y="20"
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
+    <sodipodi:guide
+       orientation="1,0"
+       position="186.87794,525.40697"
+       id="guide5396" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="80.762238,388.54747"
+       id="guide5398" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata4177">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-212.79148,-862.49238)">
+    <g
+       id="g5363"
+       transform="translate(-29.321649,458.78572)">
+      <rect
+         transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
+         y="107.46416"
+         x="566.83423"
+         height="116.26329"
+         width="33.848808"
+         id="rect4825"
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <path
+         transform="matrix(0.47860653,0.47860653,-0.47860653,0.47860653,409.59166,98.335539)"
+         d="m 403.24232,437.1969 c 0,40.63952 -32.94484,73.58437 -73.58436,73.58437 -40.63952,0 -73.58437,-32.94485 -73.58437,-73.58437 0,-40.63952 32.94485,-73.58437 73.58437,-73.58437 40.63952,0 73.58436,32.94485 73.58436,73.58437 z"
+         sodipodi:ry="73.584366"
+         sodipodi:rx="73.584366"
+         sodipodi:cy="437.1969"
+         sodipodi:cx="329.65796"
+         id="path4823"
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:35;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         sodipodi:type="arc" />
+      <path
+         inkscape:connector-curvature="0"
+         id="rect5335"
+         d="m 351.21658,441.59165 0,16.84375 -16.84375,0 0,13.84376 16.84375,0 0,16.84375 13.8125,0 0,-16.84375 16.84375,0 0,-13.84376 -16.84375,0 0,-16.84375 -13.8125,0 z"
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.40877113;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+    </g>
+  </g>
+</svg>
