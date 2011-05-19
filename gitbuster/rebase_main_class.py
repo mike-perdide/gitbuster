@@ -22,6 +22,7 @@ class RebaseMainClass(QObject):
         self.parent = parent
         self._models = models
         self._checkboxes = {}
+        self._clicked_commit = None
 
         self._ui = self.parent._ui
         iter = 0
@@ -123,6 +124,7 @@ class RebaseMainClass(QObject):
         branch_view.setVisible(value)
 
     def commit_clicked(self, index):
+        self._clicked_commit = index
         branch_view = self.focused_branch_view()
         model = branch_view.model()
         row = index.row()
