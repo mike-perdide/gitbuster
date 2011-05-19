@@ -44,6 +44,7 @@ class RebaseMainClass(QObject):
             branch_view.setDragDropMode(branch_view.DragDrop)
             branch_view.setSelectionBehavior(branch_view.SelectRows)
             branch_view.setEditTriggers(branch_view.NoEditTriggers)
+            branch_view.setContextMenuPolicy(Qt.CustomContextMenu)
 
             QObject.connect(branch_view,
                             SIGNAL("activated(const QModelIndex&)"),
@@ -51,6 +52,10 @@ class RebaseMainClass(QObject):
             QObject.connect(branch_view,
                             SIGNAL("clicked(const QModelIndex&)"),
                             self.commit_clicked)
+
+            QObject.connect(branch_view,
+                            SIGNAL("customContextMenuRequested(const QPoint&)"),
+                            self.context_menu)
 
             label = QLabel(parent)
             label.setText(branch.name)
@@ -74,6 +79,11 @@ class RebaseMainClass(QObject):
 
         shortcut = QShortcut(QKeySequence(QKeySequence.Delete), parent)
         QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
+
+    def context_menu(self, q_point):
+        menu = QMenu()
+        branch_view = self.sender()
+        menu.exec_(branch_view.mapToGlobal(q_point))
 
     def focused_branch_view(self):
         """
