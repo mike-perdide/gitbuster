@@ -326,7 +326,7 @@ class FilterMainClass():
             for row in xrange(model.rowCount()):
                 score = 0
                 for column in self._shown_columns:
-                    index = model.index(row, column)
+                    index = model.createIndex(row, column)
                     score += model.filter_score(index)
 
                 if score < total_filter_score:

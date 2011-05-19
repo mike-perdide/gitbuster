@@ -129,7 +129,7 @@ class RebaseMainClass(QObject):
 
         for field in labels:
             column = model.get_columns().index(field)
-            index = model.index(row, column, QModelIndex())
+            index = model.createIndex(row, column)
 
             if "date" in field:
                 data = model.data(index, Qt.DisplayRole)

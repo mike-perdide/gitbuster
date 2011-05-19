@@ -261,7 +261,7 @@ class QEditableGitModel(QGitModel):
                     item_model = model
 
             for column, field in enumerate(self.get_columns()):
-                item_index = self.index(item_row, column, QModelIndex())
+                item_index = self.createIndex(item_row, column)
                 data = item_model.data(item_index, Qt.EditRole)
                 data_to_be_inserted[(insert_row, column)] = data
 
@@ -274,7 +274,7 @@ class QEditableGitModel(QGitModel):
 
         for item in new_items:
             for column, field in enumerate(self.get_columns()):
-                index = self.index(insert_row, column, QModelIndex())
+                index = self.createIndex(insert_row, column)
                 self.setData(index, data_to_be_inserted[(insert_row, column)])
 
             insert_row += 1
