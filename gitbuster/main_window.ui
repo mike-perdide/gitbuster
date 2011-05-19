@@ -900,6 +900,13 @@
              </property>
             </spacer>
            </item>
+           <item row="8" column="0">
+            <widget class="QPushButton" name="conflictsButton">
+             <property name="text">
+              <string>See conflicts</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
