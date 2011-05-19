@@ -82,6 +82,9 @@ class RebaseMainClass(QObject):
         QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
 
         self._ui.detailsGroupBox.hide()
+        QObject.connect(self._ui.conflictsButton,
+                        SIGNAL("clicked()"),
+                        self.conflicts)
 
     def context_menu(self, q_point):
         menu = QMenu()
@@ -151,6 +154,11 @@ class RebaseMainClass(QObject):
 
             labels[field].setText(data.toString())
 
+        if model.is_conflicting_commit(index.row()):
+            self._ui.conflictsButton.show()
+        else:
+            self._ui.conflictsButton.hide()
+
         self._ui.detailsGroupBox.show()
 
     def toggle_modifications(self, show_modifications):
@@ -163,3 +171,6 @@ class RebaseMainClass(QObject):
                 branch_view.setModel(model)
             else:
                 branch_view.setModel(model.get_orig_q_git_model())
+
+    def conflicts(self):
+        print self._clicked_commit.model().get_unmerged_files()
