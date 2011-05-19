@@ -571,7 +571,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_12" columnstretch="0,0,0,0,0,0">
         <item row="2" column="0" rowspan="2" colspan="2">
-         <widget class="QGroupBox" name="groupBox">
+         <widget class="QGroupBox" name="detailsGroupBox">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -587,7 +587,7 @@
           <property name="title">
            <string>Details</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_13" columnstretch="1,2">
+          <layout class="QGridLayout" name="detailsLayout" columnstretch="1,2">
            <item row="0" column="0">
             <widget class="QLabel" name="hexshaLabel">
              <property name="text">
@@ -907,8 +907,8 @@
          <widget class="QGroupBox" name="groupBox_2">
           <property name="minimumSize">
            <size>
-            <width>200</width>
-            <height>20</height>
+            <width>280</width>
+            <height>40</height>
            </size>
           </property>
           <property name="title">
