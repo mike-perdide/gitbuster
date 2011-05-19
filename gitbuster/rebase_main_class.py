@@ -12,6 +12,7 @@ from PyQt4.QtGui import QWidget, QCheckBox, QApplication, QTableView, QLabel, \
 from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject, QModelIndex
 
 from gitbuster.graphics_items import CommitItem, Arrow
+from gitbuster.conflicts_dialog import ConflictsDialog
 
 
 class RebaseMainClass(QObject):
@@ -173,4 +174,5 @@ class RebaseMainClass(QObject):
                 branch_view.setModel(model.get_orig_q_git_model())
 
     def conflicts(self):
-        print self._clicked_commit.model().get_unmerged_files()
+        dialog = ConflictsDialog(self._clicked_commit.model())
+        ret = dialog.exec_()
