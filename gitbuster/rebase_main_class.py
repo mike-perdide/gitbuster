@@ -81,6 +81,8 @@ class RebaseMainClass(QObject):
         shortcut = QShortcut(QKeySequence(QKeySequence.Delete), parent)
         QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
 
+        self._ui.detailsGroupBox.hide()
+
     def context_menu(self, q_point):
         menu = QMenu()
         branch_view = self.sender()
@@ -148,6 +150,8 @@ class RebaseMainClass(QObject):
                 data = model.data(index, Qt.EditRole)
 
             labels[field].setText(data.toString())
+
+        self._ui.detailsGroupBox.show()
 
     def toggle_modifications(self, show_modifications):
         """
