@@ -198,6 +198,13 @@ class QEditableGitModel(QGitModel):
         self.git_model.redo_history()
         self.reset()
 
+    def is_conflicting_commit(self, index):
+        "See GitModel for more help."
+        return self.git_model.is_conflicting_commit(index)
+
+    def get_unmerged_files(self):
+        "See GitModel for more help."
+        return self.git_model.get_unmerged_files()
 
     def mimeTypes(self):
         types = QStringList()
