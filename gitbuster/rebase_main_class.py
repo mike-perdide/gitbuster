@@ -23,15 +23,15 @@ class RebaseMainClass(QObject):
         self._models = models
         self._checkboxes = {}
 
-        _ui = self.parent._ui
+        self._ui = self.parent._ui
         iter = 0
 
         for branch, model in models.items():
-            checkbox = QCheckBox(self.parent._ui.centralwidget)
+            checkbox = QCheckBox(self._ui.centralwidget)
             checkbox.setText(QApplication.translate("MainWindow",
                                                 branch.name,
                                                 None, QApplication.UnicodeUTF8))
-            self.parent._ui.branchCheckboxLayout.addWidget(checkbox, iter/2,
+            self._ui.branchCheckboxLayout.addWidget(checkbox, iter/2,
                                                            iter%2, 1, 1)
 
             branch_view = QTableView(parent)
@@ -61,8 +61,8 @@ class RebaseMainClass(QObject):
             label.setText(branch.name)
 
             # Insert the view in the window's layout
-            _ui.viewLayout.addWidget(label, 0, iter)
-            _ui.viewLayout.addWidget(branch_view, 1, iter)
+            self._ui.viewLayout.addWidget(label, 0, iter)
+            self._ui.viewLayout.addWidget(branch_view, 1, iter)
 
             iter += 1
 
@@ -124,17 +124,16 @@ class RebaseMainClass(QObject):
 
     def commit_clicked(self, index):
         branch_view = self.focused_branch_view()
-        _ui = self.parent._ui
         model = branch_view.model()
         row = index.row()
 
         labels = {
-            'hexsha' :          _ui.hexshaHolderLabel,
-            'authored_date' :   _ui.authoredDateHolderLabel,
-            'committed_date' :  _ui.commitDateHolderLabel,
-            'author_name' :     _ui.authorHolderLabel,
-            'committer_name' :  _ui.committerHolderLabel,
-            'message' :         _ui.messageHolderTextEdit
+            'hexsha' :          self._ui.hexshaHolderLabel,
+            'authored_date' :   self._ui.authoredDateHolderLabel,
+            'committed_date' :  self._ui.commitDateHolderLabel,
+            'author_name' :     self._ui.authorHolderLabel,
+            'committer_name' :  self._ui.committerHolderLabel,
+            'message' :         self._ui.messageHolderTextEdit
         }
 
         for field in labels:
