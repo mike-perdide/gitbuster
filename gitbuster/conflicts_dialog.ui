@@ -22,21 +22,42 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="2" column="0">
+     <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,1,0,1,0,2">
+      <item row="5" column="0">
        <widget class="QTextEdit" name="conflictTextEdit"/>
       </item>
-      <item row="1" column="0">
+      <item row="3" column="0">
        <widget class="QTextEdit" name="diffTextEdit">
         <property name="enabled">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
+      <item row="1" column="0">
        <widget class="QTextEdit" name="origTextEdit">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Unmerged state</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Diff that should be applied by the commit</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>State before picking the commit</string>
         </property>
        </widget>
       </item>
@@ -66,7 +87,7 @@
      </property>
      <column>
       <property name="text">
-       <string>Name</string>
+       <string>Unmerged files</string>
       </property>
      </column>
     </widget>
