@@ -1,3 +1,14 @@
+# This script generates a repository where cherry-picking the last commit of
+# the tmp branch from the master branch will cause a merge conflict with
+# every possible state of conflict represented:
+#  * AA on Z
+#  * AU on Y
+#  * UA on X
+#  * UU on jimmy
+#  * DU on toto
+#  * UD on tata
+#  * DD on foo
+ 
 rm -rf /tmp/tests_git
 mkdir /tmp/tests_git
 cd /tmp/tests_git
