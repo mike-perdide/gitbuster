@@ -91,15 +91,14 @@ class QGitModel(QAbstractTableModel):
             return QVariant(value.split("\n")[0])
         elif field_name == "hexsha":
             return QVariant(value[:7])
-        elif field_name == "parents":
-            return value
+
         return QVariant(value)
 
     def _data_edit(self, index, field_name):
         value = self.git_model.data(index)
         if field_name == "message":
             return QVariant(value)
-        elif field_name in TIME_FIELDS:
+        elif field_name in TIME_FIELDS or field_name in ("parents", "tree"):
             return value
         return self._data_display(index, field_name)
 
