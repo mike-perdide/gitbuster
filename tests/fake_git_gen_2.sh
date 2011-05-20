@@ -17,10 +17,19 @@ git commit -m 'adding toto'
 git mv foo X
 echo "tata bloblo" > toto
 git rm tata
-git commit -a -m 'rename foo to X, changing the content of toto, removing tata (rebase me to master)'
+echo "Z tmp blabla" > Z
+git add Z
+git commit -a -m "conflictable commit
+
+rename foo to X, change the content of toto, remove tata, add Z (rebase me to master)"
 
 git checkout -
 git mv foo Y
 git commit -m 'rename foo to Y'
+
+echo "Z blabla" > Z
+git add Z
+git ci -m "adding Z"
+
 echo "other tata blabla" > tata
 git commit -a -m 'changing the content of tata'
