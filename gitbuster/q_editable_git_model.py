@@ -38,7 +38,7 @@ class QEditableGitModel(QGitModel):
 
         self._all_models_dict = models_dict
 
-    def setData(self, index, value, role=Qt.EditRole, dont_check=False):
+    def setData(self, index, value, role=Qt.EditRole):
         """
             Sets the data when the model is modified (qt model method).
         """
@@ -51,7 +51,7 @@ class QEditableGitModel(QGitModel):
             else:
                 new_value = unicode(value.toString())
 
-            self.git_model.set_data(index, new_value, dont_check=dont_check)
+            self.git_model.set_data(index, new_value)
             self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"),
                       index, index)
             return True
@@ -288,8 +288,7 @@ class QEditableGitModel(QGitModel):
             for column, field in enumerate(self.get_columns()):
                 index = self.createIndex(insert_row, column)
                 self.setData(index,
-                             data_to_be_inserted[(insert_row, column)],
-                             dont_check=True)
+                             data_to_be_inserted[(insert_row, column)])
 
             insert_row += 1
 
