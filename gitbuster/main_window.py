@@ -212,7 +212,7 @@ class MainWindow(QMainWindow):
             msgBox = ConfirmDialog(self._models)
             ret = msgBox.exec_()
 
-            if ret:
+            if ret and msgBox.checked_models():
                 log_checked = msgBox.log_checked()
                 script_checked = msgBox.script_checked()
 
