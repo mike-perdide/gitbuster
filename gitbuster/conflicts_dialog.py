@@ -42,6 +42,7 @@ class ConflictsDialog(QDialog):
                 file_item = QTreeWidgetItem(status)
                 path = unmerged_info[0]
                 file_item.setText(0, QString(path))
+                unmerged_info.append(git_status)
                 self.tree_items[file_item] = unmerged_info
 
         connect(self._ui.treeWidget,
@@ -54,7 +55,16 @@ class ConflictsDialog(QDialog):
             pass
         else:
             # This is a file item
-            path, orig_content, tmp_file, diff = self.tree_items[item]
+            path, orig_content, tmp_file, diff, git_status = \
+                                                        self.tree_items[item]
             self._ui.conflictTextEdit.setText(QString(open(tmp_file).read()))
             self._ui.diffTextEdit.setText(QString(diff))
-            self._ui.origTextEdit.setText(QString(orig_content))
+            if git_status[0] == 'D':
+                # The file wasn't present in the tree before the merge conflict
+                orig_text_edit_content = \
+                        "<font color=#FF0000>The file wasn't present in " + \
+                        "the tree before the merge conflict."
+                self._ui.origTextEdit.setHtml(QString(orig_text_edit_content))
+            else:
+                orig_text_edit_content = orig_content
+                self._ui.origTextEdit.setText(QString(orig_text_edit_content))
