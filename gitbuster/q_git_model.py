@@ -91,6 +91,8 @@ class QGitModel(QAbstractTableModel):
             return QVariant(value.split("\n")[0])
         elif field_name == "hexsha":
             return QVariant(value[:7])
+        elif field_name == "parents":
+            return value
         return QVariant(value)
 
     def _data_edit(self, index, field_name):
