@@ -144,6 +144,10 @@ class FilterMainClass():
             displayed or what options should be set to the model (i.e. should we
             display the weekday, etc.)
         """
+        # Hiding every columns (even those not listed in AVAILABLE_CHOICES)
+        for column, field in enumerate(self._model.get_columns()):
+            self.gui.tableView.hideColumn(column)
+
         count = 0
         for checkbox_name in AVAILABLE_CHOICES:
             checkbox = QCheckBox(self.gui.centralwidget)
