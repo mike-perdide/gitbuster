@@ -8,7 +8,6 @@
 #  * DU on toto
 #  * UD on tata
 #  * DD on foo
- 
 rm -rf /tmp/tests_git
 mkdir /tmp/tests_git
 cd /tmp/tests_git
