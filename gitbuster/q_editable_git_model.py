@@ -245,13 +245,23 @@ class QEditableGitModel(QGitModel):
 
         encoded_data = mime_data.data("application/vnd.text.list")
         stream = QDataStream(encoded_data, QIODevice.ReadOnly)
-        new_items = QStringList()
+        new_items = []
         rows = 0
 
         while not stream.atEnd():
             text = stream.readQString()
-            new_items.append(text)
+            item_branch, item_row_s = str(text).split(' ')
+
+            new_items.append([int(item_row_s),])
             rows += 1
+
+        # Now new_items contains 1 element lists with the row of the inserted
+        # commit. We will complete these lists with the actual Commit object.
+        # item_branch contains the name of the branch.
+
+        for (branch, model) in self._all_models_dict.items():
+            if branch.name == item_branch:
+                item_model = model
 
         # We're going to store the data to be inserted in a dictionnary before
         # inserting the rows. This is to avoid problems when copying rows from
@@ -260,12 +270,7 @@ class QEditableGitModel(QGitModel):
         data_to_be_inserted = {}
         insert_row = begin_row
         for item in new_items:
-            item_branch, item_row_s = str(item).split(' ')
-            item_row = int(item_row_s)
-
-            for (branch, model) in self._all_models_dict.items():
-                if branch.name == item_branch:
-                    item_model = model
+            item_row = item[0]
 
             for column, field in enumerate(self.get_columns()):
                 item_index = self.createIndex(item_row, column)
