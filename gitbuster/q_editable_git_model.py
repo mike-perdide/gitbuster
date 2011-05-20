@@ -293,4 +293,6 @@ class QEditableGitModel(QGitModel):
 
             insert_row += 1
 
+        self.reset()
+
         return True
