@@ -38,10 +38,11 @@ class ConflictsDialog(QDialog):
             status = QTreeWidgetItem(self._ui.treeWidget)
             status.setText(0, QString(GIT_STATUSES[git_status]))
 
-            for path, tmp_file, diff in u_files[git_status]:
+            for unmerged_info in u_files[git_status]:
                 file_item = QTreeWidgetItem(status)
+                path = unmerged_info[0]
                 file_item.setText(0, QString(path))
-                self.tree_items[file_item] = (path, tmp_file, diff)
+                self.tree_items[file_item] = unmerged_info
 
         connect(self._ui.treeWidget,
                 SIGNAL("itemClicked(QTreeWidgetItem *, int)"),
@@ -53,6 +54,7 @@ class ConflictsDialog(QDialog):
             pass
         else:
             # This is a file item
-            path, tmp_file, diff = self.tree_items[item]
+            path, orig_content, tmp_file, diff = self.tree_items[item]
             self._ui.conflictTextEdit.setText(QString(open(tmp_file).read()))
             self._ui.diffTextEdit.setText(QString(diff))
+            self._ui.origTextEdit.setText(QString(orig_content))
