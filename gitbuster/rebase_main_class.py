@@ -113,6 +113,9 @@ class RebaseMainClass(QObject):
             correct indexes.
         """
         branch_view = self.focused_branch_view()
+        if branch_view is None:
+            return False
+
         selected_indexes = branch_view.selectedIndexes()
         model = branch_view.model()
 
