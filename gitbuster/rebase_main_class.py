@@ -38,8 +38,12 @@ class RebaseMainClass(QObject):
 
             branch_view = QTableView(parent)
             branch_view.setModel(model)
-            for col in xrange(1, 7):
-                branch_view.hideColumn(col)
+
+            show_fields = ("hexsha", "message")
+            for column, field in enumerate(model.get_columns()):
+                if not field in show_fields:
+                    branch_view.hideColumn(column)
+
             branch_view.resizeColumnsToContents()
             branch_view.horizontalHeader().setStretchLastSection(True)
             branch_view.setSelectionMode(branch_view.ExtendedSelection)
