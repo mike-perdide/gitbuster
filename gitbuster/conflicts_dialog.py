@@ -7,8 +7,10 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtGui import QDialog, QTreeWidgetItem
-from PyQt4.QtCore import QString, Qt
+from PyQt4.QtCore import QString, Qt, SIGNAL, QObject
 from gitbuster.conflicts_dialog_ui import Ui_Dialog
+
+connect = QObject.connect
 
 GIT_STATUSES = {
     "DD" : "both deleted",
@@ -29,13 +31,28 @@ class ConflictsDialog(QDialog):
         self._ui = Ui_Dialog()
         self._ui.setupUi(self)
 
+        self.tree_items = {}
+
         u_files = model.get_unmerged_files()
         for git_status in u_files:
             status = QTreeWidgetItem(self._ui.treeWidget)
             status.setText(0, QString(GIT_STATUSES[git_status]))
 
-            for path, tmp_file in u_files[git_status]:
-                file_entry = QTreeWidgetItem(status)
-                file_entry.setText(0, QString(path))
+            for path, tmp_file, diff in u_files[git_status]:
+                file_item = QTreeWidgetItem(status)
+                file_item.setText(0, QString(path))
+                self.tree_items[file_item] = (path, tmp_file, diff)
 
+        connect(self._ui.treeWidget,
+                SIGNAL("itemClicked(QTreeWidgetItem *, int)"),
+                self.item_clicked)
 
+    def item_clicked(self, item, column):
+        if item.childCount():
+            # This is a top level item (a git status item)
+            pass
+        else:
+            # This is a file item
+            path, tmp_file, diff = self.tree_items[item]
+            self._ui.conflictTextEdit.setText(QString(open(tmp_file).read()))
+            self._ui.diffTextEdit.setText(QString(diff))
