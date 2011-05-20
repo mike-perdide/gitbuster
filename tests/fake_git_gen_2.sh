@@ -6,6 +6,8 @@ echo "foo blabla" > foo
 git add foo
 echo "tata blabla" > tata
 git add tata
+echo "initial input" > jimmy
+git add jimmy
 git commit -m 'initial commit'
 
 git checkout -b tmp
@@ -19,9 +21,10 @@ echo "tata bloblo" > toto
 git rm tata
 echo "Z tmp blabla" > Z
 git add Z
+echo "tmp input blabla" > jimmy
 git commit -a -m "conflictable commit
 
-rename foo to X, change the content of toto, remove tata, add Z (rebase me to master)"
+rename foo to X, change the content of toto, remove tata, add Z, change the content of jimmy (rebase me to master)"
 
 git checkout -
 git mv foo Y
@@ -33,3 +36,6 @@ git ci -m "adding Z"
 
 echo "other tata blabla" > tata
 git commit -a -m 'changing the content of tata'
+
+echo "master input blabla" > jimmy
+git commit -a -m 'changing the content of jimmy'
