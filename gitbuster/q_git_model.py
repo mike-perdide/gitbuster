@@ -13,9 +13,7 @@ from gfbi_core.git_model import GitModel
 from gfbi_core import NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, \
                       ACTOR_FIELDS
 from datetime import datetime
-from gitbuster.graphics_items import CommitItem
 
-COLUMN_X_OFFSET = 50
 
 class QGitModel(QAbstractTableModel):
 
