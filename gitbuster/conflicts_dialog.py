@@ -34,11 +34,15 @@ class ConflictsDialog(QDialog):
         self.tree_items = {}
         self._solutions = {}
         self._current_path = ""
+        self._radio_choices = {self._ui.deleteRadioButton       : "delete",
+                               self._ui.addRadioButton          : "add",
+                               self._ui.addCustomRadioButton    : "add_custom"}
 
         self._u_files = model.get_unmerged_files()
         u_files = self._u_files
 
         for status in [u_info["git_status"] for u_info in u_files.values()]:
+
             status_item = QTreeWidgetItem(self._ui.treeWidget)
             status_item.setText(0, QString(GIT_STATUSES[status]))
 
@@ -48,13 +52,16 @@ class ConflictsDialog(QDialog):
                 file_item.setText(0, QString(u_path))
                 self.tree_items[file_item] = u_path
 
+        self.connect_signals()
+
+        # Hide every widget of the conflict details layout.
+        self.show_all_details(False)
+
+    def connect_signals(self):
         connect(self._ui.treeWidget,
                 SIGNAL("itemClicked(QTreeWidgetItem *, int)"),
                 self.item_clicked)
 
-        self._radio_choices = {self._ui.deleteRadioButton       : "delete",
-                               self._ui.addRadioButton          : "add",
-                               self._ui.addCustomRadioButton    : "add_custom"}
         for button in self._radio_choices:
             connect(button, SIGNAL("clicked()"), self.radio_button_clicked)
 
