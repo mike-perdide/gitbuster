@@ -302,8 +302,8 @@ class QGitModel(QAbstractTableModel):
                     return 1
 
         elif field_name in TEXT_FIELDS:
-            if "commit" in filters:
-                match = str(filters["commit"])
+            if "message" in filters:
+                match = str(filters["message"])
                 commit_message = self.git_model.data(index)
                 if match and match in commit_message:
                     return 1
