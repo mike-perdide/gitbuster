@@ -68,6 +68,9 @@ class ConflictsDialog(QDialog):
         # Hide every widget of the conflict details layout.
         self.show_all_details(False)
 
+        connect(self._ui.applySolutionsButton, SIGNAL("clicked()"),
+                self.apply_solutions)
+
     def show_all_details(self, show):
         conDetLayout = self._ui.conflictDetailsGridLayout
 
@@ -175,3 +178,27 @@ class ConflictsDialog(QDialog):
             else:
                 orig_text_edit_content = orig_content
                 self._ui.origTextEdit.setText(QString(orig_text_edit_content))
+
+    def apply_solutions(self):
+        """
+            When the "Apply solutions" button is clicked, check that all
+            conflicts have been marked as resolved, and pass it on to
+            the model.
+        """
+        # Saved the current path edited
+        self.set_choice()
+
+        all_solved = True
+        for u_file in self._u_files:
+            tree_item = [item for item in self.tree_items
+                         if self.tree_items[item] == u_file][0]
+
+            if u_file not in self._solutions:
+                all_solved = False
+                tree_item.setBackgroundColor(0, Qt.red)
+            else:
+                tree_item.setBackgroundColor(0, Qt.transparent)
+
+        if all_solved:
+            #model.set_conflict_solutions(self._solutions)
+            pass
