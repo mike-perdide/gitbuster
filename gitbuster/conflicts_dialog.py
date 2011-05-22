@@ -63,8 +63,22 @@ class ConflictsDialog(QDialog):
             orig_content = u_info["orig_content"]
             git_status = u_info["git_status"]
 
-            self._ui.conflictTextEdit.setText(QString(open(tmp_path).read()))
-            self._ui.diffTextEdit.setText(QString(diff))
+            if git_status == 'DD':
+                conflict_content = \
+                        "<font color=#FF0000>The file isn't present after " + \
+                        "the merge conflict."
+                self._ui.conflictTextEdit.setText(QString(conflict_content))
+            else:
+                conflict_content = open(tmp_path).read()
+                self._ui.conflictTextEdit.setText(QString(conflict_content))
+
+            if git_status == 'AU':
+                diff_text_edit_content = \
+                        "<font color=#FF0000>The file isn't present in " + \
+                        "the conflicting commit tree."
+                self._ui.diffTextEdit.setText(QString(diff_text_edit_content))
+            else:
+                self._ui.diffTextEdit.setText(QString(diff))
 
             if git_status in ('UA', 'DU', 'DD'):
                 # The file wasn't present in the tree before the merge conflict
