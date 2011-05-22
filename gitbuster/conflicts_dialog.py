@@ -89,14 +89,29 @@ class ConflictsDialog(QDialog):
             orig_content = u_info["orig_content"]
             git_status = u_info["git_status"]
 
+            add_available_states = ('DU', 'UD', 'UA', 'AU')
+            delete_available_states = ('DD', 'DU', 'UD', 'UA', 'AU')
+
+            if git_status in add_available_states:
+                self._ui.addRadioButton.show()
+            else:
+                self._ui.addRadioButton.hide()
+
+            if git_status in delete_available_states:
+                self._ui.deleteRadioButton.show()
+            else:
+                self._ui.deleteRadioButton.hide()
+
             if git_status == 'DD':
                 conflict_content = \
                         "<font color=#FF0000>The file isn't present after " + \
                         "the merge conflict."
                 self._ui.conflictTextEdit.setText(QString(conflict_content))
+                self._ui.addCustomRadioButton.hide()
             else:
                 conflict_content = open(tmp_path).read()
                 self._ui.conflictTextEdit.setText(QString(conflict_content))
+                self._ui.addCustomRadioButton.show()
 
             if git_status == 'AU':
                 diff_text_edit_content = \
