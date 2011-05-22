@@ -66,21 +66,21 @@
        </widget>
       </item>
       <item row="8" column="0" colspan="2">
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="deleteRadioButton">
         <property name="text">
          <string>Deleting the file</string>
         </property>
        </widget>
       </item>
       <item row="9" column="0" colspan="2">
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="addRadioButton">
         <property name="text">
          <string>Adding the file</string>
         </property>
        </widget>
       </item>
       <item row="10" column="0" colspan="2">
-       <widget class="QRadioButton" name="radioButton_3">
+       <widget class="QRadioButton" name="addCustomRadioButton">
         <property name="text">
          <string>Adding the file with a custom content</string>
         </property>
