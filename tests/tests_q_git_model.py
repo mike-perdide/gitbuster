@@ -2,8 +2,11 @@
     This test script aims at testing QGitModel, without any modifications.
 """
 from gitbuster.q_git_model import QGitModel
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QModelIndex
 from subprocess import Popen, PIPE
+import trace
+import sys
+
 import os
 
 TEST_DIR = "/tmp/tests_git"
@@ -29,19 +32,21 @@ def read_commits_from_log(commits_storage_list):
 def set_test_values(dir):
     """
         This will set the global branches, wallace_branch_name,
-        wallace_branch_commits, wallace_branch_model, master_branch_model.
+        wallace_branch_commits, TEST_wallace_branch_model, TEST_master_branch_model.
     """
     global TEST_branches
     global TEST_wallace_branch_name
     global TEST_wallace_branch_commits
-    global wallace_branch_model
-    global master_branch_model
-    wallace_branch_model = QGitModel(TEST_DIR)
+    global TEST_wallace_branch_model
+    global TEST_master_branch_model
+    global TEST_master_branch
+    TEST_wallace_branch_model = QGitModel(TEST_DIR)
 
-    branches = wallace_branch_model.get_branches()
-    master_brch = [branch for branch in branches if branch.name == 'master'][0]
-    master_branch_model = QGitModel(TEST_DIR)
-    master_branch_model.set_current_branch(master_brch)
+    branches = TEST_wallace_branch_model.get_branches()
+    TEST_master_branch = [branch for branch in branches
+                          if branch.name == 'master'][0]
+    TEST_master_branch_model = QGitModel(TEST_DIR)
+    TEST_master_branch_model.set_current_branch(TEST_master_branch)
 
     stdout, stderr = run_command("git branch")
     for line in stdout:
@@ -64,48 +69,71 @@ def check(tested_value, correct_value, err):
     assert tested_value == correct_value, err + \
             " '%s' instead of '%s'." % (tested_value, correct_value)
 
-def test_wallace_branch_init():
-    model_wallace_branch = wallace_branch_model.get_current_branch().name
+def test_get_current_branch():
+    model_current_branch = TEST_wallace_branch_model.get_current_branch().name
     error = "The wallace branch after QGitModel creation isn't correct."
-    check(model_wallace_branch, TEST_wallace_branch_name, error)
+    check(model_current_branch, TEST_wallace_branch_name, error)
 
-def test_number_rows():
+def test_row_count():
     error = "The wallace QGitModel doesn't contain the right number of rows."
-    check(wallace_branch_model.rowCount(), len(TEST_wallace_branch_commits),
+    check(TEST_wallace_branch_model.rowCount(), len(TEST_wallace_branch_commits),
           error)
 
     error = "The master QGitModel doesn't contain the right number of rows."
-    check(master_branch_model.rowCount(), len(TEST_master_branch_commits),
+    check(TEST_master_branch_model.rowCount(), len(TEST_master_branch_commits),
           error)
 
-def test_number_columns():
+def test_column_count():
     error = "The wallace QGitModel doesn't contain the right numer of columns."
-    check(wallace_branch_model.columnCount(), TEST_column_count, error)
+    check(TEST_wallace_branch_model.columnCount(), TEST_column_count, error)
 
-def test_message_column():
-    message_column = wallace_branch_model.get_columns().index('message')
+def test_data_message():
+    message_column = TEST_wallace_branch_model.get_columns().index('message')
     error = "The commit's message isn't correct."
     for row, commit in enumerate(TEST_wallace_branch_commits):
-        index = wallace_branch_model.createIndex(row, message_column)
+        index = TEST_wallace_branch_model.createIndex(row, message_column)
 
-        check(str(wallace_branch_model.data(index, Qt.EditRole).toString()),
+        check(str(TEST_wallace_branch_model.data(index, Qt.EditRole).toString()),
               commit[1], error)
 
     for row, commit in enumerate(TEST_master_branch_commits):
-        index = master_branch_model.createIndex(row, message_column)
+        index = TEST_master_branch_model.createIndex(row, message_column)
 
-        check(str(master_branch_model.data(index, Qt.EditRole).toString()),
+        check(str(TEST_master_branch_model.data(index, Qt.EditRole).toString()),
               commit[1], error)
 
-def test_number_branches():
-    wallace_branches = wallace_branch_model.get_branches()
+def test_get_branches():
+    wallace_branches = TEST_wallace_branch_model.get_branches()
 
     error = "The QGitModel doesn't know the right number of branches."
     check(len(wallace_branches), len(TEST_branches), error)
 
+def test_parent():
+    index = TEST_wallace_branch_model.createIndex(0, 0)
+    assert isinstance(TEST_wallace_branch_model.parent(index), QModelIndex)
+
+def test_row_of():
+    commits = TEST_wallace_branch_model.get_git_model().get_commits()
+
+def test_set_branch_twice_fails():
+    fails = False
+    try:
+        TEST_master_branch_model.set_current_branch(TEST_master_branch)
+    except Exception, err:
+        fails = True
+
+    assert fails, "We were able to set the current branch of the model twice."
+
+def wallace_tests():
+    test_get_current_branch()
+    test_row_count()
+    test_column_count()
+    test_data_message()
+    test_get_branches()
+    test_parent()
+
 setup_tests()
-test_wallace_branch_init()
-test_number_rows()
-test_number_columns()
-test_message_column()
-test_number_branches()
+wallace_tests()
+TEST_wallace_branch_model.populate()
+wallace_tests()
+test_set_branch_twice_fails()
