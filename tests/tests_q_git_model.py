@@ -12,8 +12,11 @@ import os
 
 TEST_DIR = "/tmp/tests_git"
 TEST_column_count = 10
-TEST_author_name = "Author Groom"
-TEST_author_email = "author@groom.com"
+TEST_wallace_author_name = "Author 'Wallace' Groom"
+TEST_wallace_author_email = "author-wallace@groom.com"
+TEST_master_author_name = "Author 'Master' Groom"
+TEST_master_author_email = "author-master@groom.com"
+
 TEST_committer_name = "Committer Groom"
 TEST_committer_email = "committer@groom.com"
 
@@ -156,21 +159,21 @@ def test_data_author_date():
 
 def test_data_author():
     error = "The author %s isn't correct."
-    model = TEST_wallace_branch_model
+    model = TEST_master_branch_model
 
     author_name_col = model.get_columns().index('author_name')
     author_email_col = model.get_columns().index('author_email')
 
-    for row, author in enumerate(TEST_wallace_branch_commits):
+    for row, author in enumerate(TEST_master_branch_commits):
         index = model.createIndex(row, author_name_col)
 
         tested_author_name = str(model.data(index, Qt.DisplayRole).toString())
-        check(tested_author_name, TEST_author_name, error % "name")
+        check(tested_author_name, TEST_master_author_name, error % "name")
 
         email_index = model.createIndex(row, author_email_col)
         tested_author_email = str(model.data(email_index,
                                                Qt.DisplayRole).toString())
-        check(tested_author_email, TEST_author_email, error % "email")
+        check(tested_author_email, TEST_master_author_email, error % "email")
 
 def test_data_committer():
     error = "The committer %s isn't correct."
@@ -214,6 +217,51 @@ def test_set_branch_twice_fails():
 
     assert fails, "We were able to set the current branch of the model twice."
 
+def test_filter_message():
+    dummy_model = QGitModel(TEST_DIR)
+    dummy_model.set_current_branch(TEST_master_branch)
+    dummy_model.populate()
+    message = "rodney"
+    dummy_model.filter_set("message", message)
+
+    error = "On the master branch model, wrong message filter score for %d:%d"
+    message_column = dummy_model.get_columns().index('message')
+    for row, commit in enumerate(TEST_master_branch_commits):
+        index = dummy_model.createIndex(row, message_column)
+        score = dummy_model.filter_score(index)
+
+        if message in commit[1]:
+            check(score, 1, error % (row, message_column))
+        else:
+            check(score, 0, error % (row, message_column))
+
+def test_filter_author():
+    dummy_model = QGitModel(TEST_DIR)
+    dummy_model.set_current_branch(TEST_wallace_branch)
+    dummy_model.populate()
+    author = "Wallace"
+    author_email = "-wallace"
+
+    error = "On the wallace branch model, wrong author_name filter score for %d:%d"
+    error_email = "On the wallace branch model, wrong author_email filter score for %d:%d"
+    author_name_column = dummy_model.get_columns().index('author_name')
+    author_email_column = dummy_model.get_columns().index('author_email')
+    for row, commit in enumerate(TEST_wallace_branch_commits):
+        dummy_model.filter_set("nameEmail", author)
+        index = dummy_model.createIndex(row, author_name_column)
+        score = dummy_model.filter_score(index)
+
+        dummy_model.filter_set("nameEmail", author_email)
+        index_email = dummy_model.createIndex(row, author_email_column)
+        score_email = dummy_model.filter_score(index_email)
+
+        if row != dummy_model.rowCount() - 1:
+            check(score, 1, error % (row, author_name_column))
+            check(score_email, 1, error_email % (row, author_email_column))
+        else:
+            check(score, 0, error % (row, author_name_column))
+            check(score_email, 0, error_email % (row, author_email_column))
+
 def wallace_tests():
     test_get_current_branch()
     test_row_count()
@@ -227,6 +275,7 @@ def wallace_tests():
     test_parent()
     test_set_branch_twice_fails()
     test_filter_message()
+    test_filter_author()
 
 setup_tests()
 wallace_tests()
