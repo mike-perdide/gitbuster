@@ -6,6 +6,7 @@ from PyQt4.QtCore import Qt, QModelIndex
 from subprocess import Popen, PIPE
 import trace
 import sys
+import time
 
 import os
 
@@ -71,7 +72,11 @@ def set_test_values(dir):
         TEST_branches.append(branch_name)
 
 def setup_tests():
+    global TEST_date
+    global TEST_time
+
     run_command("./fake_git_gen.sh")
+    TEST_date, TEST_time = time.strftime("%d/%m/%Y %H:%M").split(" ")
     os.chdir(TEST_DIR)
     set_test_values(TEST_DIR)
 
@@ -121,6 +126,18 @@ def test_data_message():
         check(str(TEST_master_branch_model.data(index, Qt.EditRole).toString()),
               commit[1], error)
 
+def test_data_commit_date():
+    date_error = "The commit date isn't correct."
+    time_error = "The commit time isn't correct."
+    model = TEST_wallace_branch_model
+    commit_date_col = model.get_columns().index('committed_date')
+    for row, commit in enumerate(TEST_wallace_branch_commits):
+        index = model.createIndex(row, commit_date_col)
+
+        tested_datetime = str(model.data(index, Qt.DisplayRole).toString())
+        assert TEST_date in tested_datetime, date_error
+        assert TEST_time in tested_datetime, time_error
+
 def test_get_branches():
     wallace_branches = TEST_wallace_branch_model.get_branches()
 
@@ -150,6 +167,7 @@ def wallace_tests():
     test_row_count()
     test_column_count()
     test_data_message()
+    test_data_commit_date()
     test_get_branches()
     test_parent()
 
