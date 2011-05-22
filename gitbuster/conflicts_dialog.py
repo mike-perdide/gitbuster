@@ -50,10 +50,10 @@ class ConflictsDialog(QDialog):
                 SIGNAL("itemClicked(QTreeWidgetItem *, int)"),
                 self.item_clicked)
 
-        radio_buttons = (self._ui.deleteRadioButton,
-                         self._ui.addRadioButton,
-                         self._ui.addCustomRadioButton)
-        for button in radio_buttons:
+        self._radio_choices = {self._ui.deleteRadioButton       : "delete",
+                               self._ui.addRadioButton          : "add",
+                               self._ui.addCustomRadioButton    : "add_custom"}
+        for button in self._radio_choices:
             connect(button, SIGNAL("clicked()"), self.radio_button_clicked)
 
         # Hide every widget of the conflict details layout.
