@@ -35,30 +35,40 @@ def set_test_values(dir):
         wallace_branch_commits, TEST_wallace_branch_model, TEST_master_branch_model.
     """
     global TEST_branches
-    global TEST_wallace_branch_name
+    global TEST_current_branch_name
     global TEST_wallace_branch_commits
     global TEST_wallace_branch_model
     global TEST_master_branch_model
     global TEST_master_branch
-    TEST_wallace_branch_model = QGitModel(TEST_DIR)
+    global TEST_wallace_branch
+    dummy_model = QGitModel(TEST_DIR)
 
-    branches = TEST_wallace_branch_model.get_branches()
+    branches = dummy_model.get_branches()
     TEST_master_branch = [branch for branch in branches
                           if branch.name == 'master'][0]
     TEST_master_branch_model = QGitModel(TEST_DIR)
     TEST_master_branch_model.set_current_branch(TEST_master_branch)
+    TEST_master_branch_model.populate()
+
+    TEST_wallace_branch = [branch for branch in branches
+                           if branch.name == 'wallace_branch'][0]
+    TEST_wallace_branch_model = QGitModel(TEST_DIR)
+    TEST_wallace_branch_model.set_current_branch(TEST_wallace_branch)
+    TEST_wallace_branch_model.populate()
+
+    run_command("git checkout master")
+
+    read_commits_from_log(TEST_master_branch_commits)
+
+    run_command("git checkout wallace_branch")
+    read_commits_from_log(TEST_wallace_branch_commits)
 
     stdout, stderr = run_command("git branch")
     for line in stdout:
         branch_name = line.split(' ')[-1].strip()
         if line[0] == '*':
-            TEST_wallace_branch_name = branch_name
+            TEST_current_branch_name = branch_name
         TEST_branches.append(branch_name)
-
-    read_commits_from_log(TEST_wallace_branch_commits)
-    run_command("git checkout mater")
-
-    read_commits_from_log(TEST_master_branch_commits)
 
 def setup_tests():
     run_command("./fake_git_gen.sh")
@@ -70,18 +80,27 @@ def check(tested_value, correct_value, err):
             " '%s' instead of '%s'." % (tested_value, correct_value)
 
 def test_get_current_branch():
-    model_current_branch = TEST_wallace_branch_model.get_current_branch().name
-    error = "The wallace branch after QGitModel creation isn't correct."
-    check(model_current_branch, TEST_wallace_branch_name, error)
+    error = "The branch of the QGitModel isn't correct."
+
+    model_branch = TEST_master_branch_model.get_current_branch().name
+    check(model_branch, "master", error)
+
+    model_branch = TEST_wallace_branch_model.get_current_branch().name
+    check(model_branch, "wallace_branch", error)
+
+def test_default_branch():
+    dummy_model = QGitModel(TEST_DIR)
+    default_branch_name = dummy_model.get_current_branch().name
+    error = "The default branch should be the current branch of the repository."
+    check(TEST_current_branch_name, default_branch_name, error)
 
 def test_row_count():
-    error = "The wallace QGitModel doesn't contain the right number of rows."
+    error = "The %s QGitModel doesn't contain the right number of rows."
     check(TEST_wallace_branch_model.rowCount(), len(TEST_wallace_branch_commits),
-          error)
+          error % TEST_wallace_branch_model.get_current_branch().name)
 
-    error = "The master QGitModel doesn't contain the right number of rows."
     check(TEST_master_branch_model.rowCount(), len(TEST_master_branch_commits),
-          error)
+          error % TEST_master_branch_model.get_current_branch().name)
 
 def test_column_count():
     error = "The wallace QGitModel doesn't contain the right numer of columns."
@@ -117,8 +136,10 @@ def test_row_of():
 
 def test_set_branch_twice_fails():
     fails = False
+    dummy_model = QGitModel(TEST_DIR)
+    dummy_model.set_current_branch(TEST_wallace_branch)
     try:
-        TEST_master_branch_model.set_current_branch(TEST_master_branch)
+        dummy_mode.set_current_branch(TEST_master_branch)
     except Exception, err:
         fails = True
 
