@@ -39,7 +39,7 @@ class FilterMainClass():
             "afterDate"     : self.gui.afterDateFilterDateEdit.date,
             "beforeHour"    : self.gui.beforeHourFilterTimeEdit.time,
             "afterHour"     : self.gui.afterHourFilterTimeEdit.time,
-            "commit"        : self.gui.commitFilterLineEdit.text,
+            "message"       : self.gui.messageFilterLineEdit.text,
             "nameEmail"     : self.gui.nameEmailFilterLineEdit.text,
             "localOnly"     : None
         }
@@ -120,7 +120,7 @@ class FilterMainClass():
             "dateChanged (const QDate&)": (self.gui.afterDateFilterDateEdit,
                                            self.gui.beforeDateFilterDateEdit),
             "returnPressed()"           : (self.gui.nameEmailFilterLineEdit,
-                                           self.gui.commitFilterLineEdit),
+                                           self.gui.messageFilterLineEdit),
             "stateChanged(int)"         : (self.gui.afterWeekdayFilterCheckBox,
                                            self.gui.beforeWeekdayFilterCheckBox,
                                            self.gui.afterHourFilterCheckBox,
@@ -128,7 +128,7 @@ class FilterMainClass():
                                            self.gui.afterDateFilterCheckBox,
                                            self.gui.beforeDateFilterCheckBox,
                                            self.gui.nameEmailFilterCheckBox,
-                                           self.gui.commitFilterCheckBox,
+                                           self.gui.messageFilterCheckBox,
                                            self.gui.localOnlyFilterCheckBox),
         }
         for signal, widgets in filters_widgets.items():
@@ -318,7 +318,7 @@ class FilterMainClass():
             if any(item in filters for item in group):
                 total_filter_score += 1
 
-        for item in ("nameEmail", "commit", "localOnly"):
+        for item in ("nameEmail", "message", "localOnly"):
             if item in filters:
                 total_filter_score += 1
 
