@@ -39,6 +39,7 @@ class ConflictsDialog(QDialog):
                                self._ui.addCustomRadioButton    : "add_custom"}
 
         self._u_files = model.get_unmerged_files()
+        self._model = model
         u_files = self._u_files
 
         for status in [u_info["git_status"] for u_info in u_files.values()]:
@@ -201,5 +202,6 @@ class ConflictsDialog(QDialog):
                 tree_item.setBackgroundColor(0, Qt.transparent)
 
         if all_solved:
-            #model.set_conflict_solutions(self._solutions)
-            pass
+            self._model.set_conflict_solutions(self._solutions)
+            self._model.write(True, True)
+            self.accept()
