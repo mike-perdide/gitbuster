@@ -22,70 +22,102 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="conflictDetailsGridLayout" rowstretch="0,1,0,1,0,2,0,0,0,0">
-      <item row="5" column="0">
-       <widget class="QTextEdit" name="conflictTextEdit"/>
-      </item>
-      <item row="3" column="0">
+     <layout class="QGridLayout" name="conflictDetailsGridLayout" rowstretch="0,0,1,0,1,0,2,0,0,0,0" columnstretch="0,10">
+      <item row="4" column="0" colspan="2">
        <widget class="QTextEdit" name="diffTextEdit">
         <property name="enabled">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0" colspan="2">
        <widget class="QTextEdit" name="origTextEdit">
         <property name="enabled">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item row="5" column="0" colspan="2">
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Unmerged state</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item row="3" column="0" colspan="2">
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>Diff that should be applied by the commit</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
+      <item row="1" column="0" colspan="2">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>State before picking the commit</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="7" column="0" colspan="2">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Resolve by :</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="0">
+      <item row="8" column="0" colspan="2">
        <widget class="QRadioButton" name="radioButton">
         <property name="text">
          <string>Deleting the file</string>
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
+      <item row="9" column="0" colspan="2">
        <widget class="QRadioButton" name="radioButton_2">
         <property name="text">
          <string>Adding the file</string>
         </property>
        </widget>
       </item>
-      <item row="9" column="0">
+      <item row="10" column="0" colspan="2">
        <widget class="QRadioButton" name="radioButton_3">
         <property name="text">
          <string>Adding the file with a custom content</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_6">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>filepath</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0" colspan="2">
+       <widget class="QTextEdit" name="conflictTextEdit"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Unmerged file :</string>
         </property>
        </widget>
       </item>
