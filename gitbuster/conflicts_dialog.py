@@ -50,12 +50,26 @@ class ConflictsDialog(QDialog):
                 SIGNAL("itemClicked(QTreeWidgetItem *, int)"),
                 self.item_clicked)
 
+        # Hide every widget of the conflict details layout.
+        self.show_all_details(False)
+
+    def show_all_details(self, show):
+        conDetLayout = self._ui.conflictDetailsGridLayout
+
+        for item_id in xrange(conDetLayout.count()):
+            conDetLayout.itemAt(item_id).widget().setVisible(show)
+
     def item_clicked(self, item, column):
+
         if item.childCount():
             # This is a top level item (a git status item)
-            pass
+            # Hide every widget of the conflict details layout.
+            self.show_all_details(False)
         else:
             # This is a file item
+            # Show every widget of the conflict details layout.
+            self.show_all_details(True)
+
             u_path = self.tree_items[item]
             u_info = self._u_files[u_path]
             tmp_path = u_info["tmp_path"]
