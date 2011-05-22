@@ -22,7 +22,7 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,1,0,1,0,2,0,0,0,0">
+     <layout class="QGridLayout" name="conflictDetailsGridLayout" rowstretch="0,1,0,1,0,2,0,0,0,0">
       <item row="5" column="0">
        <widget class="QTextEdit" name="conflictTextEdit"/>
       </item>
