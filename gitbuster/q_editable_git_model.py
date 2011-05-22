@@ -206,6 +206,10 @@ class QEditableGitModel(QGitModel):
         "See GitModel for more help."
         return self.git_model.get_unmerged_files()
 
+    def set_conflict_solutions(self, solutions):
+        "See GitModel for more help."
+        return self.git_model.set_conflict_solutions(solutions)
+
     def mimeTypes(self):
         types = QStringList()
         types.append("application/vnd.text.list")
