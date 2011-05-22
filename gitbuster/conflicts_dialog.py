@@ -32,6 +32,8 @@ class ConflictsDialog(QDialog):
         self._ui.setupUi(self)
 
         self.tree_items = {}
+        self._solutions = {}
+        self._current_path = ""
 
         self._u_files = model.get_unmerged_files()
         u_files = self._u_files
@@ -65,6 +67,9 @@ class ConflictsDialog(QDialog):
         for item_id in xrange(conDetLayout.count()):
             conDetLayout.itemAt(item_id).widget().setVisible(show)
 
+        # The none radio button should always be hidden.
+        self._ui.noneRadioButton.hide()
+
     def radio_button_clicked(self):
         if self.sender() == self._ui.addCustomRadioButton:
             self._ui.conflictTextEdit.setEnabled(True)
@@ -72,6 +77,19 @@ class ConflictsDialog(QDialog):
             self._ui.conflictTextEdit.setEnabled(False)
 
     def item_clicked(self, item, column):
+        # Before changing the item, store the solutions if the user made some
+        checked_radios = [radio for radio in self._radio_choices
+                          if radio.isChecked()]
+        assert len(checked_radios) < 2, \
+                "There should not be more than one checked radio button."
+
+        if checked_radios:
+            choice = self._radio_choices[checked_radios[0]]
+            custom_content = ""
+            if choice == "add_custom":
+                custom_content = str(self._ui.conflictTextEdit.toPlainText())
+
+            self._solutions[self._current_path] = (choice, custom_content)
 
         if item.childCount():
             # This is a top level item (a git status item)
@@ -83,6 +101,19 @@ class ConflictsDialog(QDialog):
             self.show_all_details(True)
 
             u_path = self.tree_items[item]
+            self._current_path = u_path
+
+            # Reset the solution radio buttons
+            for radio in self._radio_choices:
+                self._ui.noneRadioButton.setChecked(True)
+
+            # If the user already chose a solution, check the right radio button
+            if u_path in self._solutions:
+                pre_choice = self._solutions[u_path][0]
+                for radio, choice in self._radio_choices.items():
+                    if pre_choice == choice:
+                        radio.setChecked(True)
+
             u_info = self._u_files[u_path]
             tmp_path = u_info["tmp_path"]
             diff = u_info["diff"]
