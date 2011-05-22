@@ -233,7 +233,7 @@
                </widget>
               </item>
               <item row="3" column="2" colspan="2">
-               <widget class="QCheckBox" name="commitFilterCheckBox">
+               <widget class="QCheckBox" name="messageFilterCheckBox">
                 <property name="text">
                  <string>Match commit message</string>
                 </property>
@@ -247,7 +247,7 @@
                </widget>
               </item>
               <item row="3" column="4">
-               <widget class="QLineEdit" name="commitFilterLineEdit"/>
+               <widget class="QLineEdit" name="messageFilterLineEdit"/>
               </item>
               <item row="1" column="4">
                <widget class="QTimeEdit" name="beforeHourFilterTimeEdit">
@@ -1173,8 +1173,8 @@
   <tabstop>nameEmailFilterLineEdit</tabstop>
   <tabstop>beforeWeekdayFilterCheckBox</tabstop>
   <tabstop>beforeWeekdayFilterComboBox</tabstop>
-  <tabstop>commitFilterCheckBox</tabstop>
-  <tabstop>commitFilterLineEdit</tabstop>
+  <tabstop>messageFilterCheckBox</tabstop>
+  <tabstop>messageFilterLineEdit</tabstop>
   <tabstop>localOnlyFilterCheckBox</tabstop>
   <tabstop>reOrderWeekdayMondayCheckBox</tabstop>
   <tabstop>reOrderWeekdayTuesdayCheckBox</tabstop>
