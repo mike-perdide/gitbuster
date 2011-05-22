@@ -11,24 +11,27 @@ import time
 import os
 
 TEST_DIR = "/tmp/tests_git"
-TEST_branches = []
-TEST_wallace_branch_name = ""
-TEST_wallace_branch_commits = []
 TEST_column_count = 10
-TEST_master_branch_commits = []
+TEST_author_name = "Author Groom"
+TEST_author_email = "author@groom.com"
+TEST_committer_name = "Committer Groom"
+TEST_committer_email = "committer@groom.com"
 
 def run_command(command):
     handle = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
     handle.wait()
     return handle.stdout.readlines(), handle.stderr.readlines()
 
-def read_commits_from_log(commits_storage_list):
+def read_commits_from_log():
     stdout, stderr = run_command("git log --pretty='format:%h %s'")
+    commits_storage_list = []
     for line in stdout:
         short_hexsha = line.split(" ")[0]
         message = " ".join(line.split(" ")[1:]).strip()
 
         commits_storage_list.append((short_hexsha, message))
+
+    return commits_storage_list
 
 def set_test_values(dir):
     """
@@ -38,6 +41,7 @@ def set_test_values(dir):
     global TEST_branches
     global TEST_current_branch_name
     global TEST_wallace_branch_commits
+    global TEST_master_branch_commits
     global TEST_wallace_branch_model
     global TEST_master_branch_model
     global TEST_master_branch
@@ -58,13 +62,13 @@ def set_test_values(dir):
     TEST_wallace_branch_model.populate()
 
     run_command("git checkout master")
-
-    read_commits_from_log(TEST_master_branch_commits)
+    TEST_master_branch_commits = read_commits_from_log()
 
     run_command("git checkout wallace_branch")
-    read_commits_from_log(TEST_wallace_branch_commits)
+    TEST_wallace_branch_commits = read_commits_from_log()
 
     stdout, stderr = run_command("git branch")
+    TEST_branches = []
     for line in stdout:
         branch_name = line.split(' ')[-1].strip()
         if line[0] == '*':
@@ -138,6 +142,54 @@ def test_data_commit_date():
         assert TEST_date in tested_datetime, date_error
         assert TEST_time in tested_datetime, time_error
 
+def test_data_author_date():
+    date_error = "The author date isn't correct."
+    time_error = "The author time isn't correct."
+    model = TEST_wallace_branch_model
+    author_date_col = model.get_columns().index('authored_date')
+    for row, author in enumerate(TEST_wallace_branch_commits):
+        index = model.createIndex(row, author_date_col)
+
+        tested_datetime = str(model.data(index, Qt.DisplayRole).toString())
+        assert TEST_date in tested_datetime, date_error
+        assert TEST_time in tested_datetime, time_error
+
+def test_data_author():
+    error = "The author %s isn't correct."
+    model = TEST_wallace_branch_model
+
+    author_name_col = model.get_columns().index('author_name')
+    author_email_col = model.get_columns().index('author_email')
+
+    for row, author in enumerate(TEST_wallace_branch_commits):
+        index = model.createIndex(row, author_name_col)
+
+        tested_author_name = str(model.data(index, Qt.DisplayRole).toString())
+        check(tested_author_name, TEST_author_name, error % "name")
+
+        email_index = model.createIndex(row, author_email_col)
+        tested_author_email = str(model.data(email_index,
+                                               Qt.DisplayRole).toString())
+        check(tested_author_email, TEST_author_email, error % "email")
+
+def test_data_committer():
+    error = "The committer %s isn't correct."
+    model = TEST_wallace_branch_model
+
+    committer_name_col = model.get_columns().index('committer_name')
+    committer_email_col = model.get_columns().index('committer_email')
+
+    for row, committer in enumerate(TEST_wallace_branch_commits):
+        name_index = model.createIndex(row, committer_name_col)
+        tested_committer_name = str(model.data(name_index,
+                                               Qt.DisplayRole).toString())
+        check(tested_committer_name, TEST_committer_name, error % "name")
+
+        email_index = model.createIndex(row, committer_email_col)
+        tested_committer_email = str(model.data(email_index,
+                                               Qt.DisplayRole).toString())
+        check(tested_committer_email, TEST_committer_email, error % "email")
+
 def test_get_branches():
     wallace_branches = TEST_wallace_branch_model.get_branches()
 
@@ -168,11 +220,14 @@ def wallace_tests():
     test_column_count()
     test_data_message()
     test_data_commit_date()
+    test_data_author_date()
+    test_data_author()
+    test_data_committer()
     test_get_branches()
     test_parent()
+    test_set_branch_twice_fails()
+    test_filter_message()
 
 setup_tests()
 wallace_tests()
-TEST_wallace_branch_model.populate()
-wallace_tests()
-test_set_branch_twice_fails()
+# we should test the master branch model
