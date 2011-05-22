@@ -45,6 +45,7 @@ class ConflictsDialog(QDialog):
 
             status_item = QTreeWidgetItem(self._ui.treeWidget)
             status_item.setText(0, QString(GIT_STATUSES[status]))
+            status_item.setExpanded(True)
 
             for u_path in [u_path for u_path in u_files
                            if u_files[u_path]["git_status"] == status]:
