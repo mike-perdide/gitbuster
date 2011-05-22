@@ -1,6 +1,12 @@
 rm -rf /tmp/tests_git
 mkdir /tmp/tests_git
 cd /tmp/tests_git
+
+export GIT_COMMITTER_NAME="Committer Groom"
+export GIT_COMMITTER_EMAIL="committer@groom.com"
+export GIT_AUTHOR_NAME="Author Groom"
+export GIT_AUTHOR_EMAIL="author@groom.com"
+
 git init
 echo "init" > file1
 git add file1
