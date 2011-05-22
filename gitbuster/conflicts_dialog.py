@@ -33,15 +33,18 @@ class ConflictsDialog(QDialog):
 
         self.tree_items = {}
 
-        u_files = model.get_unmerged_files()
-        for git_status in u_files:
-            status = QTreeWidgetItem(self._ui.treeWidget)
-            status.setText(0, QString(GIT_STATUSES[git_status]))
+        self._u_files = model.get_unmerged_files()
+        u_files = self._u_files
 
-            for path, unmerged_info in u_files[git_status].items():
-                file_item = QTreeWidgetItem(status)
-                file_item.setText(0, QString(path))
-                self.tree_items[file_item] = path, unmerged_info, git_status
+        for status in [u_info["git_status"] for u_info in u_files.values()]:
+            status_item = QTreeWidgetItem(self._ui.treeWidget)
+            status_item.setText(0, QString(GIT_STATUSES[status]))
+
+            for u_path in [u_path for u_path in u_files
+                           if u_files[u_path]["git_status"] == status]:
+                file_item = QTreeWidgetItem(status_item)
+                file_item.setText(0, QString(u_path))
+                self.tree_items[file_item] = u_path
 
         connect(self._ui.treeWidget,
                 SIGNAL("itemClicked(QTreeWidgetItem *, int)"),
@@ -53,9 +56,14 @@ class ConflictsDialog(QDialog):
             pass
         else:
             # This is a file item
-            path, unmerged_info, git_status = self.tree_items[item]
-            tmp_file, diff, orig_content = unmerged_info
-            self._ui.conflictTextEdit.setText(QString(open(tmp_file).read()))
+            u_path = self.tree_items[item]
+            u_info = self._u_files[u_path]
+            tmp_path = u_info["tmp_path"]
+            diff = u_info["diff"]
+            orig_content = u_info["orig_content"]
+            git_status = u_info["git_status"]
+
+            self._ui.conflictTextEdit.setText(QString(open(tmp_path).read()))
             self._ui.diffTextEdit.setText(QString(diff))
             if git_status[0] == 'D':
                 # The file wasn't present in the tree before the merge conflict
