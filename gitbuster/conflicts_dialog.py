@@ -83,8 +83,11 @@ class ConflictsDialog(QDialog):
         else:
             self._ui.conflictTextEdit.setEnabled(False)
 
-    def item_clicked(self, item, column):
-        # Before changing the item, store the solutions if the user made some
+    def set_choice(self):
+        """
+            When called, this method uses the current path and the radio buttons
+            to find out what choice must be saved.
+        """
         checked_radios = [radio for radio in self._radio_choices
                           if radio.isChecked()]
         assert len(checked_radios) < 2, \
@@ -97,6 +100,10 @@ class ConflictsDialog(QDialog):
                 custom_content = str(self._ui.conflictTextEdit.toPlainText())
 
             self._solutions[self._current_path] = (choice, custom_content)
+
+    def item_clicked(self, item, column):
+        # Before changing the item, store the solutions if the user made some
+        self.set_choice()
 
         if item.childCount():
             # This is a top level item (a git status item)
