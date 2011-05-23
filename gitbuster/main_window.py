@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):
         self._history = []
         self._last_history_event = -1
 
+        self._applying = False
         self._ui.progressBar.hide()
 
         self.connect_slots()
@@ -207,20 +208,53 @@ class MainWindow(QMainWindow):
         """
             Write the modifications to the git repository.
         """
+        if self._applying:
+            # Can't apply if we're already applying
+            return
+
         if True in [model.get_modified_count() > 0
                     for model in self._models.values()]:
+
             msgBox = ConfirmDialog(self._models)
             ret = msgBox.exec_()
 
             if ret and msgBox.checked_models():
-                log_checked = msgBox.log_checked()
-                script_checked = msgBox.script_checked()
+                log = msgBox.log_checked()
+                script = msgBox.script_checked()
 
-                self.progress_thread = ProgressThread(self._ui.progressBar,
-                                                      msgBox.checked_models(),
-                                                      log_checked,
-                                                      script_checked)
-                self.progress_thread.start()
+                self.apply_models(msgBox.checked_models(), log, script)
+
+    def apply_models(self, models, log, script):
+        """
+            Applies the given models.
+        """
+        if not self._applying:
+            self.progress_thread = ProgressThread(self._ui.progressBar,
+                                                  models,
+                                                  log,
+                                                  script)
+            QObject.connect(self.progress_thread, SIGNAL("started()"),
+                            self.apply_started)
+            QObject.connect(self.progress_thread, SIGNAL("finished()"),
+                            self.apply_finished)
+
+            self.progress_thread.start()
+
+    def apply_started(self):
+        """
+            This method is called when the progress thread is started.
+        """
+        self._applying = True
+        self._ui.applyButton.setDisabled(True)
+        self._ui.cancelButton.setDisabled(True)
+
+    def apply_finished(self):
+        """
+            This method is called when the progress thread is finished.
+        """
+        self._applying = False
+        self._ui.applyButton.setEnabled(True)
+        self._ui.cancelButton.setEnabled(True)
 
     def show_progress_bar(self):
         """
@@ -228,8 +262,6 @@ class MainWindow(QMainWindow):
             process.
         """
         self._ui.progressBar.show()
-        self._ui.applyButton.setDisabled(True)
-        self._ui.cancelButton.setDisabled(True)
 
     def update_progress_bar(self, value):
         """
@@ -246,5 +278,3 @@ class MainWindow(QMainWindow):
             process.
         """
         self._ui.progressBar.hide()
-        self._ui.applyButton.setEnabled(True)
-        self._ui.cancelButton.setEnabled(True)
