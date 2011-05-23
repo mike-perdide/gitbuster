@@ -149,7 +149,7 @@ class ConflictsDialog(QDialog):
                         radio.setChecked(True)
 
             u_info = self._u_files[u_path]
-            tmp_path = u_info["tmp_path"]
+            unmerged_content = u_info["unmerged_content"]
             diff = u_info["diff"]
             orig_content = u_info["orig_content"]
             git_status = u_info["git_status"]
@@ -174,7 +174,7 @@ class ConflictsDialog(QDialog):
                 self._ui.conflictTextEdit.setText(QString(conflict_content))
                 self._ui.addCustomRadioButton.hide()
             else:
-                conflict_content = open(tmp_path).read()
+                conflict_content = unmerged_content
                 self._ui.conflictTextEdit.setText(QString(conflict_content))
                 self._ui.addCustomRadioButton.show()
 
