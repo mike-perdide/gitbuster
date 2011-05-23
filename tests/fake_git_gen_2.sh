@@ -42,7 +42,7 @@ git commit -m 'rename foo to Y'
 
 echo "Z blabla" > Z
 git add Z
-git ci -m "adding Z"
+git commit -m "adding Z"
 
 echo "other tata blabla" > tata
 git commit -a -m 'changing the content of tata'
