@@ -25,11 +25,13 @@ GIT_STATUSES = {
 
 class ConflictsDialog(QDialog):
 
-    def __init__(self, model):
+    def __init__(self, parent, model):
         QDialog.__init__(self)
 
         self._ui = Ui_Dialog()
         self._ui.setupUi(self)
+
+        self._parent = parent
 
         self.tree_items = {}
         self._solutions = {}
@@ -214,5 +216,5 @@ class ConflictsDialog(QDialog):
 
         if all_solved:
             self._model.set_conflict_solutions(self._solutions)
-            self._model.write(True, True)
+
             self.accept()
