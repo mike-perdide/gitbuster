@@ -106,7 +106,7 @@ class ConflictsDialog(QDialog):
             choice = self._radio_choices[checked_radios[0]]
             cstm_content = ""
             if choice == "add_custom":
-                cstm_content = self._ui.conflictTextEdit.toPlainText().toUtf8()
+                cstm_content = unicode(self._ui.conflictTextEdit.toPlainText())
 
             self._solutions[self._current_path] = (choice, cstm_content)
 
