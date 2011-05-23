@@ -131,6 +131,7 @@ class ConflictsDialog(QDialog):
 
             u_path = self.tree_items[item]
             self._current_path = u_path
+            self._ui.filepathLabel.setText(QString(u_path))
 
             # Reset the solution radio buttons
             for radio in self._radio_choices:
