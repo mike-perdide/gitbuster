@@ -42,9 +42,11 @@ class ConflictsDialog(QDialog):
 
         self._u_files = model.get_unmerged_files()
         self._model = model
+
         u_files = self._u_files
 
-        for status in [u_info["git_status"] for u_info in u_files.values()]:
+        statuses = set([u_info["git_status"] for u_info in u_files.values()])
+        for status in statuses:
 
             status_item = QTreeWidgetItem(self._ui.treeWidget)
             status_item.setText(0, QString(GIT_STATUSES[status]))
