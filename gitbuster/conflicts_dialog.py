@@ -107,6 +107,16 @@ class ConflictsDialog(QDialog):
             self._solutions[self._current_path] = (choice, custom_content)
 
     def item_clicked(self, item, column):
+        """
+            When a QTreeWidgetItem is clicked, display the details of the
+            related unmerged file.
+
+            :param item:
+                The clicked QTreeWidgetItem.
+
+            :param column:
+                The clicked column (unused).
+        """
         # Before changing the item, store the solutions if the user made some
         self.set_choice()
 
