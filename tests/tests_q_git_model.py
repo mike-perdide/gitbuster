@@ -4,8 +4,6 @@
 from gitbuster.q_git_model import QGitModel
 from PyQt4.QtCore import Qt, QModelIndex
 from subprocess import Popen, PIPE
-import trace
-import sys
 import time
 
 import os
