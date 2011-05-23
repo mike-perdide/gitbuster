@@ -102,11 +102,11 @@ class ConflictsDialog(QDialog):
 
         if checked_radios:
             choice = self._radio_choices[checked_radios[0]]
-            custom_content = ""
+            cstm_content = ""
             if choice == "add_custom":
-                custom_content = str(self._ui.conflictTextEdit.toPlainText())
+                cstm_content = self._ui.conflictTextEdit.toPlainText().toUtf8()
 
-            self._solutions[self._current_path] = (choice, custom_content)
+            self._solutions[self._current_path] = (choice, cstm_content)
 
     def item_clicked(self, item, column):
         """
