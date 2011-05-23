@@ -177,8 +177,8 @@ class ConflictsDialog(QDialog):
                 self._ui.conflictTextEdit.setText(QString(conflict_content))
                 self._ui.addCustomRadioButton.hide()
             else:
-                conflict_content = unmerged_content
-                self._ui.conflictTextEdit.setText(QString(conflict_content))
+                conflict_content = QString(unmerged_content)
+                self._ui.conflictTextEdit.setText(conflict_content)
                 self._ui.addCustomRadioButton.show()
 
             if git_status == 'AU':
