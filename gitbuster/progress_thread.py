@@ -82,4 +82,3 @@ class ProgressThread(QThread):
             progress_bar.emit(SIGNAL("update(int)"), 100)
             time.sleep(0.2)
             progress_bar.emit(SIGNAL("stopping"))
-
