@@ -34,6 +34,7 @@ class ConflictsDialog(QDialog):
         self._parent = parent
 
         self.tree_items = {}
+        self._status_items = []
         self._solutions = {}
         self._current_path = ""
         self._radio_choices = {self._ui.deleteRadioButton       : "delete",
@@ -51,6 +52,8 @@ class ConflictsDialog(QDialog):
             status_item = QTreeWidgetItem(self._ui.treeWidget)
             status_item.setText(0, QString(GIT_STATUSES[status]))
             status_item.setExpanded(True)
+
+            self._status_items.append(status_item)
 
             for u_path in [u_path for u_path in u_files
                            if u_files[u_path]["git_status"] == status]:
@@ -205,6 +208,8 @@ class ConflictsDialog(QDialog):
         # Saved the current path edited
         self.set_choice()
 
+        unsolved_items_parents = set([])
+
         all_solved = True
         for u_file in self._u_files:
             tree_item = [item for item in self.tree_items
@@ -213,8 +218,14 @@ class ConflictsDialog(QDialog):
             if u_file not in self._solutions:
                 all_solved = False
                 tree_item.setBackgroundColor(0, Qt.red)
+                unsolved_items_parents.add(tree_item.parent())
             else:
                 tree_item.setBackgroundColor(0, Qt.transparent)
+
+        # Collapse the parent if all the items are solved
+        for top_item in self._status_items:
+            if top_item not in unsolved_items_parents:
+                top_item.setExpanded(False)
 
         if all_solved:
             self._model.set_conflict_solutions(self._solutions)
