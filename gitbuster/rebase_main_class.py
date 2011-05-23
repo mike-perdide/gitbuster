@@ -13,6 +13,7 @@ from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject, QModelIndex
 
 from gitbuster.graphics_items import CommitItem, Arrow
 from gitbuster.conflicts_dialog import ConflictsDialog
+from gitbuster.progress_thread import ProgressThread
 
 
 class RebaseMainClass(QObject):
@@ -181,5 +182,22 @@ class RebaseMainClass(QObject):
                 branch_view.setModel(model.get_orig_q_git_model())
 
     def conflicts(self):
-        dialog = ConflictsDialog(self._clicked_commit.model())
+        """
+            When the conflicts button is clicked, display the conflict details
+            dialog.
+        """
+        model = self._clicked_commit.model()
+        dialog = ConflictsDialog(self, model)
         ret = dialog.exec_()
+
+        if ret:
+            # The following declarations are temporary until we implement the
+            # way the ConfirmDialog will store it's info.
+            log_checked = True
+            script_checked = True
+
+            self.progress_thread = ProgressThread(self._ui.progressBar,
+                                                  [model,],
+                                                  log_checked,
+                                                  script_checked)
+            self.progress_thread.start()
