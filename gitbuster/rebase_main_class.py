@@ -11,6 +11,7 @@ from PyQt4.QtGui import QApplication, QCheckBox, QGridLayout, QKeySequence,\
     QLabel, QLineEdit, QMenu, QPushButton, QShortcut, QTableView, QWidget
 
 from gitbuster.conflicts_dialog import ConflictsDialog
+from gitbuster.branch_name_dialog import BranchNameDialog
 from gitbuster.util import SetNameAction
 
 
@@ -107,57 +108,9 @@ class RebaseMainClass(QObject):
 
         self._ui = self.parent._ui
 
-        for position, (branch, model) in enumerate(models.items()):
-            checkbox = QCheckBox(self._ui.centralwidget)
-            checkbox.setText(QApplication.translate("MainWindow",
-                                                branch.name,
-                                                None, QApplication.UnicodeUTF8))
-            self._ui.branchCheckboxLayout.addWidget(checkbox, position/2,
-                                                           position%2, 1, 1)
-
-            branch_view = QTableView(parent)
-            branch_view.setModel(model)
-
-            show_fields = ("hexsha", "message")
-            for column, field in enumerate(model.get_columns()):
-                if not field in show_fields:
-                    branch_view.hideColumn(column)
-
-            branch_view.resizeColumnsToContents()
-            branch_view.horizontalHeader().setStretchLastSection(True)
-            branch_view.setSelectionMode(branch_view.ExtendedSelection)
-            branch_view.setDragDropMode(branch_view.DragDrop)
-            branch_view.setSelectionBehavior(branch_view.SelectRows)
-            branch_view.setEditTriggers(branch_view.NoEditTriggers)
-            branch_view.setContextMenuPolicy(Qt.CustomContextMenu)
-
-            QObject.connect(branch_view,
-                            SIGNAL("activated(const QModelIndex&)"),
-                            self.commit_clicked)
-            QObject.connect(branch_view,
-                            SIGNAL("clicked(const QModelIndex&)"),
-                            self.commit_clicked)
-
-            QObject.connect(branch_view,
-                            SIGNAL("customContextMenuRequested(const QPoint&)"),
-                            self.context_menu)
-
-            name = ButtonLineEdit(self.parent, branch, model)
-            place = position * 7
-
-            self._ui.viewLayout.addWidget(name, 0, place)
-            self._ui.viewLayout.addWidget(branch_view, 1, place)
-
-            if branch == self.parent.current_branch:
-                checkbox.setCheckState(Qt.Checked)
-            else:
-                branch_view.hide()
-                name.hide()
-
-            self._checkboxes[checkbox] = (name, branch_view, model)
-            QObject.connect(checkbox,
-                            SIGNAL("stateChanged(int)"),
-                            self.checkbox_clicked)
+        self._number_of_models = 0
+        for model in models.values():
+            self.create_model_interface(model)
 
         shortcut = QShortcut(QKeySequence(QKeySequence.Delete), parent)
         QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
@@ -167,6 +120,88 @@ class RebaseMainClass(QObject):
                         SIGNAL("clicked()"),
                         self.conflicts)
 
+    def create_model_interface(self, model):
+        """
+            This method sets up the interface for the model in the rebase tab.
+        """
+        position = self._number_of_models
+        branch = model.get_current_branch()
+
+        checkbox = QCheckBox(self._ui.centralwidget)
+        checkbox.setText(QApplication.translate("MainWindow",
+                                            branch.name,
+                                            None, QApplication.UnicodeUTF8))
+        self._ui.branchCheckboxLayout.addWidget(checkbox, position/2,
+                                                       position%2, 1, 1)
+
+        branch_view = QTableView(self.parent)
+        branch_view.setModel(model)
+
+        show_fields = ("hexsha", "message")
+        for column, field in enumerate(model.get_columns()):
+            if not field in show_fields:
+                branch_view.hideColumn(column)
+
+        branch_view.resizeColumnsToContents()
+        branch_view.horizontalHeader().setStretchLastSection(True)
+        branch_view.setSelectionMode(branch_view.ExtendedSelection)
+        branch_view.setDragDropMode(branch_view.DragDrop)
+        branch_view.setSelectionBehavior(branch_view.SelectRows)
+        branch_view.setEditTriggers(branch_view.NoEditTriggers)
+        branch_view.setContextMenuPolicy(Qt.CustomContextMenu)
+
+        QObject.connect(branch_view,
+                        SIGNAL("activated(const QModelIndex&)"),
+                        self.commit_clicked)
+        QObject.connect(branch_view,
+                        SIGNAL("clicked(const QModelIndex&)"),
+                        self.commit_clicked)
+
+        QObject.connect(branch_view,
+                        SIGNAL("customContextMenuRequested(const QPoint&)"),
+                        self.context_menu)
+
+        name = ButtonLineEdit(self.parent, branch, model)
+        place = position * 7
+
+        self._ui.viewLayout.addWidget(name, 0, place)
+        self._ui.viewLayout.addWidget(branch_view, 1, place)
+
+        if branch == self.parent.current_branch:
+            checkbox.setCheckState(Qt.Checked)
+        else:
+            branch_view.hide()
+            name.hide()
+
+        self._checkboxes[checkbox] = (name, branch_view, model)
+        QObject.connect(checkbox,
+                        SIGNAL("stateChanged(int)"),
+                        self.checkbox_clicked)
+        self._number_of_models += 1
+
+    def new_branch_name(self, model=None):
+        if not model:
+            button = self.sender()
+            model = [branch_objects[2]
+                     for branch_objects in self._checkboxes.values()
+                     if branch_objects[0] == self.sender()][0]
+        else:
+            button = [branch_objects[0]
+                      for branch_objects in self._checkboxes.values()
+                      if branch_objects[2] == model][0]
+
+        msgBox = BranchNameDialog(self)
+        ret = msgBox.exec_()
+
+        if ret:
+            new_name = msgBox.get_new_name()
+            old_name = model.get_old_branch_name()
+            if new_name != old_name:
+                model.start_history_event()
+                action = SetNameAction(old_name, new_name, model, button)
+                self.parent.add_history_action(action)
+                model.set_new_branch_name(new_name)
+                button.setText(new_name)
 
     def context_menu(self, q_point):
         """
@@ -180,6 +215,7 @@ class RebaseMainClass(QObject):
         branch_view = self.sender()
 
         indexes = branch_view.selectedIndexes()
+        selected_rows = set([index.row() for index in indexes])
 
         copy_action = menu.addAction("Copy")
         delete_action = menu.addAction("Delete")
@@ -187,6 +223,7 @@ class RebaseMainClass(QObject):
         paste_after_action.setDisabled(self._copy_data == "")
         paste_before_action = menu.addAction("Paste before")
         paste_before_action.setDisabled(self._copy_data == "")
+        create_branch_action = menu.addAction("Create branch from this commit")
 
         choosed_action = menu.exec_(branch_view.viewport().mapToGlobal(q_point))
 
@@ -197,16 +234,34 @@ class RebaseMainClass(QObject):
             self._copy_data = branch_view.model().mimeData(indexes)
 
         elif choosed_action == paste_after_action:
-            selected_rows = set([index.row() for index in indexes])
             drop_after = max(selected_rows) + 1
             branch_view.model().dropMimeData(self._copy_data, Qt.CopyAction,
                                              drop_after, 0, self.parent)
 
         elif choosed_action == paste_before_action:
-            selected_rows = set([index.row() for index in indexes])
             drop_before = min(selected_rows)
             branch_view.model().dropMimeData(self._copy_data, Qt.CopyAction,
                                              drop_before, 0, self.parent)
+
+        elif choosed_action == create_branch_action:
+            msgBox = BranchNameDialog(self)
+            ret = msgBox.exec_()
+
+            if ret:
+                new_name = msgBox.get_new_name()
+                from_model = branch_view.model()
+                from_row = min(selected_rows)
+                from_model_row = from_model, from_row
+                self.parent.create_new_branch_model(new_name, from_model_row)
+
+    def add_new_model(self, model):
+        """
+            Add a new model to this tab.
+        """
+        self.create_model_interface(model)
+        checkbox = [checkbox for checkbox in self._checkboxes
+                    if self._checkboxes[checkbox][2] == model][0]
+        checkbox.emit(SIGNAL("stateChanged(int)"), 1)
 
     def focused_branch_view(self):
         """
