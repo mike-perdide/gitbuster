@@ -86,7 +86,8 @@ class ConflictsDialog(QDialog):
         # Hide every widget of the conflict details layout.
         self.show_all_details(False)
 
-        syntax_highlight = SimpleGitMessagesHighlighter(self._ui.conflictTextEdit.document())
+        document = self._ui.conflictTextEdit.document()
+        syntax_highlight = SimpleGitMessagesHighlighter(document)
 
     def connect_signals(self):
         connect(self._ui.treeWidget,
