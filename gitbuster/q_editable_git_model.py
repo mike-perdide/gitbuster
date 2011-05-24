@@ -76,9 +76,10 @@ class QEditableGitModel(QGitModel):
             Removes a given number of rows in the model, starting at the given
             position.
         """
-        self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
+#        self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
         self.git_model.remove_rows(position, rows)
-        self.endRemoveRows()
+#        self.endRemoveRows()
+        self.reset()
         return True
 
     def data(self, index, role):
