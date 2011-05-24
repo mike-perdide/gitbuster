@@ -7,7 +7,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtGui import QMainWindow, QShortcut, QKeySequence, \
-                        QApplication
+                        QApplication, QMessageBox
 from PyQt4.QtCore import SIGNAL, QObject
 from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.q_git_model import QGitModel
@@ -71,7 +71,7 @@ class MainWindow(QMainWindow):
         """
         # Bottom bar connections
         _connect_button(self._ui.applyButton, self.apply)
-        _connect_button(self._ui.cancelButton, self.close)
+        _connect_button(self._ui.cancelButton, self.quit)
         _connect_button(self._ui.toggleModificationsButton,
                                                self.toggle_modifications)
 
@@ -91,7 +91,7 @@ class MainWindow(QMainWindow):
         action_shortcuts = (
             (self._ui.actionUndo, QKeySequence.Undo, self.undo_history),
             (self._ui.actionRedo, QKeySequence.Redo, self.redo_history),
-            (self._ui.actionQuit, QKeySequence.Quit, self.close))
+            (self._ui.actionQuit, QKeySequence.Quit, self.quit))
         for action, shortcut, slot in action_shortcuts:
             action.setShortcut(shortcut)
             QObject.connect(action, SIGNAL("triggered()"), slot)
@@ -278,3 +278,20 @@ class MainWindow(QMainWindow):
             process.
         """
         self._ui.progressBar.hide()
+
+    def quit(self):
+        """
+            Display a message if gitbuster is in applying state and quit if the
+            user still wants to.
+        """
+        ret = True
+        if self._applying:
+            msgBox = QMessageBox(self)
+            msgBox.setText("Gitbuster is currently applying !")
+            msgBox.setInformativeText("Do you still want to quit ?")
+            msgBox.setStandardButtons(msgBox.Cancel | msgBox.Apply)
+            msgBox.setDefaultButton(msgBox.Cancel)
+            ret = (msgBox.exec_() == msgBox.Apply)
+
+        if ret:
+            self.close()
