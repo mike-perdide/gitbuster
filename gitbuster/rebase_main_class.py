@@ -15,6 +15,10 @@ from gitbuster.util import SetNameAction
 
 
 class ButtonLineEdit(QWidget):
+    """
+    This widget provides a button that displays a changeable text,
+    and the text can be edited in place thanks to a lineedit
+    """
 
     def __init__(self, history_mgr, branch, model, parent=None):
         QWidget.__init__(self, parent)
@@ -65,7 +69,9 @@ class ButtonLineEdit(QWidget):
     def go_edit(self):
         self._editmode()
         name = self.branch.name
-        self.label.setText(u"<span>Change &#147;<i>%(name)s</i>&#148; into</span>" %
+        self.label.setText(u"<span>"
+            "Change &#147;<i>%(name)s</i>&#148; into"
+            "</span>" %
             {'name': name})
         self.editor.setText(name)
 
@@ -91,13 +97,10 @@ class RebaseMainClass(QObject):
 
     def __init__(self, parent, directory, models):
         QObject.__init__(self, parent)
-        print models
 
         self.parent = parent
         self._models = models
         self._checkboxes = {}
-        self._button_name_edits = {}
-        self._name_edit_buttons = {}
         self._clicked_commit = None
         self._copy_data = ""
         self._oldtext = ""
