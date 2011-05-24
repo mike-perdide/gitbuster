@@ -42,3 +42,20 @@ def select_git_directory():
     settings.sync()
 
     return filepath
+
+
+class SetNameAction:
+
+    def __init__(self, old_name, new_name, model, button):
+        self._old_name = old_name
+        self._new_name = new_name
+        self._model = model
+        self._button = button
+
+    def undo(self):
+        self._button.setText(self._old_name)
+        self._model.set_new_branch_name(self._old_name)
+
+    def redo(self):
+        self._button.setText(self._new_name)
+        self._model.set_new_branch_name(self._new_name)

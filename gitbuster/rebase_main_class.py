@@ -16,6 +16,7 @@ from gitbuster.graphics_items import CommitItem, Arrow
 from gitbuster.conflicts_dialog import ConflictsDialog
 from gitbuster.progress_thread import ProgressThread
 from gitbuster.branch_name_dialog import BranchNameDialog
+from gitbuster.util import SetNameAction
 
 
 class RebaseMainClass(QObject):
@@ -97,16 +98,27 @@ class RebaseMainClass(QObject):
 
     def new_branch_name(self, model=None):
         if not model:
+            button = self.sender()
             model = [branch_objects[2]
                      for branch_objects in self._checkboxes.values()
-                     if branch_objects[0] == self.sender()]
+                     if branch_objects[0] == self.sender()][0]
+        else:
+            button = [branch_objects[0]
+                      for branch_objects in self._checkboxes.values()
+                      if branch_objects[2] == model][0]
 
         msgBox = BranchNameDialog(self)
         ret = msgBox.exec_()
 
         if ret:
-            new_name = msgBox.nameLineEdit.text().toString()
-            model.set_new_branch_name(nename)
+            new_name = msgBox.get_new_name()
+            old_name = model.get_old_branch_name()
+            if new_name != old_name:
+                model.start_history_event()
+                action = SetNameAction(old_name, new_name, model, button)
+                self.parent.add_history_action(action)
+                model.set_new_branch_name(new_name)
+                button.setText(new_name)
 
     def context_menu(self, q_point):
         """

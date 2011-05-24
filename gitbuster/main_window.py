@@ -118,7 +118,7 @@ class MainWindow(QMainWindow):
         if activated_index == 0:
             opened_model_index = self._ui.currentBranchComboBox.currentIndex()
 
-            self._history.append((activated_index, opened_model_index, model))
+            self._history.append([activated_index, opened_model_index, model, []])
 
         else:
             checkboxes = []
@@ -126,15 +126,18 @@ class MainWindow(QMainWindow):
                 if checkbox.isChecked():
                     checkboxes.append(checkbox)
 
-            self._history.append((activated_index, checkboxes, model))
+            self._history.append([activated_index, checkboxes, model, []])
 
     def undo_history(self):
         """
             Reverts the history one event back, application wide.
         """
         if self._last_history_event >= 0:
-            model = self.reproduce_history_conditions()
+            model, actions = self.reproduce_history_conditions()
             model.undo_history()
+
+            for action in actions:
+                action.undo()
 
             if self._last_history_event > -1:
                 self._last_history_event -= 1
@@ -144,10 +147,21 @@ class MainWindow(QMainWindow):
             Replays the history one event forward, application wide.
         """
         if self._last_history_event < len(self._history) - 1:
-            model = self.reproduce_history_conditions()
+            model, actions = self.reproduce_history_conditions()
             model.redo_history()
 
+            for action in actions:
+                action.redo()
+
             self._last_history_event += 1
+
+    def add_history_action(self, action):
+        """
+            Add special history actions (actions related to the GUI, not covered
+            by the model history). For instance: setting the branch name in the
+            name button.
+        """
+        self._history[self._last_history_event][3].append(action)
 
     def reproduce_history_conditions(self):
         """
@@ -157,8 +171,8 @@ class MainWindow(QMainWindow):
             :return:
                 The model that was modified.
         """
-        tab_index, index_or_checkboxes, model = \
-                self._history[self._last_history_event]
+        tab_index, index_or_checkboxes, model, actions = \
+                                        self._history[self._last_history_event]
 
         self._ui.mainTabWidget.setCurrentIndex(tab_index)
         if tab_index == 0:
@@ -170,7 +184,7 @@ class MainWindow(QMainWindow):
                 else:
                     checkbox.setChecked(False)
 
-        return model
+        return model, actions
 
     def set_current_directory(self, directory):
         """
