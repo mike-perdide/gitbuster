@@ -6,40 +6,104 @@
 #
 # -*- coding: utf-8 -*-
 
-from gitbuster.branch_view_ui import Ui_BranchView
-from PyQt4.QtGui import QWidget, QCheckBox, QApplication, QTableView, QLabel, \
-                        QKeySequence, QShortcut, QMenu, QPushButton, \
-                        QMessageBox, QSpacerItem, QSizePolicy, QGridLayout
-from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject, QModelIndex
+from PyQt4.QtCore import QObject, Qt, SIGNAL
+from PyQt4.QtGui import QApplication, QCheckBox, QGridLayout, QKeySequence,\
+    QLabel, QLineEdit, QMenu, QPushButton, QShortcut, QTableView, QWidget
 
-from gitbuster.graphics_items import CommitItem, Arrow
 from gitbuster.conflicts_dialog import ConflictsDialog
-from gitbuster.progress_thread import ProgressThread
-from gitbuster.branch_name_dialog import BranchNameDialog
 from gitbuster.util import SetNameAction
+
+
+class ButtonLineEdit(QWidget):
+
+    def __init__(self, history_mgr, branch, model, parent=None):
+        QWidget.__init__(self, parent)
+
+        #data stored here for convenience
+        self.branch = branch
+        self.history_mgr = history_mgr
+        self.model = model
+
+        #widgets. Maybe we should use designer here.
+        self.read_button = QPushButton(self)
+        self.read_button.setToolTip("Branch name. Click to change.")
+        self.label = QLabel()
+        self.editor = QLineEdit(self)
+        self.valid_button = QPushButton("Ok")
+        #layout
+        self.box = QGridLayout(self)
+        self.box.addWidget(self.read_button, 0, 0, 1, 3)
+        self.box.addWidget(self.label, 1, 0, 1, 1)
+        self.box.addWidget(self.editor, 1, 1, 1, 1)
+        self.box.addWidget(self.valid_button, 1, 2, 1, 1)
+
+        #initial state of the widget
+        self._readmode()
+
+        #initial load of data
+        self.read_button.setText(branch.name)
+
+        #make it live
+        QObject.connect(self.read_button, SIGNAL("clicked()"), self.go_edit)
+        QObject.connect(self.editor, SIGNAL("editingFinished()"), self.go_read)
+        QObject.connect(self.valid_button, SIGNAL("clicked()"), self.go_read)
+
+
+    def _editmode(self):
+        self.read_button.hide()
+        self.valid_button.show()
+        self.editor.show()
+
+    def go_edit(self):
+        self._editmode()
+        name = self.branch.name
+        self.label.setText(u"<span>Change &#147;<i>%(name)s</i>&#148; into</span>" %
+            {'name': name})
+        self.editor.setText(name)
+
+    def _readmode(self):
+        self.editor.hide()
+        self.read_button.show()
+        self.valid_button.hide()
+
+    def go_read(self):
+        self._readmode()
+        new_name = unicode(self.editor.text())
+        old_name = self.model.get_old_branch_name()
+        if new_name == old_name:
+            return
+
+        self.read_button.setText(new_name)
+        self.model.start_history_event()
+        action = SetNameAction(old_name, new_name, self.model, self.read_button)
+        self.history_mgr.add_history_action(action)
+        self.model.set_new_branch_name(new_name)
 
 
 class RebaseMainClass(QObject):
 
     def __init__(self, parent, directory, models):
         QObject.__init__(self, parent)
+        print models
 
         self.parent = parent
         self._models = models
         self._checkboxes = {}
+        self._button_name_edits = {}
+        self._name_edit_buttons = {}
         self._clicked_commit = None
         self._copy_data = ""
+        self._oldtext = ""
 
         self._ui = self.parent._ui
-        iter = 0
 
-        for branch, model in models.items():
+        for position, (branch, model) in enumerate(models.items()):
             checkbox = QCheckBox(self._ui.centralwidget)
             checkbox.setText(QApplication.translate("MainWindow",
                                                 branch.name,
                                                 None, QApplication.UnicodeUTF8))
-            self._ui.branchCheckboxLayout.addWidget(checkbox, iter/2,
-                                                           iter%2, 1, 1)
+            self._ui.branchCheckboxLayout.addWidget(checkbox, position/2,
+                                                           position%2, 1, 1)
 
             branch_view = QTableView(parent)
             branch_view.setModel(model)
@@ -68,22 +132,19 @@ class RebaseMainClass(QObject):
                             SIGNAL("customContextMenuRequested(const QPoint&)"),
                             self.context_menu)
 
-            name_button = QPushButton(branch.name, parent=parent)
-            QObject.connect(name_button, SIGNAL("clicked()"),
-                            self.new_branch_name)
+            name = ButtonLineEdit(self.parent, branch, model)
+            place = position * 7
 
-            self._ui.viewLayout.addWidget(name_button, 0, iter * 7)
-            self._ui.viewLayout.addWidget(branch_view, 1, iter * 7)
-
-            iter += 1
+            self._ui.viewLayout.addWidget(name, 0, place)
+            self._ui.viewLayout.addWidget(branch_view, 1, place)
 
             if branch == self.parent.current_branch:
                 checkbox.setCheckState(Qt.Checked)
             else:
                 branch_view.hide()
-                name_button.hide()
+                name.hide()
 
-            self._checkboxes[checkbox] = (name_button, branch_view, model)
+            self._checkboxes[checkbox] = (name, branch_view, model)
             QObject.connect(checkbox,
                             SIGNAL("stateChanged(int)"),
                             self.checkbox_clicked)
@@ -96,29 +157,6 @@ class RebaseMainClass(QObject):
                         SIGNAL("clicked()"),
                         self.conflicts)
 
-    def new_branch_name(self, model=None):
-        if not model:
-            button = self.sender()
-            model = [branch_objects[2]
-                     for branch_objects in self._checkboxes.values()
-                     if branch_objects[0] == self.sender()][0]
-        else:
-            button = [branch_objects[0]
-                      for branch_objects in self._checkboxes.values()
-                      if branch_objects[2] == model][0]
-
-        msgBox = BranchNameDialog(self)
-        ret = msgBox.exec_()
-
-        if ret:
-            new_name = msgBox.get_new_name()
-            old_name = model.get_old_branch_name()
-            if new_name != old_name:
-                model.start_history_event()
-                action = SetNameAction(old_name, new_name, model, button)
-                self.parent.add_history_action(action)
-                model.set_new_branch_name(new_name)
-                button.setText(new_name)
 
     def context_menu(self, q_point):
         """
