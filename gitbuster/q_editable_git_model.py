@@ -21,7 +21,8 @@ DELETED_FONT.setStrikeOut(True)
 
 class QEditableGitModel(QGitModel):
 
-    def __init__(self, models_dict, directory="."):
+    def __init__(self, models_dict, directory=".", fake_branch_name="",
+                 from_model_row=None):
         """
             Initializes the git model with the repository root directory.
 
@@ -31,16 +32,28 @@ class QEditableGitModel(QGitModel):
             Non editable QGitModel can be initialized with a GitModel(to limit
             the number of GitModels).
         """
-        QGitModel.__init__(self, directory=directory)
+        QGitModel.__init__(self,
+                           directory=directory,
+                           fake_branch_name=fake_branch_name)
 
         # Overwrite the non editable git_model set in QGitModel.__init__
-        self.git_model = EditableGitModel(directory=directory)
+        self.git_model = EditableGitModel(directory=directory,
+                                          fake_branch_name=fake_branch_name)
 
-        self.orig_q_git_model = QGitModel(self,
-                                        model=self.git_model.get_orig_model())
         self._enabled_options = []
-
         self._all_models_dict = models_dict
+
+        if not fake_branch_name:
+            # If this is not a fake model
+            self.orig_q_git_model = QGitModel(self,
+                                        model=self.git_model.get_orig_model())
+        else:
+            from_model, from_row = from_model_row
+            action = Qt.CopyAction
+            for row in xrange(from_model.rowCount() - 1, from_row - 1, -1):
+                copied_data = from_model.mimeData((self.createIndex(row, 0),))
+                self.dropMimeData(copied_data, action, 0, 0, None,
+                                  filling_empty_model=True)
 
     def setData(self, index, value, role=Qt.EditRole):
         """
@@ -238,7 +251,7 @@ class QEditableGitModel(QGitModel):
 
     def set_new_branch_name(self, name):
         "See GitModel for more help."
-        return self.git_model.set_new_branch_name(name)
+        self.git_model.set_new_branch_name(name)
 
     def get_new_branch_name(self):
         "See GitModel for more help."
@@ -264,14 +277,15 @@ class QEditableGitModel(QGitModel):
         mime_data.setData("application/vnd.text.list", encoded_data)
         return mime_data
 
-    def dropMimeData(self, mime_data, action, row, col_unused, parent_unused):
+    def dropMimeData(self, mime_data, action, row, col_unused, parent_unused,
+                     filling_empty_model=False):
         if action == Qt.IgnoreAction:
             return True
 
         if not mime_data.hasFormat("application/vnd.text.list"):
             return False
 
-        if row == self.rowCount():
+        if not filling_empty_model and row == self.rowCount():
             # It's forbidden to insert before the first commit (last row of the
             # model).
             return False

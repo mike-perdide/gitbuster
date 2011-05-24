@@ -17,7 +17,7 @@ from datetime import datetime
 
 class QGitModel(QAbstractTableModel):
 
-    def __init__(self, directory=".", model=None):
+    def __init__(self, directory=".",  model=None, fake_branch_name=""):
         """
             Initializes the git model with the repository root directory.
 

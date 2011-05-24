@@ -90,6 +90,13 @@ class FilterMainClass():
             index += 1
         self.gui.currentBranchComboBox.setCurrentIndex(current_index)
 
+    def add_new_model(self, model):
+        """
+            Add a new model to this tab.
+        """
+        branch = model.get_current_branch()
+        self.gui.currentBranchComboBox.addItem("%s" % branch.name)
+
     def connect_slots(self):
         """
             Connect the slots to the objects.

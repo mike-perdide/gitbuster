@@ -39,6 +39,7 @@ class MainWindow(QMainWindow):
 
         self._models = {}
         self._modifications_shown = True
+        self._directory = directory
 
         a_model = QGitModel(directory)
         self.current_branch = a_model.get_current_branch()
@@ -64,6 +65,23 @@ class MainWindow(QMainWindow):
         self._ui.progressBar.hide()
 
         self.connect_slots()
+
+    def create_new_branch_model(self, new_name, from_model_row):
+        """
+        """
+        model = QEditableGitModel(self._models, directory=self._directory,
+                                  fake_branch_name=new_name,
+                                  from_model_row=from_model_row)
+        model.setMerge(False)
+        model.enable_option("filters")
+
+        new_branch = model.get_current_branch()
+        self._models[new_branch] = model
+        QObject.connect(model, SIGNAL("newHistoryEvent"),
+                        self.new_history_event)
+
+        self.filter_main_class.add_new_model(model)
+        self.rebase_main_class.add_new_model(model)
 
     def connect_slots(self):
         """
