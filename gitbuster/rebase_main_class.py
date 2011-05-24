@@ -196,8 +196,4 @@ class RebaseMainClass(QObject):
             log_checked = True
             script_checked = True
 
-            self.progress_thread = ProgressThread(self._ui.progressBar,
-                                                  [model,],
-                                                  log_checked,
-                                                  script_checked)
-            self.progress_thread.start()
+            self.parent.apply_models([model,], log_checked, script_checked)
