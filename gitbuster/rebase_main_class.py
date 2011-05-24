@@ -8,7 +8,8 @@
 
 from PyQt4.QtCore import QObject, Qt, SIGNAL
 from PyQt4.QtGui import QApplication, QCheckBox, QGridLayout, QKeySequence,\
-    QLabel, QLineEdit, QMenu, QPushButton, QShortcut, QTableView, QWidget
+    QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QShortcut, \
+    QTableView, QWidget
 
 from gitbuster.conflicts_dialog import ConflictsDialog
 from gitbuster.branch_name_dialog import BranchNameDialog
@@ -81,7 +82,6 @@ class ButtonLineEdit(QWidget):
             widget.setVisible(not is_edit)
 
     def go_read(self):
-        self._readmode()
         new_name = unicode(self.editor.text())
         old_name = self.model.get_old_branch_name()
         if new_name == old_name:
@@ -91,7 +91,12 @@ class ButtonLineEdit(QWidget):
         self.model.start_history_event()
         action = SetNameAction(old_name, new_name, self.model, self.read_button)
         self.history_mgr.add_history_action(action)
-        self.model.set_new_branch_name(new_name)
+        try:
+            self.model.set_new_branch_name(new_name)
+        except ValueError, err:
+            QMessageBox.warning(self, "Naming error", err.args[0])
+        else:
+            self._readmode()
 
 
 class RebaseMainClass(QObject):
@@ -128,6 +133,7 @@ class RebaseMainClass(QObject):
         branch = model.get_current_branch()
 
         checkbox = QCheckBox(self._ui.centralwidget)
+        QObject.connect(model, SIGNAL("name changed"), checkbox.setText)
         checkbox.setText(QApplication.translate("MainWindow",
                                             branch.name,
                                             None, QApplication.UnicodeUTF8))
