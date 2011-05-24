@@ -49,10 +49,18 @@ class ButtonLineEdit(QWidget):
         QObject.connect(self.valid_button, SIGNAL("clicked()"), self.go_read)
 
 
+    def _iter_widgets(self):
+        """
+        yields widgets and their belonging to edit (True) or read (False) mode
+        """
+        yield self.valid_button, True
+        yield self.editor, True
+        yield self.label, True
+        yield self.read_button, False
+
     def _editmode(self):
-        self.read_button.hide()
-        self.valid_button.show()
-        self.editor.show()
+        for widget, is_edit in self._iter_widgets():
+            widget.setVisible(is_edit)
 
     def go_edit(self):
         self._editmode()
@@ -62,9 +70,8 @@ class ButtonLineEdit(QWidget):
         self.editor.setText(name)
 
     def _readmode(self):
-        self.editor.hide()
-        self.read_button.show()
-        self.valid_button.hide()
+        for widget, is_edit in self._iter_widgets():
+            widget.setVisible(not is_edit)
 
     def go_read(self):
         self._readmode()
