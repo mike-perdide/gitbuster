@@ -6,8 +6,8 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QDialog, QTreeWidgetItem
-from PyQt4.QtCore import QString, Qt, SIGNAL, QObject
+from PyQt4.QtGui import QDialog, QTreeWidgetItem, QSyntaxHighlighter
+from PyQt4.QtCore import QString, Qt, SIGNAL, QObject, QRegExp
 from gitbuster.conflicts_dialog_ui import Ui_Dialog
 
 connect = QObject.connect
@@ -21,6 +21,19 @@ GIT_STATUSES = {
     "AA" : "both added",
     "UU" : "both modified"
 }
+
+
+CHEVRONS = (QRegExp("<<<<<<< HEAD"),
+            QRegExp("======="),
+            QRegExp(">>>>>>> \S{7}\.{3} [^\n]*"))
+
+
+class SimpleGitMessagesHighlighter(QSyntaxHighlighter):
+
+    def highlightBlock(self, line):
+        for chevron in CHEVRONS:
+            if chevron.indexIn(line) != -1:
+                self.setFormat(0, len(line), Qt.red)
 
 
 class ConflictsDialog(QDialog):
@@ -65,6 +78,8 @@ class ConflictsDialog(QDialog):
 
         # Hide every widget of the conflict details layout.
         self.show_all_details(False)
+
+        syntax_highlight = SimpleGitMessagesHighlighter(self._ui.conflictTextEdit.document())
 
     def connect_signals(self):
         connect(self._ui.treeWidget,
