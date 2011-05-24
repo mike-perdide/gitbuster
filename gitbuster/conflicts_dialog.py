@@ -225,13 +225,11 @@ class ConflictsDialog(QDialog):
 
         unsolved_items_parents = set([])
 
-        all_solved = True
         for u_file in self._u_files:
             tree_item = [item for item in self.tree_items
                          if self.tree_items[item] == u_file][0]
 
             if u_file not in self._solutions:
-                all_solved = False
                 tree_item.setBackgroundColor(0, Qt.red)
                 unsolved_items_parents.add(tree_item.parent())
             else:
@@ -242,7 +240,7 @@ class ConflictsDialog(QDialog):
             if top_item not in unsolved_items_parents:
                 top_item.setExpanded(False)
 
-        if all_solved:
+        if not unsolved_items_parents:
             self._model.set_conflict_solutions(self._solutions)
 
             self.accept()
