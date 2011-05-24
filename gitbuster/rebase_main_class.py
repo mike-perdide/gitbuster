@@ -8,12 +8,14 @@
 
 from gitbuster.branch_view_ui import Ui_BranchView
 from PyQt4.QtGui import QWidget, QCheckBox, QApplication, QTableView, QLabel, \
-                        QKeySequence, QShortcut, QMenu
+                        QKeySequence, QShortcut, QMenu, QPushButton, \
+                        QMessageBox, QSpacerItem, QSizePolicy, QGridLayout
 from PyQt4.QtCore import QString, SIGNAL, Qt, QPointF, QObject, QModelIndex
 
 from gitbuster.graphics_items import CommitItem, Arrow
 from gitbuster.conflicts_dialog import ConflictsDialog
 from gitbuster.progress_thread import ProgressThread
+from gitbuster.branch_name_dialog import BranchNameDialog
 
 
 class RebaseMainClass(QObject):
@@ -65,12 +67,12 @@ class RebaseMainClass(QObject):
                             SIGNAL("customContextMenuRequested(const QPoint&)"),
                             self.context_menu)
 
-            label = QLabel(parent)
-            label.setText(branch.name)
+            name_button = QPushButton(branch.name, parent=parent)
+            QObject.connect(name_button, SIGNAL("clicked()"),
+                            self.new_branch_name)
 
-            # Insert the view in the window's layout
-            self._ui.viewLayout.addWidget(label, 0, iter)
-            self._ui.viewLayout.addWidget(branch_view, 1, iter)
+            self._ui.viewLayout.addWidget(name_button, 0, iter * 7)
+            self._ui.viewLayout.addWidget(branch_view, 1, iter * 7)
 
             iter += 1
 
@@ -78,9 +80,9 @@ class RebaseMainClass(QObject):
                 checkbox.setCheckState(Qt.Checked)
             else:
                 branch_view.hide()
-                label.hide()
+                name_button.hide()
 
-            self._checkboxes[checkbox] = (label, branch_view, model)
+            self._checkboxes[checkbox] = (name_button, branch_view, model)
             QObject.connect(checkbox,
                             SIGNAL("stateChanged(int)"),
                             self.checkbox_clicked)
@@ -92,6 +94,19 @@ class RebaseMainClass(QObject):
         QObject.connect(self._ui.conflictsButton,
                         SIGNAL("clicked()"),
                         self.conflicts)
+
+    def new_branch_name(self, model=None):
+        if not model:
+            model = [branch_objects[2]
+                     for branch_objects in self._checkboxes.values()
+                     if branch_objects[0] == self.sender()]
+
+        msgBox = BranchNameDialog(self)
+        ret = msgBox.exec_()
+
+        if ret:
+            new_name = msgBox.nameLineEdit.text().toString()
+            model.set_new_branch_name(nename)
 
     def context_menu(self, q_point):
         """

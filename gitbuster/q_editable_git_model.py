@@ -210,6 +210,10 @@ class QEditableGitModel(QGitModel):
         "See GitModel for more help."
         return self.git_model.set_conflict_solutions(solutions)
 
+    def set_new_branch_name(self, name):
+        "See GitModel for more help."
+        return self.git_model.set_new_branch_name(name)
+
     def mimeTypes(self):
         types = QStringList()
         types.append("application/vnd.text.list")
