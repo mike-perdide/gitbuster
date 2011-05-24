@@ -27,5 +27,5 @@ def main():
         window.show()
         signal.signal(signal.SIGINT, signal.SIG_DFL)
         sys.exit(app.exec_())
-    else:
-        sys.exit(1)
+
+    sys.exit(1)
