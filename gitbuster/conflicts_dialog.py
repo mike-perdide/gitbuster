@@ -6,7 +6,8 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QDialog, QTreeWidgetItem, QSyntaxHighlighter
+from PyQt4.QtGui import QDialog, QTreeWidgetItem, QSyntaxHighlighter, \
+                        QMessageBox
 from PyQt4.QtCore import QString, Qt, SIGNAL, QObject, QRegExp
 from gitbuster.conflicts_dialog_ui import Ui_Dialog
 
@@ -28,12 +29,18 @@ CHEVRONS = (QRegExp("<<<<<<< HEAD"),
             QRegExp(">>>>>>> \S{7}\.{3} [^\n]*"))
 
 
+def contains_chevron(line):
+    for chevron in CHEVRONS:
+        if chevron.indexIn(line) != -1:
+            return True
+    return False
+
+
 class SimpleGitMessagesHighlighter(QSyntaxHighlighter):
 
     def highlightBlock(self, line):
-        for chevron in CHEVRONS:
-            if chevron.indexIn(line) != -1:
-                self.setFormat(0, len(line), Qt.red)
+        if contains_chevron(line):
+            self.setFormat(0, len(line), Qt.red)
 
 
 class ConflictsDialog(QDialog):
@@ -240,7 +247,18 @@ class ConflictsDialog(QDialog):
             if top_item not in unsolved_items_parents:
                 top_item.setExpanded(False)
 
-        if not unsolved_items_parents:
+        ret = True
+        for line in [infos[1] for infos in self._solutions.values()]:
+            if contains_chevron(line):
+                msgBox = QMessageBox(self)
+                msgBox.setText("Some of the files contain git chevrons.")
+                msgBox.setInformativeText("Do you want to apply anyway?")
+                msgBox.setStandardButtons(msgBox.Cancel | msgBox.Apply)
+                msgBox.setDefaultButton(msgBox.Cancel)
+                ret = (msgBox.exec_() == msgBox.Apply)
+                break
+
+        if not unsolved_items_parents and ret:
             self._model.set_conflict_solutions(self._solutions)
 
             self.accept()
