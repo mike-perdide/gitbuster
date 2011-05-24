@@ -25,6 +25,7 @@ class RebaseMainClass(QObject):
         self._models = models
         self._checkboxes = {}
         self._clicked_commit = None
+        self._copy_data = ""
 
         self._ui = self.parent._ui
         iter = 0
@@ -93,9 +94,44 @@ class RebaseMainClass(QObject):
                         self.conflicts)
 
     def context_menu(self, q_point):
-        menu = QMenu()
+        """
+            Creates a menu with the actions:
+                - copy
+                - delete
+                - paste after
+                - paste before
+        """
+        menu = QMenu(self.parent)
         branch_view = self.sender()
-        menu.exec_(branch_view.mapToGlobal(q_point))
+
+        indexes = branch_view.selectedIndexes()
+
+        copy_action = menu.addAction("Copy")
+        delete_action = menu.addAction("Delete")
+        paste_after_action = menu.addAction("Paste after")
+        paste_after_action.setDisabled(self._copy_data == "")
+        paste_before_action = menu.addAction("Paste before")
+        paste_before_action.setDisabled(self._copy_data == "")
+
+        choosed_action = menu.exec_(branch_view.viewport().mapToGlobal(q_point))
+
+        if choosed_action == delete_action:
+            self.remove_rows()
+
+        elif choosed_action == copy_action:
+            self._copy_data = branch_view.model().mimeData(indexes)
+
+        elif choosed_action == paste_after_action:
+            selected_rows = set([index.row() for index in indexes])
+            drop_after = max(selected_rows) + 1
+            branch_view.model().dropMimeData(self._copy_data, Qt.CopyAction,
+                                             drop_after, 0, self.parent)
+
+        elif choosed_action == paste_before_action:
+            selected_rows = set([index.row() for index in indexes])
+            drop_before = min(selected_rows)
+            branch_view.model().dropMimeData(self._copy_data, Qt.CopyAction,
+                                             drop_before, 0, self.parent)
 
     def focused_branch_view(self):
         """
