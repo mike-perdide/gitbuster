@@ -230,7 +230,7 @@ class QEditableGitModel(QGitModel):
         mime_data.setData("application/vnd.text.list", encoded_data)
         return mime_data
 
-    def dropMimeData(self, mime_data, action, row, column, parent):
+    def dropMimeData(self, mime_data, action, row, col_unused, parent_unused):
         if action == Qt.IgnoreAction:
             return True
 
