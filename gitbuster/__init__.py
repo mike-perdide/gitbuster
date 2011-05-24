@@ -9,6 +9,7 @@
 from PyQt4.QtGui import QApplication
 from gitbuster.main_window import MainWindow
 from gitbuster.util import select_git_directory, is_top_git_directory
+import signal
 import sys
 
 
@@ -24,6 +25,7 @@ def main():
     if filepath:
         window = MainWindow(directory=filepath, debug=True)
         window.show()
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
         sys.exit(app.exec_())
     else:
         sys.exit(1)
