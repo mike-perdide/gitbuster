@@ -9,10 +9,14 @@
 from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, \
                          QDateTime, SIGNAL, QMimeData, QByteArray, \
                          QDataStream, QIODevice, QStringList, QString
-from PyQt4.QtGui import QColor
+from PyQt4.QtGui import QColor, QFont
 from gfbi_core.editable_git_model import EditableGitModel
 from gfbi_core import TIME_FIELDS, NOT_EDITABLE_FIELDS
 from gitbuster.q_git_model import QGitModel
+
+
+DELETED_FONT = QFont("Sans Serif", italic=True)
+DELETED_FONT.setStrikeOut(True)
 
 
 class QEditableGitModel(QGitModel):
@@ -76,6 +80,27 @@ class QEditableGitModel(QGitModel):
         self.git_model.remove_rows(position, rows)
         self.endRemoveRows()
         return True
+
+    def data(self, index, role):
+        """
+            Returns the data of the model.
+        """
+        if not index.isValid() or not (0 <= index.row() < self.rowCount()):
+            return QVariant()
+
+        if role == Qt.FontRole:
+            return self._data_font(index)
+        else:
+            return QGitModel.data(self, index, role)
+
+    def _data_font(self, index):
+        """
+            Returns a striked + italic font for items that were deleted.
+        """
+        if self.git_model.is_deleted(index):
+            return DELETED_FONT
+
+        return QVariant()
 
     def _data_background(self, index, field_name):
         """
