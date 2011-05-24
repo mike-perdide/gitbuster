@@ -112,10 +112,8 @@ class ConflictsDialog(QDialog):
         self._ui.noneRadioButton.hide()
 
     def radio_button_clicked(self):
-        if self.sender() == self._ui.addCustomRadioButton:
-            self._ui.conflictTextEdit.setEnabled(True)
-        else:
-            self._ui.conflictTextEdit.setEnabled(False)
+        writable = self.sender() == self._ui.addCustomRadioButton
+        self._ui.conflictTextEdit.setReadOnly(writable)
 
     def set_choice(self):
         """
