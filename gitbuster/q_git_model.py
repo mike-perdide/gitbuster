@@ -384,3 +384,7 @@ class QGitModel(QAbstractTableModel):
     def get_columns(self):
         "See GitModel for more help."
         return self.git_model.get_columns()
+
+    def get_old_branch_name(self):
+        "See GitModel for more help."
+        return self.git_model.get_old_branch_name()
