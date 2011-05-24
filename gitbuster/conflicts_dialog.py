@@ -245,6 +245,10 @@ class ConflictsDialog(QDialog):
             if top_item not in unsolved_items_parents:
                 top_item.setExpanded(False)
 
+
+        if unsolved_items_parents:
+            return
+
         ret = True
         for line in [infos[1] for infos in self._solutions.values()]:
             if contains_chevron(line):
@@ -256,7 +260,7 @@ class ConflictsDialog(QDialog):
                 ret = (msgBox.exec_() == msgBox.Apply)
                 break
 
-        if not unsolved_items_parents and ret:
+        if  ret:
             self._model.set_conflict_solutions(self._solutions)
 
             self.accept()
