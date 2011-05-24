@@ -98,6 +98,11 @@ class MainWindow(QMainWindow):
 
         QObject.connect(self._ui.actionApply, SIGNAL("triggered()"), self.apply)
 
+        QObject.connect(self._ui.actionShow_modifications,
+                        SIGNAL("triggered()"), self.show_modifications)
+        QObject.connect(self._ui.actionHide_modifications,
+                        SIGNAL("triggered()"), self.hide_modifications)
+
     def new_history_event(self):
         """
             When a history event occurs, we store the tab index, the displayed
@@ -185,6 +190,14 @@ class MainWindow(QMainWindow):
         directory = select_git_directory()
         if directory:
             self.set_current_directory(directory)
+
+    def show_modifications(self):
+        if not self._modifications_shown:
+            self.toggle_modifications()
+
+    def hide_modifications(self):
+        if self._modifications_shown:
+            self.toggle_modifications()
 
     def toggle_modifications(self):
         """

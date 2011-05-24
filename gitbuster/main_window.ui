@@ -1061,7 +1061,7 @@
      <string>&amp;Edit</string>
     </property>
     <addaction name="actionApply"/>
-    <addaction name="action_Hide_modifications"/>
+    <addaction name="actionHide_modifications"/>
     <addaction name="actionShow_modifications"/>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
@@ -1081,7 +1081,7 @@
    </attribute>
    <addaction name="actionApply"/>
    <addaction name="separator"/>
-   <addaction name="action_Hide_modifications"/>
+   <addaction name="actionHide_modifications"/>
    <addaction name="actionShow_modifications"/>
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
@@ -1136,7 +1136,7 @@
     <string>Ctrl+A</string>
    </property>
   </action>
-  <action name="action_Hide_modifications">
+  <action name="actionHide_modifications">
    <property name="icon">
     <iconset resource="gitbuster.qrc">
      <normaloff>:/images/images/Hide.svg</normaloff>:/images/images/Hide.svg</iconset>
