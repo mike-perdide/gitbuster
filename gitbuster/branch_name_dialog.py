@@ -20,4 +20,4 @@ class BranchNameDialog(QDialog):
         self._ui.setupUi(self)
 
     def get_new_name(self):
-        return msgBox.nameLineEdit.text().toString()
+        return str(self._ui.nameLineEdit.text())
