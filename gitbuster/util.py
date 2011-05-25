@@ -26,11 +26,12 @@ def select_git_directory():
     settings.beginGroup("Last run")
 
     filepath = '/'
+    last_directory = settings.value("directory", QVariant(QDir.homePath()))
     while not is_top_git_directory(filepath):
         filepath = unicode(QFileDialog.getExistingDirectory(
             None,
             "Open git repository",
-            unicode(settings.value("directory", QVariant(QDir.homePath()).toString())),
+            unicode(last_directory.toString()),
             QFileDialog.ShowDirsOnly
             ))
         if not filepath:
