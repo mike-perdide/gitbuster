@@ -96,7 +96,7 @@ class ButtonLineEdit(QWidget):
             return
 
         self.new_name = new_name
-        self.current_name_label.setText(new_name)
+        self.current_name_label.setText(new_name + "  (new name)")
         self.model.start_history_event()
         action = SetNameAction(old_name, new_name, self.model, self.current_name_label)
         self.history_mgr.add_history_action(action)
