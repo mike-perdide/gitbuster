@@ -371,6 +371,27 @@ class FilterMainClass():
 
         return None
 
+    def hide_fake_models(self):
+        """
+            Hide all the fake models.
+        """
+        self.gui.currentBranchComboBox.clear()
+        for branch, model in self._models.items():
+            if not model.is_fake_model():
+                self.gui.currentBranchComboBox.addItem("%s" % branch.name)
+
+        if self._model.is_fake_model():
+            some_branch_name = self.gui.currentBranchComboBox.itemText(0)
+            self.current_branch_changed(some_branch_name)
+
+    def show_fake_models(self):
+        """
+            Show all fake models.
+        """
+        self.gui.currentBranchComboBox.clear()
+        for branch, model in self._models.items():
+            self.gui.currentBranchComboBox.addItem("%s" % branch.name)
+
     def toggle_modifications(self, show_modifications):
         """
             When the toggleModifications button is pressed, change the
@@ -378,7 +399,9 @@ class FilterMainClass():
         """
         if show_modifications:
             self.gui.tableView.setModel(self._model)
+            self.show_fake_models()
         else:
+            self.hide_fake_models()
             # if the displayed model is the editable model
             orig_model = self._model.get_orig_q_git_model()
             self.gui.tableView.setModel(orig_model)

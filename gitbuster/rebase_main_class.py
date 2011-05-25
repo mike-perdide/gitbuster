@@ -374,6 +374,29 @@ class RebaseMainClass(QObject):
 
         self._ui.detailsGroupBox.show()
 
+    def hide_fake_models(self):
+        """
+            Hide all the fake models.
+        """
+        for checkbox, info in self._checkboxes.items():
+            name, branch_view, model = info
+            if model.is_fake_model():
+                name.hide()
+                branch_view.hide()
+                checkbox.setEnabled(False)
+
+    def show_fake_models(self):
+        """
+            Show all fake models.
+        """
+        for checkbox, info in self._checkboxes.items():
+            name, branch_view, model = info
+            if model.is_fake_model():
+                if checkbox.isChecked():
+                    name.show()
+                    branch_view.show()
+                checkbox.setEnabled(True)
+
     def toggle_modifications(self, show_modifications):
         """
             When the toggleModifications button is pressed, change the displayed
@@ -382,8 +405,11 @@ class RebaseMainClass(QObject):
         for label, branch_view, model in self._checkboxes.values():
             if show_modifications:
                 branch_view.setModel(model)
+                self.show_fake_models()
             else:
-                branch_view.setModel(model.get_orig_q_git_model())
+                self.hide_fake_models()
+                if not model.is_fake_model():
+                    branch_view.setModel(model.get_orig_q_git_model())
 
     def conflicts(self):
         """
