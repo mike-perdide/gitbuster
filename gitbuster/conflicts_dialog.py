@@ -13,13 +13,13 @@ from gitbuster.conflicts_dialog_ui import Ui_Dialog
 connect = QObject.connect
 
 GIT_STATUSES = {
-    "DD" : "both deleted",
-    "AU" : "added by us",
-    "UD" : "deleted by them",
-    "UA" : "added by them",
-    "DU" : "deleted by us",
-    "AA" : "both added",
-    "UU" : "both modified"
+    "DD": "both deleted",
+    "AU": "added by us",
+    "UD": "deleted by them",
+    "UA": "added by them",
+    "DU": "deleted by us",
+    "AA": "both added",
+    "UU": "both modified"
 }
 
 
@@ -56,9 +56,9 @@ class ConflictsDialog(QDialog):
         self._status_items = []
         self._solutions = {}
         self._current_path = ""
-        self._radio_choices = {self._ui.deleteRadioButton       : "delete",
-                               self._ui.addRadioButton          : "add",
-                               self._ui.addCustomRadioButton    : "add_custom"}
+        self._radio_choices = {self._ui.deleteRadioButton: "delete",
+                               self._ui.addRadioButton: "add",
+                               self._ui.addCustomRadioButton: "add_custom"}
 
         self._u_files = model.get_unmerged_files()
         self._model = model
@@ -117,8 +117,8 @@ class ConflictsDialog(QDialog):
 
     def set_choice(self):
         """
-            When called, this method uses the current path and the radio buttons
-            to find out what choice must be saved.
+            When called, this method uses the current path and the radio
+            buttons to find out what choice must be saved.
         """
         checked_radios = [radio for radio in self._radio_choices
                           if radio.isChecked()]
@@ -164,7 +164,7 @@ class ConflictsDialog(QDialog):
             for radio in self._radio_choices:
                 self._ui.noneRadioButton.setChecked(True)
 
-            # If the user already chose a solution, check the right radio button
+            # If the user already chose a solution, check the right radiobutton
             if u_path in self._solutions:
                 pre_choice = self._solutions[u_path][0]
                 for radio, choice in self._radio_choices.items():
@@ -244,7 +244,6 @@ class ConflictsDialog(QDialog):
         for top_item in self._status_items:
             if top_item not in unsolved_items_parents:
                 top_item.setExpanded(False)
-
 
         if unsolved_items_parents:
             return
