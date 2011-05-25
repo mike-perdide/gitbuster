@@ -12,7 +12,7 @@ from PyQt4.QtGui import QApplication, QCheckBox, QGridLayout, QKeySequence,\
 
 from gitbuster.branch_name_dialog import BranchNameDialog
 from gitbuster.conflicts_dialog import ConflictsDialog
-from gitbuster.util import SetNameAction
+from gitbuster.util import SetNameAction, DummyRemoveAction
 
 
 class ButtonLineEdit(QWidget):
@@ -313,17 +313,24 @@ class RebaseMainClass(QObject):
         if branch_view is None:
             return False
 
-        selected_indexes = branch_view.selectedIndexes()
+        selected_indexes = [index for index in branch_view.selectedIndexes()
+                            if index.isValid()]
         model = branch_view.model()
 
         ordered_list = []
+        deleted_dummies = []
         for index in selected_indexes:
-            if index.isValid() and index.row() not in ordered_list and \
-               not model.is_deleted(index):
+            if index.row() not in ordered_list and not model.is_deleted(index):
                 ordered_list.insert(0, index.row())
+            if model.is_inserted_commit(index):
+                deleted_dummies.append(index.row())
 
         if ordered_list:
             model.start_history_event()
+            for dummy_row in deleted_dummies:
+                self.parent.add_history_action(DummyRemoveAction(dummy_row,
+                                                                 branch_view))
+                branch_view.hideRow(dummy_row)
 
         for row in ordered_list:
             model.removeRows(row)
