@@ -15,7 +15,8 @@ from gfbi_core.git_model import GitModel
 
 class QGitModel(QAbstractTableModel):
 
-    def __init__(self, directory=".",  model=None, fake_branch_name=""):
+    def __init__(self, directory=".",  model=None, fake_branch_name="",
+                 parent=None):
         """
             Initializes the git model with the repository root directory.
 
@@ -29,7 +30,7 @@ class QGitModel(QAbstractTableModel):
                 As given by QGitEditableModel.get_model().get_orig_model().
 
         """
-        QAbstractTableModel.__init__(self, None)
+        QAbstractTableModel.__init__(self, parent)
         if not model:
             self.git_model = GitModel(directory=directory)
         else:

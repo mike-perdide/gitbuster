@@ -21,7 +21,7 @@ DELETED_FONT.setStrikeOut(True)
 class QEditableGitModel(QGitModel):
 
     def __init__(self, models_dict, directory=".", fake_branch_name="",
-                 from_model_row=None):
+                 from_model_row=None, parent=None):
         """
             Initializes the git model with the repository root directory.
 
@@ -33,7 +33,8 @@ class QEditableGitModel(QGitModel):
         """
         QGitModel.__init__(self,
                            directory=directory,
-                           fake_branch_name=fake_branch_name)
+                           fake_branch_name=fake_branch_name,
+                           parent=parent)
 
         # Overwrite the non editable git_model set in QGitModel.__init__
         self.git_model = EditableGitModel(directory=directory,
