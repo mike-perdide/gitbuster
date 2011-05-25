@@ -8,11 +8,11 @@
 
 from PyQt4.QtCore import QObject, Qt, SIGNAL
 from PyQt4.QtGui import QApplication, QCheckBox, QGridLayout, QKeySequence,\
-    QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QShortcut, \
-    QTableView, QWidget
+     QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QShortcut, QTableView,\
+     QWidget
 
-from gitbuster.conflicts_dialog import ConflictsDialog
 from gitbuster.branch_name_dialog import BranchNameDialog
+from gitbuster.conflicts_dialog import ConflictsDialog
 from gitbuster.util import SetNameAction
 
 

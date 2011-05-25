@@ -6,11 +6,11 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QApplication, QCheckBox, QSpacerItem, QSizePolicy
-from PyQt4.QtCore import SIGNAL, QObject, Qt, QDateTime
+from PyQt4.QtCore import QDateTime, QObject, Qt, SIGNAL
+from PyQt4.QtGui import QApplication, QCheckBox, QSizePolicy, QSpacerItem
 
-from gitbuster.q_git_model import NAMES
 from gitbuster.q_git_delegate import QGitDelegate
+from gitbuster.q_git_model import NAMES
 from gitbuster.util import _connect_button
 
 from datetime import datetime

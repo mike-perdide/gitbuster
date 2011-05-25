@@ -6,9 +6,9 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QDialog, QTreeWidgetItem, QSyntaxHighlighter, \
-                        QMessageBox
-from PyQt4.QtCore import QString, Qt, SIGNAL, QObject, QRegExp
+from PyQt4.QtCore import QObject, QRegExp, QString, Qt, SIGNAL
+from PyQt4.QtGui import QDialog, QMessageBox, QSyntaxHighlighter,\
+     QTreeWidgetItem
 from gitbuster.conflicts_dialog_ui import Ui_Dialog
 
 connect = QObject.connect
