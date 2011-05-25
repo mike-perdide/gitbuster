@@ -6,9 +6,9 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import Qt, SIGNAL, QDateTime, QVariant
-from PyQt4.QtGui import QTextEdit, QLineEdit, QDateTimeEdit, QItemDelegate
-from gfbi_core import TEXT_FIELDS, TIME_FIELDS, ACTOR_FIELDS
+from PyQt4.QtCore import QDateTime, QVariant, Qt, SIGNAL
+from PyQt4.QtGui import QDateTimeEdit, QItemDelegate, QLineEdit, QTextEdit
+from gfbi_core import ACTOR_FIELDS, TEXT_FIELDS, TIME_FIELDS
 
 class QGitDelegate(QItemDelegate):
 

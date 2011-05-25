@@ -8,7 +8,7 @@
 
 from PyQt4.QtGui import QApplication
 from gitbuster.main_window import MainWindow
-from gitbuster.util import select_git_directory, is_top_git_directory
+from gitbuster.util import is_top_git_directory, select_git_directory
 import signal
 import sys
 

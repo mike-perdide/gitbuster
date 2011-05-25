@@ -5,10 +5,9 @@
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import SIGNAL, QObject
+from PyQt4.QtCore import QDir, QObject, QSettings, QVariant, SIGNAL
 from PyQt4.QtGui import QFileDialog
-from PyQt4.QtCore import QDir, QSettings, QVariant
-from os.path import join, exists
+from os.path import exists, join
 
 
 def _connect_button(button, function):

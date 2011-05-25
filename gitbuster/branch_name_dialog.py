@@ -6,8 +6,8 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QDialog, QCheckBox, QApplication, QLabel
 from PyQt4.QtCore import QString, Qt
+from PyQt4.QtGui import QApplication, QCheckBox, QDialog, QLabel
 from gitbuster.branch_name_dialog_ui import Ui_Dialog
 
 
