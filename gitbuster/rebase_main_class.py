@@ -291,7 +291,7 @@ class RebaseMainClass(QObject):
         self.create_model_interface(model)
         checkbox = [checkbox for checkbox in self._checkboxes
                     if self._checkboxes[checkbox][2] == model][0]
-        checkbox.emit(SIGNAL("stateChanged(int)"), 1)
+        checkbox.setCheckState(Qt.Checked)
 
     def focused_branch_view(self):
         """
