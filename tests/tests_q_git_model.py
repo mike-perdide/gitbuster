@@ -19,6 +19,17 @@ TEST_master_author_email = "author-master@groom.com"
 TEST_committer_name = "Committer Groom"
 TEST_committer_email = "committer@groom.com"
 
+TEST_master_branch = None
+TEST_wallace_branch = None
+TEST_master_branch_model = None
+TEST_wallace_branch_model = None
+TEST_master_branch_commits = None
+TEST_wallace_branch_commits = None
+TEST_date = None
+TEST_time = None
+TEST_branches = None
+TEST_current_branch_name = ""
+
 def run_command(command):
     handle = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
     handle.wait()
