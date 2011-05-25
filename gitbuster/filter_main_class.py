@@ -21,7 +21,39 @@ AVAILABLE_CHOICES = ['hexsha',
                      'committer_name', 'committer_email',
                      'message']
 PRE_CHOICE = ['hexsha', 'authored_date', 'author_name', 'message']
-AVAILABLE_OPTIONS = {'display_weekday'  : 'Weekday'}
+AVAILABLE_OPTIONS = {'display_weekday': 'Weekday'}
+
+_FILTER_WIDGETS = {
+"currentIndexChanged (int)": """
+    afterWeekdayFilterComboBox
+    beforeWeekdayFilterComboBox""",
+"timeChanged (const QTime&)": """
+    afterHourFilterTimeEdit
+    beforeHourFilterTimeEdit""",
+"dateChanged (const QDate&)": """
+    afterDateFilterDateEdit
+    beforeDateFilterDateEdit""",
+"returnPressed()": """
+    nameEmailFilterLineEdit
+    messageFilterLineEdit""",
+"stateChanged(int)": """
+    afterWeekdayFilterCheckBox
+    beforeWeekdayFilterCheckBox
+    afterHourFilterCheckBox
+    beforeHourFilterCheckBox
+    afterDateFilterCheckBox
+    beforeDateFilterCheckBox
+    nameEmailFilterCheckBox
+    messageFilterCheckBox
+    localOnlyFilterCheckBox""",
+        }
+
+#afterHour, beforeHour etc
+_DATE_FILTERS = frozenset([frozenset(["after%s" % word, "before%s" % word])
+    for word in "Hour Date Weekday".split()
+    ])
+
+_SIMPLE_FILTERS = frozenset(["nameEmail", "message", "localOnly"])
 
 
 class FilterMainClass():
@@ -32,15 +64,15 @@ class FilterMainClass():
 
         self.gui = self.parent._ui
         self._filters_values = {
-            "afterWeekday"  : self.gui.afterWeekdayFilterComboBox.currentIndex,
-            "beforeWeekday" : self.gui.beforeWeekdayFilterComboBox.currentIndex,
-            "beforeDate"    : self.gui.beforeDateFilterDateEdit.date,
-            "afterDate"     : self.gui.afterDateFilterDateEdit.date,
-            "beforeHour"    : self.gui.beforeHourFilterTimeEdit.time,
-            "afterHour"     : self.gui.afterHourFilterTimeEdit.time,
-            "message"       : self.gui.messageFilterLineEdit.text,
-            "nameEmail"     : self.gui.nameEmailFilterLineEdit.text,
-            "localOnly"     : None
+            "afterWeekday": self.gui.afterWeekdayFilterComboBox.currentIndex,
+            "beforeWeekday": self.gui.beforeWeekdayFilterComboBox.currentIndex,
+            "beforeDate": self.gui.beforeDateFilterDateEdit.date,
+            "afterDate": self.gui.afterDateFilterDateEdit.date,
+            "beforeHour": self.gui.beforeHourFilterTimeEdit.time,
+            "afterHour": self.gui.afterHourFilterTimeEdit.time,
+            "message": self.gui.messageFilterLineEdit.text,
+            "nameEmail": self.gui.nameEmailFilterLineEdit.text,
+            "localOnly": None
         }
 
         self._shown_columns = []
@@ -118,27 +150,9 @@ class FilterMainClass():
 
         # Apply filters when filter edit widgets are edited or when the filter
         # checkboxes are ticked.
-        filters_widgets = {
-            "currentIndexChanged (int)" : (self.gui.afterWeekdayFilterComboBox,
-                                          self.gui.beforeWeekdayFilterComboBox),
-            "timeChanged (const QTime&)": (self.gui.afterHourFilterTimeEdit,
-                                           self.gui.beforeHourFilterTimeEdit),
-            "dateChanged (const QDate&)": (self.gui.afterDateFilterDateEdit,
-                                           self.gui.beforeDateFilterDateEdit),
-            "returnPressed()"           : (self.gui.nameEmailFilterLineEdit,
-                                           self.gui.messageFilterLineEdit),
-            "stateChanged(int)"         : (self.gui.afterWeekdayFilterCheckBox,
-                                           self.gui.beforeWeekdayFilterCheckBox,
-                                           self.gui.afterHourFilterCheckBox,
-                                           self.gui.beforeHourFilterCheckBox,
-                                           self.gui.afterDateFilterCheckBox,
-                                           self.gui.beforeDateFilterCheckBox,
-                                           self.gui.nameEmailFilterCheckBox,
-                                           self.gui.messageFilterCheckBox,
-                                           self.gui.localOnlyFilterCheckBox),
-        }
-        for signal, widgets in filters_widgets.items():
-            for widget in widgets:
+        for signal, widgets in _FILTER_WIDGETS.iteritems():
+            for widgetname in widgets.split():
+                widget = getattr(self.gui, widgetname)
                 connect(widget, SIGNAL(signal), self.apply_filters)
 
         # Connecting the re-order push button to the re-order method.
@@ -147,8 +161,8 @@ class FilterMainClass():
     def create_checkboxes(self):
         """
             Creates the checkboxes used to determine what columns are to be
-            displayed or what options should be set to the model (i.e. should we
-            display the weekday, etc.)
+            displayed or what options should be set to the model (i.e. should
+            we display the weekday, etc.)
         """
         # Hiding every columns (even those not listed in AVAILABLE_CHOICES)
         for column, field in enumerate(self._model.get_columns()):
@@ -190,8 +204,8 @@ class FilterMainClass():
     def refresh_checkboxes(self):
         """
             When a "column checkbox" is checked or unchecked, we change the
-            view's displayed columns model so that only the selected columns are
-            displayed.
+            view's displayed columns model so that only the selected columns
+            are displayed.
         """
         self._shown_columns = []
         for checkbox_name in AVAILABLE_CHOICES:
@@ -241,13 +255,13 @@ class FilterMainClass():
                                        None, QApplication.UnicodeUTF8))
             return
 
-        checkboxes = {self.gui.reOrderWeekdayMondayCheckBox : 0,
-                      self.gui.reOrderWeekdayTuesdayCheckBox : 1,
-                      self.gui.reOrderWeekdayWednesdayCheckBox : 2,
-                      self.gui.reOrderWeekdayThursdayCheckBox : 3,
-                      self.gui.reOrderWeekdayFridayCheckBox : 4,
-                      self.gui.reOrderWeekdaySaturdayCheckBox : 5,
-                      self.gui.reOrderWeekdaySundayCheckBox : 6,
+        checkboxes = {self.gui.reOrderWeekdayMondayCheckBox: 0,
+                      self.gui.reOrderWeekdayTuesdayCheckBox: 1,
+                      self.gui.reOrderWeekdayWednesdayCheckBox: 2,
+                      self.gui.reOrderWeekdayThursdayCheckBox: 3,
+                      self.gui.reOrderWeekdayFridayCheckBox: 4,
+                      self.gui.reOrderWeekdaySaturdayCheckBox: 5,
+                      self.gui.reOrderWeekdaySundayCheckBox: 6,
         }
         weekdays = []
         for checkbox in checkboxes:
@@ -255,8 +269,7 @@ class FilterMainClass():
                 weekdays.append(checkboxes[checkbox])
 
         if not weekdays:
-            weekdays = (0, 1, 2, 3, 4, 5, 6)
-
+            weekdays = tuple(xrange(7))
 
         q_max_date = q_max_date.addDays(1)
         max_date = datetime(q_max_date.year(), q_max_date.month(),
@@ -300,34 +313,31 @@ class FilterMainClass():
 
     def apply_filters(self):
         """
-            When a "filter checkbox" is checked or unchecked, set the filters on
-            the model and reset it.
+            When a "filter checkbox" is checked or unchecked, set the filters
+            on the model and reset it.
         """
         table_view = self.gui.tableView
         model = table_view.model()
 
-        filters = []
+        filters = set()
         for checkbox_name in self._filters_values:
             checkbox = self._filterbox_byname(checkbox_name)
 
             if checkbox.checkState() == Qt.Checked:
                 _filter = self._filter_byname(checkbox_name)
                 model.filter_set(checkbox_name, _filter)
-                filters.append(checkbox_name)
+                filters.add(checkbox_name)
             else:
                 model.filter_unset(checkbox_name)
 
-
-        total_filter_score = 0
-        for word in ("Hour", "Date", "Weekday"):
-            group = "after%s" % word, "before%s" % word
-            if any(item in filters for item in group):
-                total_filter_score += 1
-
-        for item in ("nameEmail", "message", "localOnly"):
-            if item in filters:
-                total_filter_score += 1
-
+        #help for reading following code:
+        # '&' provides with the intersection between 2 sets
+        # then a tuple of '1' is built if the intersection is not empty
+        # (we could have chosen anything)
+        # the cumulative len of the tuples gives the total_filter_score
+        total_filter_score = sum(1 for group in _DATE_FILTERS
+            if group & filters)\
+            +len(filters & _SIMPLE_FILTERS)
 
         for row in xrange(model.rowCount()):
             table_view.showRow(row)
@@ -363,8 +373,8 @@ class FilterMainClass():
 
     def toggle_modifications(self, show_modifications):
         """
-            When the toggleModifications button is pressed, change the displayed
-            model.
+            When the toggleModifications button is pressed, change the
+            displayed model.
         """
         if show_modifications:
             self.gui.tableView.setModel(self._model)
