@@ -202,6 +202,10 @@ class QEditableGitModel(QGitModel):
         "See GitModel for more help."
         self.git_model.write(log, script)
 
+    def is_write_success(self):
+        "See GitModel for more help."
+        return self.git_model.is_write_success()
+
     def is_finished_writing(self):
         "See GitModel for more help."
         return self.git_model.is_finished_writing()
