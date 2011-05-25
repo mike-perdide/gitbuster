@@ -24,6 +24,7 @@ def main():
     if filepath:
         window = MainWindow(directory=filepath, debug=True)
         window.show()
+
         def quit(signum, frame):
             window._ui.actionQuit.trigger()
         signal.signal(signal.SIGINT, quit)
