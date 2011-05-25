@@ -56,8 +56,7 @@ class MainWindow(QMainWindow):
         self.filter_main_class = FilterMainClass(self, directory, self._models)
         self.rebase_main_class = RebaseMainClass(self, directory, self._models)
 
-        self._history = []
-        self._last_history_event = -1
+        self.reset_history()
 
         self._applying = False
         self._ui.progressBar.hide()
@@ -118,6 +117,14 @@ class MainWindow(QMainWindow):
                         SIGNAL("triggered()"), self.show_modifications)
         QObject.connect(self._ui.actionHide_modifications,
                         SIGNAL("triggered()"), self.hide_modifications)
+
+    def reset_history(self):
+        """
+            Reset the history (for instance when the apply is finished
+            successfully.
+        """
+        self._history = []
+        self._last_history_event = -1
 
     def new_history_event(self):
         """
