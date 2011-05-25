@@ -32,15 +32,28 @@ def select_git_directory():
                                QStringList()).toStringList()
 
     recent_dirs_urls = [QUrl.fromLocalFile(dir) for dir in dirs_list]
-    recent_dirs_urls.insert(0, QUrl.fromLocalFile(QDir.homePath()))
+    home_url = QUrl.fromLocalFile(QDir.homePath())
+
     while not is_top_git_directory(unicode(filepath)):
         file_dialog = QFileDialog(None, "Open git repository",
                                   last_directory.toString())
         file_dialog.setFileMode(QFileDialog.Directory)
         file_dialog.setOptions(QFileDialog.ShowDirsOnly)
         if recent_dirs_urls:
-            file_dialog.setSidebarUrls(recent_dirs_urls[-6:])
+            file_dialog.setSidebarUrls(
+                [home_url,] +
+                custom_entries_urls +
+                recent_dirs_urls[-6:]
+            )
         ret = file_dialog.exec_()
+
+        custom_entries = QStringList()
+        custom_entries_urls = []
+        for url in file_dialog.sidebarUrls():
+            if url not in recent_dirs_urls and url != home_url:
+                custom_entries.append(QString(url.path()))
+                custom_entries_urls.append(url)
+        settings.setValue("custom entries", custom_entries)
 
         if ret:
             filepath = file_dialog.selectedFiles()[0]
