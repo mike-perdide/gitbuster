@@ -209,7 +209,7 @@ def test_set_branch_twice_fails():
     dummy_model = QGitModel(TEST_DIR)
     dummy_model.set_current_branch(TEST_wallace_branch)
     try:
-        dummy_mode.set_current_branch(TEST_master_branch)
+        dummy_model.set_current_branch(TEST_master_branch)
     except Exception, err:
         fails = True
 
