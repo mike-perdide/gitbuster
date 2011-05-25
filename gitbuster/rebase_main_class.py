@@ -8,7 +8,7 @@
 from PyQt4.QtCore import QObject, Qt, SIGNAL
 from PyQt4.QtGui import QApplication, QCheckBox, QGridLayout, QKeySequence,\
      QLabel, QLineEdit, QMenu, QMessageBox, QPushButton, QShortcut, QTableView,\
-     QWidget
+     QWidget, QFont
 
 from gitbuster.branch_name_dialog import BranchNameDialog
 from gitbuster.conflicts_dialog import ConflictsDialog
@@ -31,14 +31,19 @@ class ButtonLineEdit(QWidget):
         self.new_name = ""
 
         #widgets. Maybe we should use designer here.
-        self.read_button = QPushButton(self)
-        self.read_button.setToolTip("Branch name. Click to change.")
+        name_label_font = QFont()
+        name_label_font.setBold(True)
+        self.current_name_label = QLabel(self)
+        self.current_name_label.setMinimumHeight(23)
+        self.current_name_label.setToolTip("Branch name. Click to change.")
+        self.current_name_label.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.current_name_label.setFont(name_label_font)
         self.label = QLabel()
         self.editor = QLineEdit(self)
         self.valid_button = QPushButton("Ok")
         #layout
         self.box = QGridLayout(self)
-        self.box.addWidget(self.read_button, 0, 0, 1, 3)
+        self.box.addWidget(self.current_name_label, 0, 0, 1, 3)
         self.box.addWidget(self.label, 1, 0, 1, 1)
         self.box.addWidget(self.editor, 1, 1, 1, 1)
         self.box.addWidget(self.valid_button, 1, 2, 1, 1)
@@ -47,13 +52,14 @@ class ButtonLineEdit(QWidget):
         self._readmode()
 
         #initial load of data
-        self.read_button.setText(branch.name)
+        self.current_name_label.setText(branch.name)
 
         #make it live
-        QObject.connect(self.read_button, SIGNAL("clicked()"), self.go_edit)
+        QObject.connect(self.current_name_label,
+                        SIGNAL("customContextMenuRequested(const QPoint&)"),
+                        self.context_menu)
         QObject.connect(self.editor, SIGNAL("editingFinished()"), self.go_read)
         QObject.connect(self.valid_button, SIGNAL("clicked()"), self.go_read)
-
 
     def _iter_widgets(self):
         """
@@ -62,7 +68,7 @@ class ButtonLineEdit(QWidget):
         yield self.valid_button, True
         yield self.editor, True
         yield self.label, True
-        yield self.read_button, False
+        yield self.current_name_label, False
 
     def _editmode(self):
         for widget, is_edit in self._iter_widgets():
@@ -90,9 +96,9 @@ class ButtonLineEdit(QWidget):
             return
 
         self.new_name = new_name
-        self.read_button.setText(new_name)
+        self.current_name_label.setText(new_name)
         self.model.start_history_event()
-        action = SetNameAction(old_name, new_name, self.model, self.read_button)
+        action = SetNameAction(old_name, new_name, self.model, self.current_name_label)
         self.history_mgr.add_history_action(action)
         try:
             self.model.set_new_branch_name(new_name)
@@ -100,6 +106,21 @@ class ButtonLineEdit(QWidget):
             QMessageBox.warning(self, "Naming error", err.args[0])
         else:
             self._readmode()
+
+    def context_menu(self, q_point):
+        """
+            Creates a menu with the actions:
+                - edit
+                - delete (not implemented yet)
+                - copy to new branch (not implemented yet)
+        """
+        menu = QMenu(self)
+        edit_action = menu.addAction("edit")
+
+        choosed_action = menu.exec_(self.sender().mapToGlobal(q_point))
+
+        if choosed_action == edit_action:
+            self.go_edit()
 
 
 class RebaseMainClass(QObject):
