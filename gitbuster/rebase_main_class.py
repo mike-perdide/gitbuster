@@ -85,6 +85,8 @@ class ButtonLineEdit(QWidget):
         new_name = unicode(self.editor.text())
         old_name = self.model.get_old_branch_name()
         if new_name == old_name:
+            # Here, return to read_mode anyway
+            self._readmode()
             return
 
         self.new_name = new_name
