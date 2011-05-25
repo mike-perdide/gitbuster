@@ -148,7 +148,7 @@ class MainWindow(QMainWindow):
         """
             Reverts the history one event back, application wide.
         """
-        if self._last_history_event >= 0:
+        if not self._applying and self._last_history_event >= 0:
             model, actions = self.reproduce_history_conditions()
             model.undo_history()
 
@@ -162,7 +162,7 @@ class MainWindow(QMainWindow):
         """
             Replays the history one event forward, application wide.
         """
-        if self._last_history_event < len(self._history) - 1:
+        if self._applying and self._last_history_event < len(self._history) - 1:
             model, actions = self.reproduce_history_conditions()
             model.redo_history()
 
