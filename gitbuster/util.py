@@ -22,8 +22,7 @@ def is_top_git_directory(filepath):
 
 
 def select_git_directory():
-    settings = QSettings("Noname company yet", "gitbuster")
-
+    settings = QSettings("majerti", "gitbuster")
     settings.beginGroup("Last run")
 
     filepath = '/'
