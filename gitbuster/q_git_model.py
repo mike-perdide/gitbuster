@@ -4,14 +4,12 @@
 # This module is part of gitbuster and is released under the GPLv3
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
-# -*- coding: utf-8 -*-
 
 from PyQt4.QtCore import QAbstractTableModel, QDateTime, QModelIndex, QVariant,\
-     Qt, SIGNAL
+     Qt
 from PyQt4.QtGui import QColor
 from datetime import datetime
-from gfbi_core import ACTOR_FIELDS, NAMES, NOT_EDITABLE_FIELDS, TEXT_FIELDS,\
-     TIME_FIELDS
+from gfbi_core import ACTOR_FIELDS, NAMES, TEXT_FIELDS, TIME_FIELDS
 from gfbi_core.git_model import GitModel
 
 

@@ -4,10 +4,11 @@
 # This module is part of gitbuster and is released under the GPLv3
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
-# -*- coding: utf-8 -*-
+
+from os.path import exists, join
+
 from PyQt4.QtCore import QDir, QObject, QSettings, QVariant, SIGNAL
 from PyQt4.QtGui import QFileDialog
-from os.path import exists, join
 
 
 def _connect_button(button, function):

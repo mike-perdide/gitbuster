@@ -4,14 +4,11 @@
 # This module is part of gitbuster and is released under the GPLv3
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
-# -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import QEvent, QMimeData, QObject, QPoint, QPointF, QRectF,\
-     QString, Qt, SIGNAL
-from PyQt4.QtGui import QApplication, QBrush, QColor, QDrag, QFont,\
-     QGraphicsItem, QGraphicsObject, QGraphicsScene,\
-     QGraphicsSceneDragDropEvent, QGraphicsTextItem, QGraphicsView, QPainter,\
-     QPainterPath, QPixmap, QPolygonF, QWidget
+from PyQt4.QtCore import QMimeData, QPoint, QPointF, QRectF, QString, Qt,\
+     SIGNAL
+from PyQt4.QtGui import QBrush, QColor, QDrag, QFont, QGraphicsItem,\
+     QGraphicsObject, QPainter, QPainterPath, QPixmap, QPolygonF
 
 COMMIT_WIDTH = 150
 COMMIT_HEIGHT = 40
@@ -213,7 +210,7 @@ class CommitItem(QGraphicsObject):
 
     def shape(self):
         return self.path
-    
+
     # Event methods
     def mousePressEvent(self, event):
         """
