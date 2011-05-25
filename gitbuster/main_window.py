@@ -280,9 +280,8 @@ class MainWindow(QMainWindow):
         """
         if not self._applying:
             self.progress_thread = ProgressThread(self._ui.progressBar,
-                                                  models,
-                                                  log,
-                                                  script)
+                                                  models, log, script)
+
             QObject.connect(self.progress_thread, SIGNAL("started()"),
                             self.apply_started)
             QObject.connect(self.progress_thread, SIGNAL("finished()"),
@@ -305,6 +304,10 @@ class MainWindow(QMainWindow):
         self._applying = False
         self._ui.applyButton.setEnabled(True)
         self._ui.cancelButton.setEnabled(True)
+        if self.progress_thread.is_write_success():
+            # Reset history
+            self.reset_history()
+            # If the applied models were fake, we should try to rebuild them.
 
     def show_progress_bar(self):
         """
