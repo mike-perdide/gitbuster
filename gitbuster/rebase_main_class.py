@@ -28,6 +28,7 @@ class ButtonLineEdit(QWidget):
         self.branch = branch
         self.history_mgr = history_mgr
         self.model = model
+        self.new_name = ""
 
         #widgets. Maybe we should use designer here.
         self.read_button = QPushButton(self)
@@ -74,7 +75,7 @@ class ButtonLineEdit(QWidget):
             "Change &#147;<i>%(name)s</i>&#148; into"
             "</span>" %
             {'name': name})
-        self.editor.setText(name)
+        self.editor.setText(self.new_name or name)
 
     def _readmode(self):
         for widget, is_edit in self._iter_widgets():
@@ -86,6 +87,7 @@ class ButtonLineEdit(QWidget):
         if new_name == old_name:
             return
 
+        self.new_name = new_name
         self.read_button.setText(new_name)
         self.model.start_history_event()
         action = SetNameAction(old_name, new_name, self.model, self.read_button)
