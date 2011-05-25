@@ -208,7 +208,7 @@ class QEditableGitModel(QGitModel):
 
     def get_modified_count(self):
         "See GitModel for more help."
-        return len(self.git_model.get_modifications())
+        return self.git_model.get_modified_count()
 
     def reorder_commits(self, dates, time, weekdays):
         "See GitModel for more help."
