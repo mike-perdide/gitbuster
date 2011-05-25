@@ -318,7 +318,8 @@ class RebaseMainClass(QObject):
 
         ordered_list = []
         for index in selected_indexes:
-            if index.isValid() and index.row() not in ordered_list:
+            if index.isValid() and index.row() not in ordered_list and \
+               not model.is_deleted(index):
                 ordered_list.insert(0, index.row())
 
         if ordered_list:
