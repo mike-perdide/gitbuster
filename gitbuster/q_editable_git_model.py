@@ -219,6 +219,10 @@ class QEditableGitModel(QGitModel):
         "See GitModel for more help."
         return self.git_model.is_deleted(index)
 
+    def is_inserted_commit(self, index):
+        "See GitModel for more help."
+        return self.git_model.is_inserted_commit(index)
+
     def reorder_commits(self, dates, time, weekdays):
         "See GitModel for more help."
         self.start_history_event()
