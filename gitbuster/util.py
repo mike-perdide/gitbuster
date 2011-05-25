@@ -7,7 +7,8 @@
 
 from os.path import exists, join
 
-from PyQt4.QtCore import QDir, QObject, QSettings, QVariant, SIGNAL
+from PyQt4.QtCore import QDir, QObject, QSettings, QVariant, SIGNAL, QUrl,\
+        QStringList, QString
 from PyQt4.QtGui import QFileDialog
 
 
@@ -27,21 +28,37 @@ def select_git_directory():
 
     filepath = '/'
     last_directory = settings.value("directory", QVariant(QDir.homePath()))
-    while not is_top_git_directory(filepath):
-        filepath = unicode(QFileDialog.getExistingDirectory(
-            None,
-            "Open git repository",
-            unicode(last_directory.toString()),
-            QFileDialog.ShowDirsOnly
-            ))
+    dirs_list = settings.value("recent directories",
+                               QStringList()).toStringList()
+
+
+    recent_dirs_urls = [QUrl.fromLocalFile(dir) for dir in dirs_list]
+    while not is_top_git_directory(unicode(filepath)):
+        file_dialog = QFileDialog(None, "Open git repository",
+                                  last_directory.toString())
+        file_dialog.setFileMode(QFileDialog.Directory)
+        file_dialog.setOptions(QFileDialog.ShowDirsOnly)
+        if recent_dirs_urls:
+            file_dialog.setSidebarUrls(recent_dirs_urls[-5:])
+        ret = file_dialog.exec_()
+
+        if ret:
+            filepath = file_dialog.selectedFiles()[0]
+        else:
+            return ret
+
         if not filepath:
             return filepath
+
+    if not dirs_list.contains(filepath):
+        dirs_list.append(filepath)
+        settings.setValue("recent directories", dirs_list)
 
     settings.setValue("directory", filepath)
     settings.endGroup()
     settings.sync()
 
-    return filepath
+    return unicode(filepath)
 
 
 class SetNameAction:
