@@ -223,6 +223,10 @@ class QEditableGitModel(QGitModel):
         "See GitModel for more help."
         return self.git_model.is_inserted_commit(index)
 
+    def is_fake_model(self):
+        "See GitModel for more help."
+        return self.git_model.is_fake_model()
+
     def reorder_commits(self, dates, time, weekdays):
         "See GitModel for more help."
         self.start_history_event()
