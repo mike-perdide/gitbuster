@@ -1,12 +1,13 @@
 """
     This test script aims at testing QGitModel, without any modifications.
 """
-from gitbuster.q_git_model import QGitModel
 from PyQt4.QtCore import Qt, QModelIndex
 from subprocess import Popen, PIPE
 import time
-
 import os
+
+from gitbuster.q_git_model import QGitModel
+from gfbi_core.util import GfbiException
 
 TEST_DIR = "/tmp/tests_git"
 TEST_column_count = 10
@@ -210,7 +211,7 @@ def test_set_branch_twice_fails():
     dummy_model.set_current_branch(TEST_wallace_branch)
     try:
         dummy_model.set_current_branch(TEST_master_branch)
-    except Exception, err:
+    except GfbiException, err:
         fails = True
 
     assert fails, "We were able to set the current branch of the model twice."
