@@ -6,15 +6,14 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QMainWindow, QShortcut, QKeySequence, \
-                        QApplication, QMessageBox
-from PyQt4.QtCore import SIGNAL, QObject
-from gitbuster.main_window_ui import Ui_MainWindow
-from gitbuster.q_git_model import QGitModel
-from gitbuster.q_editable_git_model import QEditableGitModel
+from PyQt4.QtCore import QObject, SIGNAL
+from PyQt4.QtGui import QApplication, QKeySequence, QMainWindow, QMessageBox
 from gitbuster.confirm_dialog import ConfirmDialog
-from gitbuster.util import _connect_button, select_git_directory
+from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.progress_thread import ProgressThread
+from gitbuster.q_editable_git_model import QEditableGitModel
+from gitbuster.q_git_model import QGitModel
+from gitbuster.util import _connect_button, select_git_directory
 
 from gitbuster.filter_main_class import FilterMainClass
 from gitbuster.rebase_main_class import RebaseMainClass
