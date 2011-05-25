@@ -89,3 +89,16 @@ class SetNameAction:
     def redo(self):
         self._button.setText(self._new_name)
         self._model.set_new_branch_name(self._new_name)
+
+
+class DummyRemoveAction:
+
+    def __init__(self, row, view):
+        self._row = row
+        self._view = view
+
+    def undo(self):
+        self._view.showRow(self._row)
+
+    def redo(self):
+        self._view.hideRow(self._row)
