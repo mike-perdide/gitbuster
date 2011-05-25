@@ -1,3 +1,5 @@
+PY = $(wildcard *.py)
+PY_REORDERED = $(PY:.py=_py_reorder_imports)
 UI = $(wildcard *.ui)
 UIPY = $(UI:.ui=_ui.py)
 
@@ -11,6 +13,11 @@ OBJECTS = $(RCPY) $(UIPY)
 
 %_rc.py: %.qrc
 	pyrcc4 $< -o $@
+
+%_py_reorder_imports: %.py
+	reorder -i $< -o $<
+
+reorder_imports: $(PY_REORDERED)
 
 all: $(OBJECTS)
 
