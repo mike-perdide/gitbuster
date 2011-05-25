@@ -38,6 +38,7 @@ class ProgressThread(QThread):
         self._models = models
         self._log = log
         self._generate_scripts = generate_scripts
+        self._success = True
 
         total_to_rewrite = 0
         for model in self._models:
@@ -77,9 +78,18 @@ class ProgressThread(QThread):
 
             finished_writing_models += 1
 
+            if not model.is_write_success():
+                self._success = False
+
             model.reset()
 
         if self._use_progress_bar:
             progress_bar.emit(SIGNAL("update(int)"), 100)
             time.sleep(0.2)
             progress_bar.emit(SIGNAL("stopping"))
+
+    def is_write_success(self):
+        """
+            Returns True if the model write process didn't fail.
+        """
+        return self._success
