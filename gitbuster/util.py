@@ -31,15 +31,15 @@ def select_git_directory():
     dirs_list = settings.value("recent directories",
                                QStringList()).toStringList()
 
-
     recent_dirs_urls = [QUrl.fromLocalFile(dir) for dir in dirs_list]
+    recent_dirs_urls.insert(0, QUrl.fromLocalFile(QDir.homePath()))
     while not is_top_git_directory(unicode(filepath)):
         file_dialog = QFileDialog(None, "Open git repository",
                                   last_directory.toString())
         file_dialog.setFileMode(QFileDialog.Directory)
         file_dialog.setOptions(QFileDialog.ShowDirsOnly)
         if recent_dirs_urls:
-            file_dialog.setSidebarUrls(recent_dirs_urls[-5:])
+            file_dialog.setSidebarUrls(recent_dirs_urls[-6:])
         ret = file_dialog.exec_()
 
         if ret:
