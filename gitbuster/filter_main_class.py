@@ -332,9 +332,7 @@ class FilterMainClass():
 
         #help for reading following code:
         # '&' provides with the intersection between 2 sets
-        # then a tuple of '1' is built if the intersection is not empty
-        # (we could have chosen anything)
-        # the cumulative len of the tuples gives the total_filter_score
+        # then a sum of non empty intersections is computed
         total_filter_score = sum(1 for group in _DATE_FILTERS
             if group & filters)\
             +len(filters & _SIMPLE_FILTERS)
