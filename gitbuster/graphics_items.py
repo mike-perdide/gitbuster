@@ -6,12 +6,12 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtGui import QGraphicsScene, QApplication, QWidget, QGraphicsItem, \
-        QPainterPath, QBrush, QGraphicsView, QGraphicsSceneDragDropEvent, \
-        QFont, QPainter, QColor, QGraphicsTextItem, QPolygonF, QGraphicsObject,\
-        QDrag, QPixmap
-from PyQt4.QtCore import QRectF, Qt, SIGNAL, QString, QPointF, QObject, \
-        QEvent, QMimeData, QPoint
+from PyQt4.QtCore import QEvent, QMimeData, QObject, QPoint, QPointF, QRectF,\
+     QString, Qt, SIGNAL
+from PyQt4.QtGui import QApplication, QBrush, QColor, QDrag, QFont,\
+     QGraphicsItem, QGraphicsObject, QGraphicsScene,\
+     QGraphicsSceneDragDropEvent, QGraphicsTextItem, QGraphicsView, QPainter,\
+     QPainterPath, QPixmap, QPolygonF, QWidget
 
 COMMIT_WIDTH = 150
 COMMIT_HEIGHT = 40

@@ -6,12 +6,12 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, \
-                         QDateTime, SIGNAL, QMimeData, QByteArray, \
-                         QDataStream, QIODevice, QStringList, QString
+from PyQt4.QtCore import QAbstractTableModel, QByteArray, QDataStream,\
+     QDateTime, QIODevice, QMimeData, QModelIndex, QString, QStringList,\
+     QVariant, Qt, SIGNAL
 from PyQt4.QtGui import QColor, QFont
+from gfbi_core import NOT_EDITABLE_FIELDS, TIME_FIELDS
 from gfbi_core.editable_git_model import EditableGitModel
-from gfbi_core import TIME_FIELDS, NOT_EDITABLE_FIELDS
 from gitbuster.q_git_model import QGitModel
 
 

@@ -5,7 +5,7 @@
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
 # -*- coding: utf-8 -*-
-from PyQt4.QtCore import SIGNAL, QThread
+from PyQt4.QtCore import QThread, SIGNAL
 
 import time
 

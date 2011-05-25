@@ -6,13 +6,13 @@
 #
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import QModelIndex, Qt, QVariant, QAbstractTableModel, \
-                         QDateTime, SIGNAL
+from PyQt4.QtCore import QAbstractTableModel, QDateTime, QModelIndex, QVariant,\
+     Qt, SIGNAL
 from PyQt4.QtGui import QColor
-from gfbi_core.git_model import GitModel
-from gfbi_core import NAMES, TEXT_FIELDS, TIME_FIELDS, NOT_EDITABLE_FIELDS, \
-                      ACTOR_FIELDS
 from datetime import datetime
+from gfbi_core import ACTOR_FIELDS, NAMES, NOT_EDITABLE_FIELDS, TEXT_FIELDS,\
+     TIME_FIELDS
+from gfbi_core.git_model import GitModel
 
 
 class QGitModel(QAbstractTableModel):
