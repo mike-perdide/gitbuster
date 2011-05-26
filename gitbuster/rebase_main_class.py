@@ -282,7 +282,8 @@ class RebaseMainClass(QObject):
                 from_model = branch_view.model()
                 from_row = min(selected_rows)
                 from_model_row = from_model, from_row
-                self.parent.create_new_branch_model(new_name, from_model_row)
+                self.parent.create_new_branch_from_model(new_name,
+                                                         from_model_row)
 
     def add_new_model(self, model):
         """
