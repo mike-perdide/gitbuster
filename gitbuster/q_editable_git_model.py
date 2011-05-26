@@ -5,9 +5,8 @@
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
 
-from PyQt4.QtCore import QAbstractTableModel, QByteArray, QDataStream,\
-     QIODevice, QMimeData, QModelIndex, QString, QStringList, QVariant, Qt,\
-     SIGNAL
+from PyQt4.QtCore import QAbstractTableModel, QDataStream, QIODevice, \
+        QModelIndex, QString, QStringList, QVariant, Qt, SIGNAL
 from PyQt4.QtGui import QColor, QFont
 from gfbi_core import NOT_EDITABLE_FIELDS, TIME_FIELDS
 from gfbi_core.editable_git_model import EditableGitModel
@@ -279,21 +278,6 @@ class QEditableGitModel(QGitModel):
         types = QStringList()
         types.append("application/vnd.text.list")
         return types
-
-    def mimeData(self, indexes):
-        mime_data = QMimeData()
-        encoded_data = QByteArray()
-
-        stream = QDataStream(encoded_data, QIODevice.WriteOnly)
-
-        for index in indexes:
-            if index.isValid() and index.column() == 0:
-                text = QString(str(self.get_current_branch()) + " ")
-                text += QString(str(index.row()))
-                stream.writeQString(text)
-
-        mime_data.setData("application/vnd.text.list", encoded_data)
-        return mime_data
 
     def dropMimeData(self, mime_data, action, row, col_unused, parent_unused,
                      filling_empty_model=False):
