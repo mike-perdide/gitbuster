@@ -16,7 +16,7 @@ from gfbi_core.git_model import GitModel
 class QGitModel(QAbstractTableModel):
 
     def __init__(self, directory=".",  model=None, fake_branch_name="",
-                 parent=None):
+                 parent=None, remote_ref=None):
         """
             Initializes the git model with the repository root directory.
 
@@ -32,7 +32,8 @@ class QGitModel(QAbstractTableModel):
         """
         QAbstractTableModel.__init__(self, parent)
         if not model:
-            self.git_model = GitModel(directory=directory)
+            self.git_model = GitModel(directory=directory,
+                                      remote_ref=remote_ref)
         else:
             self.git_model = model
         self._filters = {}
@@ -369,6 +370,10 @@ class QGitModel(QAbstractTableModel):
     def set_current_branch(self, branch):
         "See GitModel for more help."
         return self.git_model.set_current_branch(branch)
+
+    def get_remote_ref(self):
+        "See GitModel for more help."
+        return self.git_model.get_remote_ref()
 
     def reorder_commits(self, dates, time, weekdays):
         "See GitModel for more help."

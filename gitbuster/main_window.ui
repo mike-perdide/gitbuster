@@ -1054,6 +1054,8 @@
      <string>&amp;File</string>
     </property>
     <addaction name="actionChange_repository"/>
+    <addaction name="actionNew_branch"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -1152,6 +1154,11 @@
    </property>
    <property name="text">
     <string>Show modifications</string>
+   </property>
+  </action>
+  <action name="actionNew_branch">
+   <property name="text">
+    <string>New remote branch</string>
    </property>
   </action>
  </widget>
