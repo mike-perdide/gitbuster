@@ -61,6 +61,7 @@ def main():
 
     #reroute SIGINT to Qt.
     def quit(signum, frame):
+        # Clean the repo : stages, tmp_rebase, remotes
         window._ui.actionQuit.trigger()
     signal.signal(signal.SIGINT, quit)
 
