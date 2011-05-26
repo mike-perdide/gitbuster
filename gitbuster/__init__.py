@@ -10,26 +10,30 @@ from gitbuster.main_window import MainWindow
 from gitbuster.util import is_top_git_directory, select_git_directory
 import signal
 import sys
+import warnings
 
-try:
-    from git import Repo
-except:
-    print """Couldn't import git. You might want to install GitPython from:
-    http://pypi.python.org/pypi/GitPython/"""
-    sys.exit(1)
-try:
+
+def get_gitpython():
+    try:
+        from git import Repo
+    except ImportError:
+        warnings.warn("""Couldn't import git. You might want to install GitPython from:
+        http://pypi.python.org/pypi/GitPython/""", ImportWarning)
+        sys.exit(1)
+
     from git import __version__
     str_maj, str_min, str_rev = __version__.split(".")
     _maj, _min, _rev = int(str_maj), int(str_min), int(str_rev)
     if  _maj < 0 or (_maj == 0 and _min < 3) or \
         (_maj == 0 and _min == 3 and _rev < 1):
+        warnings.warn("This project needs GitPython (>=0.3.1).", ImportWarning)
         raise Exception()
-except:
-    print "This project needs GitPython (>=0.3.1)."
-    sys.exit(1)
+        sys.exit(1)
+    return Repo
 
 def main():
     " This method launches gitbuster."
+    repo_klass = get_gitpython()
     app = QApplication(sys.argv)
 
     if len(sys.argv) == 2 and is_top_git_directory(sys.argv[1]):
@@ -37,25 +41,28 @@ def main():
     else:
         filepath = select_git_directory()
 
-    if filepath:
-        test_repo = Repo(filepath)
-        if test_repo.is_dirty():
-            warning_title = "Unclean repository"
-            warning_text = "The chosen repository has unstaged changes. " \
-                           "You should commit or stash them. "\
-                           "Do you want to continue anyway ?"
-            warning_choice = QMessageBox.warning(None, warning_title, warning_text,
-                                                 QMessageBox.Yes, QMessageBox.No)
+    if not filepath:
+        sys.exit(1)
 
-            if warning_choice == QMessageBox.No:
-                sys.exit(2)
+    test_repo = repo_klass(filepath)
+    if test_repo.is_dirty():
+        warning_title = "Unclean repository"
+        warning_text = "The chosen repository has unstaged changes. " \
+                       "You should commit or stash them. "\
+                       "Do you want to continue anyway ?"
+        warning_choice = QMessageBox.warning(None, warning_title, warning_text,
+                                             QMessageBox.Yes, QMessageBox.No)
 
-        window = MainWindow(directory=filepath, debug=True)
-        window.show()
+        if warning_choice == QMessageBox.No:
+            sys.exit(2)
 
-        def quit(signum, frame):
-            window._ui.actionQuit.trigger()
-        signal.signal(signal.SIGINT, quit)
-        sys.exit(app.exec_())
+    window = MainWindow(directory=filepath, debug=True)
+    window.show()
 
-    sys.exit(1)
+    #reroute SIGINT to Qt.
+    def quit(signum, frame):
+        window._ui.actionQuit.trigger()
+    signal.signal(signal.SIGINT, quit)
+
+    #run app and exit with same code
+    sys.exit(app.exec_())

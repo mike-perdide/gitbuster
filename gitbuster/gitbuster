@@ -6,7 +6,10 @@
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
 
+import warnings
+
 from gitbuster import main
 
 if __name__ == "__main__":
+    warnings.simplefilter("always")
     main()
