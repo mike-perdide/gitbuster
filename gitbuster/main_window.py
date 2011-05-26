@@ -123,7 +123,8 @@ class MainWindow(QMainWindow):
 
         if ret:
             new_remote = dialog.get_remote()
-            new_model = QGitModel(self._directory, remote_ref=new_remote)
+            new_model = QGitModel(self._directory, remote_ref=new_remote,
+                                 parent=self)
             self.add_new_model(new_model)
 
     def add_new_model(self, model):
