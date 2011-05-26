@@ -5,8 +5,8 @@
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
 
-from PyQt4.QtCore import QAbstractTableModel, QDateTime, QModelIndex, QVariant,\
-     Qt
+from PyQt4.QtCore import QAbstractTableModel, QDateTime, QModelIndex, \
+    QVariant, Qt, QMimeData, QDataStream, QByteArray, QIODevice, QString
 from PyQt4.QtGui import QColor
 from datetime import datetime
 from gfbi_core import ACTOR_FIELDS, NAMES, TEXT_FIELDS, TIME_FIELDS
@@ -343,7 +343,24 @@ class QGitModel(QAbstractTableModel):
             return Qt.ItemIsEnabled
 
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
+                            Qt.ItemIsDragEnabled |
                             Qt.NoItemFlags)
+
+    def mimeData(self, indexes):
+        mime_data = QMimeData()
+        encoded_data = QByteArray()
+
+        stream = QDataStream(encoded_data, QIODevice.WriteOnly)
+
+        ref = self.get_current_branch() or self.get_remote_ref()
+        for index in indexes:
+            if index.isValid() and index.column() == 0:
+                text = QString(ref.name + " ")
+                text += QString(str(index.row()))
+                stream.writeQString(text)
+
+        mime_data.setData("application/vnd.text.list", encoded_data)
+        return mime_data
 
     # Beyond this point, abandon all hope of seeing anything more than "proxying
     # methods" (for instance, progress() calls git_model.progress())
