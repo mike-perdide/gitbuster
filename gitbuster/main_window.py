@@ -287,10 +287,12 @@ class MainWindow(QMainWindow):
             # Can't apply if we're already applying
             return
 
-        if True in [model.get_modified_count() > 0
-                    for model in self._models.values()]:
 
-            msgBox = ConfirmDialog(self._models)
+        modified_models = [model for model in self._models.values()
+                           if isinstance(model, QEditableGitModel) and
+                           model.get_modified_count > 0]
+        if modified_models:
+            msgBox = ConfirmDialog(modified_models)
             ret = msgBox.exec_()
 
             if ret and msgBox.checked_models():
