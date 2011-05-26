@@ -73,16 +73,7 @@ class MainWindow(QMainWindow):
         model = QEditableGitModel(self._models, directory=self._directory,
                                   fake_branch_name=new_name,
                                   from_model_row=from_model_row)
-        model.setMerge(False)
-        model.enable_option("filters")
-
-        new_branch = model.get_current_branch()
-        self._models[new_branch] = model
-        QObject.connect(model, SIGNAL("newHistoryEvent"),
-                        self.new_history_event)
-
-        self.filter_main_class.add_new_model(model)
-        self.rebase_main_class.add_new_model(model)
+        self.add_new_model(model)
 
     def connect_slots(self):
         """
