@@ -79,42 +79,38 @@ class MainWindow(QMainWindow):
         """
             Connect the slots to the objects.
         """
+        gui = self._ui
         # Bottom bar connections
-        _connect_button(self._ui.applyButton, self.apply)
-        _connect_button(self._ui.cancelButton, self.quit)
-        _connect_button(self._ui.toggleModificationsButton,
+        _connect_button(gui.applyButton, self.apply)
+        _connect_button(gui.cancelButton, self.quit)
+        _connect_button(gui.toggleModificationsButton,
                                                self.toggle_modifications)
 
         # Catching progress bar signals.
-        self.connect(self._ui.progressBar, SIGNAL("starting"),
+        self.connect(gui.progressBar, SIGNAL("starting"),
                                                     self.show_progress_bar)
-        self.connect(self._ui.progressBar, SIGNAL("update(int)"),
+        self.connect(gui.progressBar, SIGNAL("update(int)"),
                                                     self.update_progress_bar)
-        self.connect(self._ui.progressBar, SIGNAL("stopping"),
+        self.connect(gui.progressBar, SIGNAL("stopping"),
                                                     self.hide_progress_bar)
 
         # Connecting actions
-        self.connect(self._ui.actionChange_repository,
+        self.connect(gui.actionChange_repository,
                      SIGNAL("triggered(bool)"),
                      self.change_directory)
 
         action_shortcuts = (
-            (self._ui.actionUndo, QKeySequence.Undo, self.undo_history),
-            (self._ui.actionRedo, QKeySequence.Redo, self.redo_history),
-            (self._ui.actionQuit, QKeySequence.Quit, self.quit))
+            (gui.actionUndo, QKeySequence.Undo, self.undo_history),
+            (gui.actionRedo, QKeySequence.Redo, self.redo_history),
+            (gui.actionQuit, QKeySequence.Quit, self.quit),
+            (gui.actionShow_modifications, None, self.show_modifications),
+            (gui.actionHide_modifications, None, self.hide_modifications),
+            (gui.actionNew_branch, None, self.new_remote_branch),
+            (gui.actionApply, None, self.apply))
         for action, shortcut, slot in action_shortcuts:
-            action.setShortcut(shortcut)
+            if shortcut:
+                action.setShortcut(shortcut)
             QObject.connect(action, SIGNAL("triggered()"), slot)
-
-        QObject.connect(self._ui.actionApply, SIGNAL("triggered()"), self.apply)
-
-        QObject.connect(self._ui.actionShow_modifications,
-                        SIGNAL("triggered()"), self.show_modifications)
-        QObject.connect(self._ui.actionHide_modifications,
-                        SIGNAL("triggered()"), self.hide_modifications)
-
-        QObject.connect(self._ui.actionNew_branch,
-                        SIGNAL("triggered()"), self.new_remote_branch)
 
     def new_remote_branch(self):
         """
