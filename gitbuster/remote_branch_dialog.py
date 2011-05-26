@@ -157,9 +157,12 @@ class RemoteBranchDialog(QDialog):
         if remote_url in self._existing_remotes:
             self._remote = a_repo.remotes[self._existing_remotes[remote_url]]
         else:
-            self._remote = a_repo.create_remote("remote" +
-                                                len(self._existing_remotes),
-                                                remote_url)
+            id = 0
+            available_name = "remote" + str(id)
+            while available_name in self._existing_remotes.values():
+                id += 1
+                available_name = "remote" + str(id)
+            self._remote = a_repo.create_remote(available_name, remote_url)
             self._remote.fetch()
             self._created_remotes.append(self._remote)
 
