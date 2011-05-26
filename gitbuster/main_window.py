@@ -13,9 +13,12 @@ from gitbuster.progress_thread import ProgressThread
 from gitbuster.q_editable_git_model import QEditableGitModel
 from gitbuster.q_git_model import QGitModel
 from gitbuster.util import _connect_button, select_git_directory
+from gitbuster.remote_branch_dialog import RemoteBranchDialog
 
 from gitbuster.filter_main_class import FilterMainClass
 from gitbuster.rebase_main_class import RebaseMainClass
+
+from git import Repo
 
 
 class MainWindow(QMainWindow):
@@ -118,6 +121,39 @@ class MainWindow(QMainWindow):
                         SIGNAL("triggered()"), self.show_modifications)
         QObject.connect(self._ui.actionHide_modifications,
                         SIGNAL("triggered()"), self.hide_modifications)
+
+        QObject.connect(self._ui.actionNew_branch,
+                        SIGNAL("triggered()"), self.new_remote_branch)
+
+    def new_remote_branch(self):
+        """
+            Create a new branch.
+            This can be a branch build with a directory repository or with an
+            URL repository.
+        """
+        dialog = RemoteBranchDialog(self, self._directory)
+        ret = dialog.exec_()
+
+        if ret:
+            new_remote = dialog.get_remote()
+            new_model = QGitModel(self._directory, remote_ref=new_remote)
+            self.add_new_model(new_model)
+
+    def add_new_model(self, model):
+        """
+            This adds the given model to the two tabs.
+        """
+        if not isinstance(model, QGitModel):
+            model.setMerge(False)
+        model.enable_option("filters")
+
+        new_branch = model.get_current_branch() or model.get_remote_ref()
+        self._models[new_branch] = model
+        QObject.connect(model, SIGNAL("newHistoryEvent"),
+                        self.new_history_event)
+
+        self.filter_main_class.add_new_model(model)
+        self.rebase_main_class.add_new_model(model)
 
     def reset_history(self):
         """
