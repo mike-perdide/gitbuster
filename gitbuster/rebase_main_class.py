@@ -154,7 +154,7 @@ class RebaseMainClass(QObject):
             This method sets up the interface for the model in the rebase tab.
         """
         position = self._number_of_models
-        branch = model.get_current_branch()
+        branch = model.get_current_branch() or model.get_remote_ref()
 
         checkbox = QCheckBox(self._ui.centralwidget)
         QObject.connect(model, SIGNAL("name changed"), checkbox.setText)
@@ -197,7 +197,7 @@ class RebaseMainClass(QObject):
         self._ui.viewLayout.addWidget(name, 0, place)
         self._ui.viewLayout.addWidget(branch_view, 1, place)
 
-        if branch == self.parent.current_branch:
+        if hasattr(branch, 'path') and branch == self.parent.current_branch:
             checkbox.setCheckState(Qt.Checked)
         else:
             branch_view.hide()
@@ -367,7 +367,8 @@ class RebaseMainClass(QObject):
 
             labels[field].setText(data.toString())
 
-        if model.is_conflicting_commit(index.row()):
+        if hasattr(model, 'is_conflicting_commit') and \
+           model.is_conflicting_commit(index.row()):
             self._ui.conflictsButton.show()
         else:
             self._ui.conflictsButton.hide()
@@ -408,7 +409,7 @@ class RebaseMainClass(QObject):
                 self.show_fake_models()
             else:
                 self.hide_fake_models()
-                if not model.is_fake_model():
+                if hasattr(model, 'get_orig_q_git_model'):
                     branch_view.setModel(model.get_orig_q_git_model())
 
     def conflicts(self):

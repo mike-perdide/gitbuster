@@ -125,7 +125,7 @@ class FilterMainClass():
         """
             Add a new model to this tab.
         """
-        branch = model.get_current_branch()
+        branch = model.get_current_branch() or model.get_remote_ref()
         self.gui.currentBranchComboBox.addItem("%s" % branch.name)
 
     def connect_slots(self):
@@ -400,6 +400,7 @@ class FilterMainClass():
             self.show_fake_models()
         else:
             self.hide_fake_models()
-            # if the displayed model is the editable model
-            orig_model = self._model.get_orig_q_git_model()
-            self.gui.tableView.setModel(orig_model)
+            # if the displayed model is not a fake model nor a QGitModel
+            if hasattr(model, 'get_orig_q_git_model'):
+                orig_model = self._model.get_orig_q_git_model()
+                self.gui.tableView.setModel(orig_model)
