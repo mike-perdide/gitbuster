@@ -21,7 +21,8 @@ class ConfirmDialog(QDialog):
         self._model_checkboxes = []
 
         row = 1
-        for branch, model in models.items():
+        for model in models:
+            branch = model.get_current_branch()
             mod_count = model.get_modified_count()
             to_rewrite = model.get_to_rewrite_count()
 
