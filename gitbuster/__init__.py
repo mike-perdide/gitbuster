@@ -37,19 +37,19 @@ def main():
     else:
         filepath = select_git_directory()
 
-    test_repo = Repo(filepath)
-    if test_repo.is_dirty():
-        warning_title = "Unclean repository"
-        warning_text = "The chosen repository has unstaged changes. " \
-                       "You should commit or stash them. "\
-                       "Do you want to continue anyway ?"
-        warning_choice = QMessageBox.warning(None, warning_title, warning_text,
-                                             QMessageBox.Yes, QMessageBox.No)
-
-        if warning_choice == QMessageBox.No:
-            sys.exit(2)
-
     if filepath:
+        test_repo = Repo(filepath)
+        if test_repo.is_dirty():
+            warning_title = "Unclean repository"
+            warning_text = "The chosen repository has unstaged changes. " \
+                           "You should commit or stash them. "\
+                           "Do you want to continue anyway ?"
+            warning_choice = QMessageBox.warning(None, warning_title, warning_text,
+                                                 QMessageBox.Yes, QMessageBox.No)
+
+            if warning_choice == QMessageBox.No:
+                sys.exit(2)
+
         window = MainWindow(directory=filepath, debug=True)
         window.show()
 
