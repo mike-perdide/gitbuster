@@ -25,7 +25,7 @@ DISCUSSIONS FERMÉES:
 # Déplacer les QGraphicsItem plutôt que les peindre un peu plus loin.
 # ADOPTÉ
 
-# On ne doit pas avoir d'opérations de filter et de rebase en même temps
+# On ne doit pas avoir d'opérations de filter et de rebase en même temps
 # Raisonnement par l'absurde:
 #   - si on a des modifications filter et rebase en même temps, si on applique filter
 #   - les commits sont réecrits
@@ -74,7 +74,7 @@ How to deal with inserting commits after HEAD or before the first commit ?
 
 [Model/View]
 Faut il reimplémenter le MVD pour graphicsView ou utiliser GitPython directement ?
-# Utiliser QGraphicsScene(QAbstractItemModel):
+# Utiliser QGraphicsScene(QAbstractItemModel):
 #  + on réutilise tout le formatage des dates, auteurs, messages de commit
 #  + on a un design pattern pour insérer des données
 #  - il faut modifier q_git_model pour pouvoir insérer des nouveaux commits, pour
