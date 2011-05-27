@@ -82,7 +82,8 @@ class RemoteBranchDialog(QDialog):
         a_repo = Repo(self._directory)
         existing_remotes = {}
         remote_output = " ".join(a_repo.git.remote("-v").split("\t"))
-        remotes = [remote.split(" ") for remote in remote_output.split("\n")]
+        remotes = [remote.split(" ") for remote in remote_output.split("\n")
+                   if remote]
         for remote_name, url, mode in remotes:
             existing_remotes[url] = remote_name
 
