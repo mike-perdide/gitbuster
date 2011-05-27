@@ -419,7 +419,9 @@ class RebaseMainClass(QObject):
             dialog.
         """
         model = self._clicked_commit.model()
-        dialog = ConflictsDialog(self, model)
+
+        unmerged_files = model.get_unmerged_files()
+        dialog = ConflictsDialog(self, unmerged_files)
         ret = dialog.exec_()
 
         if ret:
@@ -427,5 +429,8 @@ class RebaseMainClass(QObject):
             # way the ConfirmDialog will store it's info.
             log_checked = True
             script_checked = True
+
+            solutions = dialog.get_solutions()
+            model.set_conflict_solutions(solutions)
 
             self.parent.apply_models([model,], log_checked, script_checked)

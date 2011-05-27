@@ -44,7 +44,7 @@ class SimpleGitMessagesHighlighter(QSyntaxHighlighter):
 
 class ConflictsDialog(QDialog):
 
-    def __init__(self, parent, model):
+    def __init__(self, parent, unmerged_files):
         QDialog.__init__(self)
 
         self._ui = Ui_Dialog()
@@ -60,8 +60,7 @@ class ConflictsDialog(QDialog):
                                self._ui.addRadioButton: "add",
                                self._ui.addCustomRadioButton: "add_custom"}
 
-        self._u_files = model.get_unmerged_files()
-        self._model = model
+        self._u_files = unmerged_files
 
         u_files = self._u_files
 
@@ -260,6 +259,10 @@ class ConflictsDialog(QDialog):
                 break
 
         if  ret:
-            self._model.set_conflict_solutions(self._solutions)
-
             self.accept()
+
+    def get_solutions(self):
+        """
+            Return the selected solutions.
+        """
+        return self._solutions
