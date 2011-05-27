@@ -50,11 +50,16 @@ def main():
         warning_text = "The chosen repository has unstaged changes. " \
                        "You should commit or stash them. "\
                        "Do you want to continue anyway ?"
-        warning_choice = QMessageBox.warning(None, warning_title, warning_text,
-                                             QMessageBox.Yes, QMessageBox.No)
+        warning_choice = QMessageBox.warning(None, warning_title,
+                                             warning_text,
+                                             "Yes",
+                                             button1Text="No",
+                                             button2Text ="Stash")
 
         if warning_choice == QMessageBox.No:
             sys.exit(2)
+        elif warning_choice == 2:
+            test_repo.git.stash()
 
     window = MainWindow(directory=filepath, debug=True)
     window.show()
