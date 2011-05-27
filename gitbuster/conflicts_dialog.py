@@ -172,9 +172,6 @@ class ConflictsDialog(QDialog):
                         radio.setChecked(True)
 
             u_info = self._u_files[u_path]
-            unmerged_content = u_info["unmerged_content"]
-            diff = u_info["diff"]
-            orig_content = u_info["orig_content"]
             git_status = u_info["git_status"]
 
             add_available_states = ('DU', 'UD', 'UA', 'AU')
@@ -197,6 +194,7 @@ class ConflictsDialog(QDialog):
                 self._ui.conflictTextEdit.setText(QString(conflict_content))
                 self._ui.addCustomRadioButton.hide()
             else:
+                unmerged_content = u_info["unmerged_content"]
                 conflict_content = QString(unmerged_content)
                 self._ui.conflictTextEdit.setText(conflict_content)
                 self._ui.addCustomRadioButton.show()
@@ -207,6 +205,7 @@ class ConflictsDialog(QDialog):
                         "the conflicting commit tree."
                 self._ui.diffTextEdit.setText(QString(diff_text_edit_content))
             else:
+                diff = u_info["diff"]
                 self._ui.diffTextEdit.setText(QString(diff))
 
             if git_status in ('UA', 'DU', 'DD'):
@@ -216,6 +215,7 @@ class ConflictsDialog(QDialog):
                         "the tree before the merge conflict."
                 self._ui.origTextEdit.setHtml(QString(orig_text_edit_content))
             else:
+                orig_content = u_info["orig_content"]
                 orig_text_edit_content = orig_content
                 self._ui.origTextEdit.setText(QString(orig_text_edit_content))
 
