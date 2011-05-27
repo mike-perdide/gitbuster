@@ -8,9 +8,13 @@
 from PyQt4.QtGui import QApplication, QMessageBox
 from gitbuster.main_window import MainWindow
 from gitbuster.util import is_top_git_directory, select_git_directory
+from gitbuster.conflicts_dialog import ConflictsDialog
+from gfbi_core.git_rebase_process import get_unmerged_files, apply_solutions
 import signal
 import sys
+import os
 import warnings
+import git
 
 
 def get_gitpython():
@@ -45,6 +49,19 @@ def main():
         sys.exit(1)
 
     test_repo = repo_klass(filepath)
+    if os.path.exists(os.path.join(filepath, ".git/rebase-merge")):
+        # Special conflict mode
+        os.chdir(filepath)
+        unmerged_files = get_unmerged_files()
+        conflicts_dialog = ConflictsDialog(unmerged_files)
+        ret = conflicts_dialog.exec_()
+        if ret:
+            solutions = conflicts_dialog.get_solutions()
+            apply_solutions(solutions)
+            print "Applied your solutions, you can know continue:"
+            print "git rebase --continue"
+        sys.exit()
+
     if test_repo.is_dirty():
         warning_title = "Unclean repository"
         warning_text = "The chosen repository has unstaged changes. " \
