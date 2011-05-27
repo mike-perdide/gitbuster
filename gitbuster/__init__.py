@@ -56,7 +56,7 @@ def main():
                                              button1Text="No",
                                              button2Text ="Stash")
 
-        if warning_choice == QMessageBox.No:
+        if warning_choice == 1:
             sys.exit(2)
         elif warning_choice == 2:
             test_repo.git.stash()
