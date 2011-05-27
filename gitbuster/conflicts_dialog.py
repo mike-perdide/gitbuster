@@ -45,7 +45,7 @@ class SimpleGitMessagesHighlighter(QSyntaxHighlighter):
 class ConflictsDialog(QDialog):
 
     def __init__(self, parent, unmerged_files):
-        QDialog.__init__(self)
+        QDialog.__init__(self, parent=parent)
 
         self._ui = Ui_Dialog()
         self._ui.setupUi(self)
