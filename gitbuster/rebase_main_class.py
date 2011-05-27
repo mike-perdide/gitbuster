@@ -421,7 +421,7 @@ class RebaseMainClass(QObject):
         model = self._clicked_commit.model()
 
         unmerged_files = model.get_unmerged_files()
-        dialog = ConflictsDialog(self, unmerged_files)
+        dialog = ConflictsDialog(unmerged_files, parent=self.parent)
         ret = dialog.exec_()
 
         if ret:
