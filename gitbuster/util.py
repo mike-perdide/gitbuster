@@ -30,9 +30,12 @@ def select_git_directory():
     last_directory = settings.value("directory", QVariant(QDir.homePath()))
     dirs_list = settings.value("recent directories",
                                QStringList()).toStringList()
+    custom_entries = settings.value("custom entries",
+                                    QStringList()).toStringList()
 
     recent_dirs_urls = [QUrl.fromLocalFile(dir) for dir in dirs_list]
     home_url = QUrl.fromLocalFile(QDir.homePath())
+    custom_entries_urls = [QUrl.fromLocalFile(dir) for dir in custom_entries]
 
     while not is_top_git_directory(unicode(filepath)):
         file_dialog = QFileDialog(None, "Open git repository",
