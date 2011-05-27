@@ -21,8 +21,9 @@ def get_gitpython():
     try:
         from git import Repo
     except ImportError:
-        warnings.warn("""Couldn't import git. You might want to install GitPython from:
-        http://pypi.python.org/pypi/GitPython/""", ImportWarning)
+        warnings.warn("""Couldn't import git. You might want to install
+                      GitPython from: http://pypi.python.org/pypi/GitPython/""",
+                      ImportWarning)
         sys.exit(1)
 
     from git import __version__
