@@ -1,0 +1,21 @@
+
+gitbuster v2.0.0 "Who were you gonna call anyway ?" (28-05-11)
+==============================================================
+
+The main new feature is the possibility to rebase graphically by cherry-picking sets of commits with drag'n'drop.
+
+ * New tab for interactive rebase/cherry-pick.
+ * Drag and drop commits to insert into a branch.
+ * Deletion of commits.
+ * History feature on most of the interface actions.
+ * The repository can be specified in the command line.
+ * Applying several models at the same time.
+ * Better UTF-8 support.
+ * Detection of conflicting commits and ask the user for solutions.
+ * New conflicts dialog showing all the possible actions to solve a conflict.
+ * New test scripts to create easily conflicting repositories.
+ * Change the name of the branch.
+ * Dealing with ctrl + C.
+ * Display the last repositories used.
+ * Special conflicts mode when launching gitbuster right after a conflict after a rebase -i.
+ * New icons, dialog titles.
