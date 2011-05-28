@@ -1,4 +1,7 @@
 include *.txt
 include setup.py
+include README.rst
+include CHANGELOG
+include Makefile
 include gitbuster/*.py
 include gitbuster/*_ui.py
