@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="images">
     <file>images/Show.svg</file>
+    <file>images/gitbuster_logo.xcf</file>
     <file>images/Hide.svg</file>
     <file>images/system-log-out.svg</file>
     <file>images/mightyman_RedoGreen.svg</file>
