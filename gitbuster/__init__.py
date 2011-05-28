@@ -40,7 +40,7 @@ def main():
         if ret:
             solutions = conflicts_dialog.get_solutions()
             apply_solutions(solutions)
-            print "Applied your solutions, you can know continue:"
+            print "Applied your solutions, you can now continue:"
             print "git rebase --continue"
         sys.exit()
 
