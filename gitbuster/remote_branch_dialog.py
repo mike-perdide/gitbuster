@@ -48,7 +48,9 @@ class RemoteBranchDialog(QDialog):
         self.remote_type_mode()
 
     def connect_signals(self):
-
+        """
+            Connecting widgets to slots.
+        """
         connect(self._ui.remoteComboBox, SIGNAL("activated(const QString&)"),
                 self.location_mode)
 
@@ -58,17 +60,13 @@ class RemoteBranchDialog(QDialog):
         connect(self._ui.locationLineEdit, SIGNAL("returnPressed()"),
                 self.fetch_clicked)
 
-        connect(self._ui.fetchButton, SIGNAL("clicked()"),
-                self.fetch_clicked)
+        connect(self._ui.fetchButton, SIGNAL("clicked()"), self.fetch_clicked)
 
         connect(self._ui.branchComboBox, SIGNAL("activated(const QString&)"),
                 self.branch_chosen)
 
-        connect(self._ui.cancelButton, SIGNAL("clicked()"),
-                self.close)
-
-        connect(self._ui.addButton, SIGNAL("clicked()"),
-                self.accept)
+        connect(self._ui.cancelButton, SIGNAL("clicked()"), self.close)
+        connect(self._ui.addButton, SIGNAL("clicked()"), self.accept)
 
     def get_existing_remotes(self):
         """
