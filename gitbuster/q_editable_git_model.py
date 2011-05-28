@@ -45,6 +45,7 @@ class QEditableGitModel(QGitModel):
         if not fake_branch_name:
             # If this is not a fake model
             self.orig_q_git_model = QGitModel(self,
+                                        parent=parent,
                                         model=self.git_model.get_orig_model())
         else:
             from_model, from_row = from_model_row
