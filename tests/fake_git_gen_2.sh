@@ -20,7 +20,7 @@ echo "initial input" > jimmy
 git add jimmy
 git commit -m 'initial commit'
 
-git checkout -b tmp
+git checkout -b wallace_branch
 
 echo "toto blabla" > toto
 git add toto
