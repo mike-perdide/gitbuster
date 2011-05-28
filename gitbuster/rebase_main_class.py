@@ -97,13 +97,15 @@ class ButtonLineEdit(QWidget):
 
         self.new_name = new_name
         self.current_name_label.setText(new_name + "  (new name)")
-        self.model.start_history_event()
-        action = SetNameAction(old_name, new_name, self.model, self.current_name_label)
-        self.history_mgr.add_history_action(action)
         try:
+            self.model.start_history_event()
             self.model.set_new_branch_name(new_name)
+            action = SetNameAction(old_name, new_name, self.model,
+                                   self.current_name_label)
+            self.history_mgr.add_history_action(action)
         except ValueError, err:
             QMessageBox.warning(self, "Naming error", err.args[0])
+            # We should cancel the history event
         else:
             self._readmode()
 
