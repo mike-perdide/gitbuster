@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>gitbuster</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="gitbuster.qrc">
+    <normaloff>:/images/images/gitbuster_logo.xcf</normaloff>:/images/images/gitbuster_logo.xcf</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
