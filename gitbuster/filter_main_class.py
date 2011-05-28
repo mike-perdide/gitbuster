@@ -401,6 +401,6 @@ class FilterMainClass():
         else:
             self.hide_fake_models()
             # if the displayed model is not a fake model nor a QGitModel
-            if hasattr(model, 'get_orig_q_git_model'):
+            if hasattr(self._model, 'get_orig_q_git_model'):
                 orig_model = self._model.get_orig_q_git_model()
                 self.gui.tableView.setModel(orig_model)
