@@ -6,6 +6,7 @@ UIPY = $(UI:.ui=_ui.py)
 QRC = $(wildcard *.qrc)
 RCPY = $(QRC:.qrc=_rc.py)
 OBJECTS = $(RCPY) $(UIPY)
+RESOURCES = $(wildcard images/*)
 
 reorder_imports: $(PY_REORDERED)
 
@@ -19,6 +20,8 @@ clean:
 test: $(PY_TESTED)
 	@echo Write mooooooore tests!
 
+$(RCPY): $(RESOURCES)
+
 %_ui.py: %.ui
 	pyuic4 $< -o $@
 
@@ -30,5 +33,4 @@ test: $(PY_TESTED)
 
 %_py_tested: %.py
 	PYTHONPATH=$(SRC_ROOT) python -m doctest $<
-
 
