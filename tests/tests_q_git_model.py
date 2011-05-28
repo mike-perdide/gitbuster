@@ -197,3 +197,22 @@ class TestsQGitModel(TemplateTest):
                 self.check(score, 0, error % (row, author_name_column))
                 self.check(score_email, 0,
                            error_email % (row, author_email_column))
+
+
+if __name__ == "__main__":
+    to_test = TestsQGitModel()
+    to_test.setup_class()
+    to_test.test_get_current_branch()
+    to_test.test_default_branch()
+    to_test.test_row_count()
+    to_test.test_column_count()
+    to_test.test_data_message()
+    to_test.test_data_message()
+    to_test.test_data_author_date()
+    to_test.test_data_author()
+    to_test.test_data_committer()
+    to_test.test_get_branches()
+    to_test.test_parent()
+    to_test.test_set_branch_twice_fails()
+    to_test.test_filter_message()
+    to_test.test_filter_author()
