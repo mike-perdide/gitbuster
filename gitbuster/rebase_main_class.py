@@ -58,7 +58,7 @@ class ButtonLineEdit(QWidget):
         QObject.connect(self.current_name_label,
                         SIGNAL("customContextMenuRequested(const QPoint&)"),
                         self.context_menu)
-        QObject.connect(self.editor, SIGNAL("editingFinished()"), self.go_read)
+        QObject.connect(self.editor, SIGNAL("returnPressed()"), self.go_read)
         QObject.connect(self.valid_button, SIGNAL("clicked()"), self.go_read)
 
     def _iter_widgets(self):
