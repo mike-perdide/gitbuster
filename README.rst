@@ -68,7 +68,7 @@ Installing with distutils::
 
 Installing with distutils2::
     
-    $ python -m "distutils2.run" install
+    $ pysetup run install_dist
 
 ---------------------
 Building From Sources
