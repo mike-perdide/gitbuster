@@ -1,11 +1,27 @@
-=========
-gitbuster
-=========
+============
+gitbuster II
+============
 Formerly qGitFilterBranch.
 
 " If there's something strange / In your history / Who you gonna call ? / GitBuster! "
 
-Python Qt4 frontend for git filter-branch. gitbuster allows you to :
+Frontend for git cherry-pick/git rebase:
+
+- use drag and drop to rebase a branch onto another (one or a set of commits)
+
+- graphical resolution of merge conflicts by displaying:
+    * the original content of the file
+    * the patch that was meant to be applied bu failed
+    * the unmerged content of the file for you to edit if necessary
+    * a set of resolution choices (delete the file, add the file, add the file with custom content)
+
+- works with remote branches (directory on your filesystem or web)
+
+- rename a branch or create a new branch from any commit of your history
+
+- special conflicts mode that can be called right after a conflict when using 'git rebase -i'
+
+Frontend for git filter-branch:
 
 - use filters to display only the commits matching
     * committed before/after a date (e.g. commits before 01/01/11)
@@ -34,16 +50,16 @@ That way it won't interfere with your system packaging tools (like apt).
 Installing From PyPI
 --------------------
 
-Installing with easy_install::
+Installing with pip::
 
-    $ easy_install gitbuster
+    $ pip install gitbuster
 
 -------------------
 Manual Installation
 -------------------
 Download the tarball, then::
 
-    $ tar xvf gitbuster-0.9b1.tar.gz
+    $ tar xvf gitbuster-2.0.0b.tar.gz
     $ cd gitbuster
 
 Installing with distutils::
@@ -52,7 +68,7 @@ Installing with distutils::
 
 Installing with distutils2::
     
-    $ python -m "distutils2.run" install_dist
+    $ python -m "distutils2.run" install
 
 ---------------------
 Building From Sources
@@ -62,6 +78,7 @@ Dependencies:
 - pyuic4: on debian/ubuntu systems, look for a package named 'pyqt4-dev-tools'.
 - gcc: on most systems, look for a package named 'gcc'.
 - make: on most systems, look for a package named 'make'.
+- gfbi_core: see https://github.com/mike-perdide/gfbi_core.
 - GitPython
 
 
