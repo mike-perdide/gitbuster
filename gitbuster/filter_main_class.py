@@ -373,22 +373,30 @@ class FilterMainClass():
         """
             Hide all the fake models.
         """
-        self.gui.currentBranchComboBox.clear()
-        for branch, model in self._models.items():
-            if not model.is_fake_model():
-                self.gui.currentBranchComboBox.addItem("%s" % branch.name)
+        if [True for model in self._models.values() if model.is_fake_model()]:
+            comboBox = self.gui.currentBranchComboBox
+            previously_selected_index = comboBox.currentIndex()
+            comboBox.clear()
+            for branch, model in self._models.items():
+                if not model.is_fake_model():
+                    comboBox.addItem("%s" % branch.name)
 
-        if self._model.is_fake_model():
-            some_branch_name = self.gui.currentBranchComboBox.itemText(0)
-            self.current_branch_changed(some_branch_name)
+            if self._model.is_fake_model():
+                comboBox.setCurrentIndex(0)
+            else:
+                comboBox.setCurrentIndex(previously_selected_index)
 
     def show_fake_models(self):
         """
             Show all fake models.
         """
-        self.gui.currentBranchComboBox.clear()
-        for branch, model in self._models.items():
-            self.gui.currentBranchComboBox.addItem("%s" % branch.name)
+        if [True for model in self._models.values() if model.is_fake_model()]:
+            comboBox = self.gui.currentBranchComboBox
+            previously_selected_index = comboBox.currentIndex()
+            comboBox.clear()
+            for branch, model in self._models.items():
+                comboBox.addItem("%s" % branch.name)
+            comboBox.setCurrentIndex(previously_selected_index)
 
     def toggle_modifications(self, show_modifications):
         """
