@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.1 r9760"
-   sodipodi:docname="Nouveau document 1">
+   sodipodi:docname="gitbuster.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -25,8 +25,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
-     inkscape:cx="69.457338"
-     inkscape:cy="63.862041"
+     inkscape:cx="6.0661382"
+     inkscape:cy="59.097587"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -47,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -57,10 +57,20 @@
      id="layer1"
      transform="translate(-388.79298,-387.90628)">
     <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-opacity:1"
+       id="path3770"
+       sodipodi:cx="83.463852"
+       sodipodi:cy="75.358612"
+       sodipodi:rx="63.008266"
+       sodipodi:ry="63.008266"
+       d="m 146.47212,75.358612 a 63.008266,63.008266 0 1 1 -126.016535,0 63.008266,63.008266 0 1 1 126.016535,0 z"
+       transform="translate(382.44908,389.30725)" />
+    <path
        inkscape:connector-curvature="0"
        id="path3989"
        d="m 465.04903,389.70742 c -32.7714,0.36045 -62.6412,22.35839 -71.53848,55.56353 -10.71233,39.97893 13.0384,81.07393 53.01731,91.78625 39.97892,10.71232 81.07394,-13.02098 91.78623,-52.99989 10.71233,-39.9789 -13.02094,-81.05649 -52.99986,-91.76881 -6.24671,-1.67377 -12.51405,-2.51918 -18.69559,-2.58108 -0.52158,-0.006 -1.04941,-0.006 -1.56961,0 z m 1.43007,15.13782 c 4.93203,0.0489 9.92706,0.72245 14.91115,2.05792 7.9745,2.13676 15.151,5.79401 21.27669,10.56856 -1.56458,1.56009 -88.525,77.08442 -88.525,77.08442 -7.65375,-13.25053 -10.25542,-29.41218 -5.98189,-45.36121 7.21159,-26.91398 31.68624,-44.61408 58.31905,-44.34969 z m 51.22103,29.92689 c 7.64842,13.2536 10.23798,29.41218 5.96445,45.3612 -8.54706,31.89807 -41.31467,50.8214 -73.21275,42.27435 -7.97451,-2.13677 -15.14899,-5.77774 -21.27669,-10.55115 -0.062,-0.0167 88.52499,-77.0844 88.52499,-77.0844 z"
-       style="fill:#aa4400;fill-opacity:1;stroke:none" />
+       style="fill:#000000;fill-opacity:1;stroke:none" />
     <g
        id="g3991">
       <g
