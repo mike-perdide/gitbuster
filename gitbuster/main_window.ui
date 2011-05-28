@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="gitbuster.qrc">
-    <normaloff>:/images/images/gitbuster_logo.xcf</normaloff>:/images/images/gitbuster_logo.xcf</iconset>
+    <normaloff>:/images/images/gitbuster.svg</normaloff>:/images/images/gitbuster.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
