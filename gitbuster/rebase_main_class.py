@@ -90,7 +90,7 @@ class ButtonLineEdit(QWidget):
     def go_read(self):
         new_name = unicode(self.editor.text())
         old_name = self.model.get_old_branch_name()
-        if new_name == old_name:
+        if new_name == old_name or self.new_name == new_name:
             # Here, return to read_mode anyway
             self._readmode()
             return
