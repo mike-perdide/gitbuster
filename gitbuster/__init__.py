@@ -15,30 +15,11 @@ import sys
 import os
 import warnings
 import git
+from git import Repo
 
-
-def get_gitpython():
-    try:
-        from git import Repo
-    except ImportError:
-        warnings.warn("""Couldn't import git. You might want to install
-                      GitPython from: http://pypi.python.org/pypi/GitPython/""",
-                      ImportWarning)
-        sys.exit(1)
-
-    from git import __version__
-    str_maj, str_min, str_rev = __version__.split(".")
-    _maj, _min, _rev = int(str_maj), int(str_min), int(str_rev)
-    if  _maj < 0 or (_maj == 0 and _min < 3) or \
-        (_maj == 0 and _min == 3 and _rev < 1):
-        warnings.warn("This project needs GitPython (>=0.3.1).", ImportWarning)
-        raise Exception()
-        sys.exit(1)
-    return Repo
 
 def main():
     " This method launches gitbuster."
-    repo_klass = get_gitpython()
     app = QApplication(sys.argv)
 
     if len(sys.argv) == 2 and is_top_git_directory(sys.argv[1]):
@@ -49,7 +30,7 @@ def main():
     if not filepath:
         sys.exit(1)
 
-    test_repo = repo_klass(filepath)
+    test_repo = Repo(filepath)
     if os.path.exists(os.path.join(filepath, ".git/rebase-merge")):
         # Special conflict mode
         os.chdir(filepath)
