@@ -61,6 +61,9 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
+            </property>
            </widget>
           </item>
          </layout>
