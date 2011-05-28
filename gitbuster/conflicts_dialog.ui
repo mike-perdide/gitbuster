@@ -17,8 +17,8 @@
    <iconset resource="gitbuster.qrc">
     <normaloff>:/images/images/gitbuster_logo.xcf</normaloff>:/images/images/gitbuster_logo.xcf</iconset>
   </property>
-  <layout class="QGridLayout" name="gridLayout" columnstretch="1,0,0,0,0">
-   <item row="0" column="1" colspan="4">
+  <layout class="QGridLayout" name="gridLayout" columnstretch="1,0,0,0,0,0">
+   <item row="0" column="1" colspan="5">
     <widget class="QFrame" name="frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -161,20 +161,7 @@
      </property>
     </spacer>
    </item>
-   <item row="1" column="2" colspan="2">
-    <widget class="QPushButton" name="applySolutionsButton">
-     <property name="maximumSize">
-      <size>
-       <width>100</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Apply solutions</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
+   <item row="1" column="1" colspan="3">
     <spacer name="horizontalSpacer_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -202,10 +189,23 @@
      </column>
     </widget>
    </item>
-   <item row="1" column="4">
+   <item row="1" column="5">
     <widget class="QPushButton" name="cancelButton">
      <property name="text">
       <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="4">
+    <widget class="QPushButton" name="applySolutionsButton">
+     <property name="maximumSize">
+      <size>
+       <width>100</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Apply solutions</string>
      </property>
     </widget>
    </item>
