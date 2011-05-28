@@ -21,14 +21,15 @@ class ButtonLineEdit(QWidget):
     and the text can be edited in place thanks to a lineedit
     """
 
-    def __init__(self, history_mgr, branch, model, parent=None):
+    def __init__(self, history_mgr, branch, model, checkbox, parent=None):
         QWidget.__init__(self, parent)
 
         #data stored here for convenience
         self.branch = branch
         self.history_mgr = history_mgr
         self.model = model
-        self.new_name = ""
+        self.new_name = model.get_old_branch_name()
+        self.checkbox = checkbox
 
         #widgets. Maybe we should use designer here.
         name_label_font = QFont()
@@ -88,20 +89,30 @@ class ButtonLineEdit(QWidget):
             widget.setVisible(not is_edit)
 
     def go_read(self):
-        new_name = unicode(self.editor.text())
-        old_name = self.model.get_old_branch_name()
-        if new_name == old_name or self.new_name == new_name:
-            # Here, return to read_mode anyway
+        old_name = self.new_name
+        new_name = unicode(self.editor.text()).strip()
+        old_branch_name = self.model.get_old_branch_name()
+
+        if self.new_name == new_name:
+            # The name hasn't changed.
             self._readmode()
             return
 
         self.new_name = new_name
-        self.current_name_label.setText(new_name + "  (new name)")
+
+        if new_name != old_branch_name:
+            self.current_name_label.setText(new_name + "  (new name)")
+        else:
+            self.current_name_label.setText(new_name)
+        self.checkbox.setText(new_name)
+
         try:
             self.model.start_history_event()
             self.model.set_new_branch_name(new_name)
-            action = SetNameAction(old_name, new_name, self.model,
-                                   self.current_name_label)
+            action = SetNameAction(old_name, new_name,
+                                   self.checkbox,
+                                   self.current_name_label,
+                                   old_branch_name)
             self.history_mgr.add_history_action(action)
         except ValueError, err:
             QMessageBox.warning(self, "Naming error", err.args[0])
@@ -159,7 +170,6 @@ class RebaseMainClass(QObject):
         branch = model.get_current_branch() or model.get_remote_ref()
 
         checkbox = QCheckBox(self._ui.centralwidget)
-        QObject.connect(model, SIGNAL("name changed"), checkbox.setText)
         checkbox.setText(QApplication.translate("MainWindow",
                                             branch.name,
                                             None, QApplication.UnicodeUTF8))
@@ -193,7 +203,7 @@ class RebaseMainClass(QObject):
                         SIGNAL("customContextMenuRequested(const QPoint&)"),
                         self.context_menu)
 
-        name = ButtonLineEdit(self.parent, branch, model)
+        name = ButtonLineEdit(self.parent, branch, model, checkbox)
         place = position * 7
 
         self._ui.viewLayout.addWidget(name, 0, place)

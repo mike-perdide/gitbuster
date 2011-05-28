@@ -268,7 +268,6 @@ class QEditableGitModel(QGitModel):
     def set_new_branch_name(self, name):
         "See GitModel for more help."
         new_name = self.git_model.set_new_branch_name(name)
-        self.emit(SIGNAL("name changed"), new_name)
         return new_name
 
     def get_new_branch_name(self):

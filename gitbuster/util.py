@@ -79,19 +79,26 @@ def select_git_directory():
 
 class SetNameAction:
 
-    def __init__(self, old_name, new_name, model, button):
-        self._old_name = old_name
+    def __init__(self, old_name, new_name, checkbox, button, original_name):
+        self._old_name = old_name or original_name
         self._new_name = new_name
-        self._model = model
+        self._checkbox = checkbox
         self._button = button
+        self._original_name = original_name
 
     def undo(self):
-        self._button.setText(self._old_name)
-        self._model.set_new_branch_name(self._old_name)
+        if self._old_name != self._original_name:
+            self._button.setText(self._old_name + "  (new name)")
+        else:
+            self._button.setText(self._old_name)
+        self._checkbox.setText(self._old_name)
 
     def redo(self):
-        self._button.setText(self._new_name)
-        self._model.set_new_branch_name(self._new_name)
+        if self._new_name != self._original_name:
+            self._button.setText(self._new_name + "  (new name)")
+        else:
+            self._button.setText(self._new_name)
+        self._checkbox.setText(self._new_name)
 
 
 class DummyRemoveAction:
