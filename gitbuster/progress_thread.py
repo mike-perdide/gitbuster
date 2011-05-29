@@ -16,7 +16,7 @@ class ProgressThread(QThread):
         git repository.
     """
 
-    def __init__(self, progress_bar, models, log, generate_scripts):
+    def __init__(self, progress_bar, models, log, force_committed_date):
         """
             Initializes the thread with the progress bar widget and the
             qGitModel used.
@@ -28,16 +28,16 @@ class ProgressThread(QThread):
                 The qGitModel used in the MainWindow's view.
             :param log:
                 Do we log the writing of the model ?
-            :param generate_scripts:
-                Do we generate the scripts corresponding to the writing of the
-                models ?
+            :param force_committed_date:
+                Do we write the committed date/author according to the model
+                data or do we let git update it.
         """
         QThread.__init__(self)
 
         self._progress_bar = progress_bar
         self._models = models
         self._log = log
-        self._generate_scripts = generate_scripts
+        self._force_committed_date = force_committed_date
         self._success = True
 
         total_to_rewrite = 0
@@ -61,7 +61,7 @@ class ProgressThread(QThread):
 
         finished_writing_models = 0
         for model in self._models:
-            model.write(self._log, self._generate_scripts)
+            model.write(self._log, self._force_committed_date)
 
             while not model.is_finished_writing():
                 # While the model writing isn't finished, update the  progress

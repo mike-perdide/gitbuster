@@ -199,9 +199,9 @@ class QEditableGitModel(QGitModel):
         "See GitModel for more help."
         self.git_model.set_merge(merge_state)
 
-    def write(self, log, script):
+    def write(self, log, force_committed_date):
         "See GitModel for more help."
-        self.git_model.write(log, script)
+        self.git_model.write(log, force_committed_date)
 
     def is_write_success(self):
         "See GitModel for more help."
