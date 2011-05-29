@@ -98,27 +98,33 @@ class ButtonLineEdit(QWidget):
             self._readmode()
             return
 
+        error = self.model.is_valid_branch_name(new_name)
+
+        if error:
+            # The branch name isn't valid.
+            QMessageBox.warning(self, "Naming error", error.args[0])
+            return
+
+        # The branch name is valid.
         self.new_name = new_name
 
+        # Setting the new branch name on the model and creating history events
+        self.model.start_history_event()
+        self.model.set_new_branch_name(new_name)
+        action = SetNameAction(old_name, new_name,
+                               self.checkbox,
+                               self.current_name_label,
+                               old_branch_name)
+        self.history_mgr.add_history_action(action)
+
+        # Displaying the new branch name
         if new_name != old_branch_name:
             self.current_name_label.setText(new_name + "  (new name)")
         else:
             self.current_name_label.setText(new_name)
         self.checkbox.setText(new_name)
 
-        try:
-            self.model.start_history_event()
-            self.model.set_new_branch_name(new_name)
-            action = SetNameAction(old_name, new_name,
-                                   self.checkbox,
-                                   self.current_name_label,
-                                   old_branch_name)
-            self.history_mgr.add_history_action(action)
-        except ValueError, err:
-            QMessageBox.warning(self, "Naming error", err.args[0])
-            # We should cancel the history event
-        else:
-            self._readmode()
+        self._readmode()
 
     def context_menu(self, q_point):
         """
