@@ -303,17 +303,19 @@ class MainWindow(QMainWindow):
 
             if ret and msgBox.checked_models():
                 log = msgBox.log_checked()
-                script = msgBox.script_checked()
+                force_committed_date = msgBox.force_checked()
 
-                self.apply_models(msgBox.checked_models(), log, script)
+                self.apply_models(msgBox.checked_models(), log,
+                                  force_committed_date)
 
-    def apply_models(self, models, log, script):
+    def apply_models(self, models, log, force_committed_date):
         """
             Applies the given models.
         """
         if not self._applying:
             self.progress_thread = ProgressThread(self._ui.progressBar,
-                                                  models, log, script)
+                                                  models, log,
+                                                  force_committed_date)
 
             QObject.connect(self.progress_thread, SIGNAL("started()"),
                             self.apply_started)

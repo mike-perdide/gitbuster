@@ -46,11 +46,11 @@ class ConfirmDialog(QDialog):
         """
         return self._ui.logCheckBox.isChecked()
 
-    def script_checked(self):
+    def force_checked(self):
         """
-            Returns the state of the "Generate migration scripts" checkbox.
+            Returns the state of the "Force committed date/author" checkbox.
         """
-        return self._ui.scriptCheckBox.isChecked()
+        return self._ui.forceCheckBox.isChecked()
 
     def checked_models(self):
         """
