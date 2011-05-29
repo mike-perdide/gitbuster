@@ -265,6 +265,10 @@ class QEditableGitModel(QGitModel):
         "See GitModel for more help."
         return self.git_model.set_conflict_solutions(solutions)
 
+    def is_valid_branch_name(self, name):
+        "See GitModel for more help."
+        return self.git_model.is_valid_branch_name(name)
+
     def set_new_branch_name(self, name):
         "See GitModel for more help."
         new_name = self.git_model.set_new_branch_name(name)
