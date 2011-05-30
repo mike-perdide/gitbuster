@@ -60,7 +60,7 @@ class FilterMainClass():
 
     def __init__(self, parent, directory, models):
         self.parent = parent
-        self._models = models
+        self._models = None
 
         self.gui = self.parent._ui
         self._filters_values = {
@@ -79,7 +79,7 @@ class FilterMainClass():
         self._checkboxes = {}
         self._model = None
 
-        self.set_current_directory(directory)
+        self.reset_interface(models)
 
         self.connect_slots()
 
@@ -92,15 +92,13 @@ class FilterMainClass():
         for dateedit in dateedits:
             dateedit.setDateTime(QDateTime.currentDateTime())
 
-    def set_current_directory(self, directory):
+    def reset_interface(self, models):
         """
-            Sets the current directory and sets up the important widgets.
-
-            :param directory:
-                The git directory.
+            Resets the filter tab (usually after a directory change).
         """
         current_branch = self.parent.current_branch
 
+        self._models = models
         self._model = self._models[current_branch]
         self.gui.tableView.setModel(self._model)
         self.gui.tableView.verticalHeader().hide()
