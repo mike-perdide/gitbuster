@@ -148,17 +148,17 @@ class RebaseMainClass(QObject):
         QObject.__init__(self, parent)
 
         self.parent = parent
-        self._models = models
-        self._checkboxes = {}
+        self._models = None
         self._clicked_commit = None
         self._copy_data = ""
         self._oldtext = ""
 
         self._ui = self.parent._ui
 
+        self._checkboxes = {}
         self._number_of_models = 0
-        for model in models.values():
-            self.create_model_interface(model)
+
+        self.reset_interface(models)
 
         shortcut = QShortcut(QKeySequence(QKeySequence.Delete), parent)
         QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
@@ -167,6 +167,29 @@ class RebaseMainClass(QObject):
         QObject.connect(self._ui.conflictsButton,
                         SIGNAL("clicked()"),
                         self.conflicts)
+
+    def reset_interface(self, models):
+        """
+            Resets the rebase tab (usually after a directory change).
+        """
+        self._checkboxes = {}
+        self._models = models
+        self._number_of_models = 0
+
+        checkbox_layout = self._ui.branchCheckboxLayout
+        for item in [checkbox_layout.itemAt(id)
+                     for id in xrange(checkbox_layout.count())]:
+            item.widget().hide()
+            checkbox_layout.removeItem(item)
+
+        view_layout = self._ui.branchCheckboxLayout
+        for item in [view_layout.itemAt(id)
+                     for id in xrange(view_layout.count())]:
+            item.widget().hide()
+            view_layout.removeItem(item)
+
+        for model in self._models.values():
+            self.create_model_interface(model)
 
     def create_model_interface(self, model):
         """

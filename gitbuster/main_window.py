@@ -38,24 +38,13 @@ class MainWindow(QMainWindow):
         self._ui = Ui_MainWindow()
         self._ui.setupUi(self)
 
-        self._models = {}
         self._modifications_shown = True
         self._directory = directory
 
-        a_model = QGitModel(directory)
-        self.current_branch = a_model.get_current_branch()
+        self.current_branch = None
 
-        for branch in a_model.get_branches():
-            model = QEditableGitModel(self._models, directory=directory,
-                                      parent=self)
-            model.set_current_branch(branch)
-            model.setMerge(False)
-            model.enable_option("filters")
-            model.populate()
-            self._models[branch] = model
-
-            QObject.connect(model, SIGNAL("newHistoryEvent"),
-                            self.new_history_event)
+        self._models = {}
+        self.set_current_directory(directory)
 
         self.filter_main_class = FilterMainClass(self, directory, self._models)
         self.rebase_main_class = RebaseMainClass(self, directory, self._models)
@@ -240,15 +229,32 @@ class MainWindow(QMainWindow):
 
         return model, actions
 
-    def set_current_directory(self, directory):
+    def set_current_directory(self, directory, reset_all=False):
         """
             Sets the current directory.
 
             :param directory:
                 The git directory.
         """
-        self.FilterMainClass.set_current_directory(directory)
-        self.FilterMainClass.set_current_directory(directory)
+        self._models = {}
+        a_model = QGitModel(directory)
+        self.current_branch = a_model.get_current_branch()
+
+        for branch in a_model.get_branches():
+            model = QEditableGitModel(self._models, directory=directory,
+                                      parent=self)
+            model.set_current_branch(branch)
+            model.setMerge(False)
+            model.enable_option("filters")
+            model.populate()
+            self._models[branch] = model
+
+            QObject.connect(model, SIGNAL("newHistoryEvent"),
+                            self.new_history_event)
+
+        if reset_all:
+            self.rebase_main_class.reset_interface(self._models)
+            self.filter_main_class.reset_interface(self._models)
 
     def change_directory(self):
         """
@@ -257,7 +263,7 @@ class MainWindow(QMainWindow):
         """
         directory = select_git_directory()
         if directory:
-            self.set_current_directory(directory)
+            self.set_current_directory(directory, reset_all=True)
 
     def show_modifications(self):
         if not self._modifications_shown:
