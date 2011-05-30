@@ -71,9 +71,6 @@ class MainWindow(QMainWindow):
         gui = self._ui
         # Bottom bar connections
         _connect_button(gui.applyButton, self.apply)
-        _connect_button(gui.cancelButton, self.quit)
-        _connect_button(gui.toggleModificationsButton,
-                                               self.toggle_modifications)
 
         # Catching progress bar signals.
         self.connect(gui.progressBar, SIGNAL("starting"),
@@ -278,15 +275,7 @@ class MainWindow(QMainWindow):
             When the toggleModifications button is pressed, change the displayed
             model.
         """
-        if self._modifications_shown:
-            label = "&Show modifications"
-        else:
-            label = "&Hide modifications"
-
         self._modifications_shown = not self._modifications_shown
-        self._ui.toggleModificationsButton.setText(
-            QApplication.translate("MainWindow", label,
-                                   None, QApplication.UnicodeUTF8))
 
         self.filter_main_class.toggle_modifications(self._modifications_shown)
         self.rebase_main_class.toggle_modifications(self._modifications_shown)
@@ -338,7 +327,6 @@ class MainWindow(QMainWindow):
         """
         self._applying = True
         self._ui.applyButton.setDisabled(True)
-        self._ui.cancelButton.setDisabled(True)
 
     def apply_finished(self):
         """
@@ -346,7 +334,6 @@ class MainWindow(QMainWindow):
         """
         self._applying = False
         self._ui.applyButton.setEnabled(True)
-        self._ui.cancelButton.setEnabled(True)
         if self.progress_thread.is_write_success():
             # Reset history
             self.reset_history()
