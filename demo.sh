@@ -9,13 +9,13 @@
 # # Customization
 
 #Command to fetch project
-fetchcmd="git clone https://github.com/mike-perdide/gitbuster.git"
+fetchcmd="git clone --recursive https://github.com/mike-perdide/gitbuster.git"
 #Command to build project. Escape variables.
-buildcmd="make -C gitbuster/"
+buildcmd="make install -C gitbuster/"
 #Command to run project. Escape variables.
 runcmd="PYTHONPATH=\$mydir/gitbuster/ \$mydir/bin/python gitbuster/gitbuster/gitbuster"
 #Pypi deps for the project
-pypideps=gfbi_core
+#pypideps=gfbi_core
 
 # # end of customization
 
@@ -113,8 +113,8 @@ buildlog=$mydir/build.log
 runandcheck "Invoking virtualenv on $mydir" "virtualenv $mydir > /dev/null"
 runandcheck "Moving to $mydir" "cd $mydir"
 runandcheck "Activating virtualenv" ". ./bin/activate > /dev/null"
-runandcheck "Fetching Pipy deps. Logs in $depslog" "easy_install $pypideps > $depslog"
+#runandcheck "Fetching Pipy deps. Logs in $depslog" "easy_install $pypideps > $depslog"
 runandcheck "Fetching project. Logs in $fetchlog" "$fetchcmd > $fetchlog"
-runandcheck "Building project. Logs in $buildlog" "$buildcmd > $buildlog"
+runandcheck "Building & installing project. Logs in $buildlog" "$buildcmd > $buildlog"
 runandcheck "Starting gitbuster" "$runcmd"
 
