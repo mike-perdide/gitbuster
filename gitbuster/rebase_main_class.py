@@ -356,10 +356,11 @@ class RebaseMainClass(QObject):
 
         if ordered_list:
             model.start_history_event()
-            for dummy_row in deleted_dummies:
-                self.parent.add_history_action(DummyRemoveAction(dummy_row,
-                                                                 branch_view))
-                branch_view.hideRow(dummy_row)
+        for dummy_row in deleted_dummies:
+            # Special behaviour for inserted commits: hide them
+            self.parent.add_history_action(DummyRemoveAction(dummy_row,
+                                                             branch_view))
+            branch_view.hideRow(dummy_row)
 
         for row in ordered_list:
             model.removeRows(row)
