@@ -6,6 +6,7 @@ $(GENTARGETS): $(SRCDIRS)
 	$(MAKE) -C $< $@
 
 install:	all
+	$(MAKE) install -C gfbi_core
 	pysetup run install_dist||python setup.py install
 
 publish:	all
