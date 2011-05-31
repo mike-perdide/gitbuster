@@ -362,7 +362,10 @@ class RebaseMainClass(QObject):
         ordered_list = []
         deleted_dummies = []
         for index in selected_indexes:
-            if index.row() not in ordered_list and not model.is_deleted(index):
+            if index.row() not in ordered_list and \
+               not model.is_deleted(index) and \
+               not model.is_first_commit(index):
+                # Don't delete deleted or first commits.
                 ordered_list.insert(0, index.row())
             if model.is_inserted_commit(index):
                 deleted_dummies.append(index.row())
