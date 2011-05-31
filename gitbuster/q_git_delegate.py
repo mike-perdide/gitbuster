@@ -5,7 +5,7 @@
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
 
-from PyQt4.QtCore import QDateTime, QVariant, Qt, SIGNAL
+from PyQt4.QtCore import QDateTime, QVariant, Qt, SIGNAL, QRect
 from PyQt4.QtGui import QDateTimeEdit, QItemDelegate, QLineEdit, QTextEdit
 from gfbi_core import ACTOR_FIELDS, TEXT_FIELDS, TIME_FIELDS
 
@@ -37,6 +37,26 @@ class QGitDelegate(QItemDelegate):
         self.connect(editor, SIGNAL("returnPressed()"),
                      self.commitAndCloseEditor)
         return editor
+
+    def updateEditorGeometry(self, editor, option, index):
+        """
+            Here we're gonna make the text edit of the message column bigger.
+        """
+        model = index.model()
+        columns = model.get_git_model().get_columns()
+        field_name = columns[index.column()]
+
+        if field_name != "message":
+            QItemDelegate.updateEditorGeometry(self, editor, option, index)
+            return
+
+        message = model.data(index, Qt.EditRole)
+
+        new_geometry = option.rect
+        new_height = 27 * message.toString().count("\n") or option.rect.height()
+
+        new_geometry.setHeight(new_height)
+        editor.setGeometry(new_geometry)
 
     def commitAndCloseEditor(self):
         editor = self.sender()
