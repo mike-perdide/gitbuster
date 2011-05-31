@@ -187,8 +187,7 @@ class MainWindow(QMainWindow):
             for action in actions:
                 action.undo()
 
-            if self._last_history_event > -1:
-                self._last_history_event -= 1
+            self._last_history_event -= 1
 
         if self._last_history_event == -1:
             self.enable_modifications_buttons(False)
