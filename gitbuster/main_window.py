@@ -46,6 +46,8 @@ class MainWindow(QMainWindow):
         self._models = {}
         self.set_current_directory(directory)
 
+        self.enable_modifications_buttons(False)
+
         self.filter_main_class = FilterMainClass(self, directory, self._models)
         self.rebase_main_class = RebaseMainClass(self, directory, self._models)
 
@@ -162,6 +164,15 @@ class MainWindow(QMainWindow):
 
             self._history.append([activated_index, checkboxes, model, []])
 
+        self.enable_modifications_buttons(True)
+
+    def enable_modifications_buttons(self, enable):
+        """
+            Hide or show the two modifications buttons.
+        """
+        self._ui.actionShow_modifications.setEnabled(enable)
+        self._ui.actionHide_modifications.setEnabled(enable)
+
     def undo_history(self):
         """
             Reverts the history one event back, application wide.
@@ -179,6 +190,9 @@ class MainWindow(QMainWindow):
             if self._last_history_event > -1:
                 self._last_history_event -= 1
 
+        if self._last_history_event == -1:
+            self.enable_modifications_buttons(False)
+
     def redo_history(self):
         """
             Replays the history one event forward, application wide.
@@ -194,6 +208,8 @@ class MainWindow(QMainWindow):
                 action.redo()
 
             self._last_history_event += 1
+
+        self.enable_modifications_buttons(True)
 
     def add_history_action(self, action):
         """
