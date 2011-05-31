@@ -59,16 +59,12 @@ Manual Installation
 -------------------
 Download the tarball, then::
 
-    $ tar xvf gitbuster-2.0.0b.tar.gz
+    $ git clone --recursive git://github.com/mike-perdide/gitbuster.git
     $ cd gitbuster
 
-Installing with distutils::
+Installing ::
 
-    $ python setup.py install
-
-Installing with distutils2::
-    
-    $ pysetup run install_dist
+    $ make install
 
 ---------------------
 Building From Sources
