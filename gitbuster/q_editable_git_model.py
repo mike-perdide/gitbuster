@@ -146,7 +146,9 @@ class QEditableGitModel(QGitModel):
         column = index.column()
         field_name = self.git_model.get_columns()[column]
 
-        if field_name in NOT_EDITABLE_FIELDS:
+        if field_name in NOT_EDITABLE_FIELDS or \
+           self.is_first_commit(index) or \
+           self.is_deleted(index):
             return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
                                 Qt.ItemIsDragEnabled |
                                 Qt.NoItemFlags)
