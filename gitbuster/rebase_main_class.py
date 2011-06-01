@@ -98,9 +98,9 @@ class ButtonLineEdit(QWidget):
             self._readmode()
             return
 
-        error = self.model.is_valid_branch_name(new_name)
+        valid_name, error = self.model.is_valid_branch_name(new_name)
 
-        if error:
+        if not valid_name:
             # The branch name isn't valid.
             QMessageBox.warning(self, "Naming error", error.args[0])
             return
