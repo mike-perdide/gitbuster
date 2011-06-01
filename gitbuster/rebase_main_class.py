@@ -21,11 +21,10 @@ class ButtonLineEdit(QWidget):
     and the text can be edited in place thanks to a lineedit
     """
 
-    def __init__(self, history_mgr, branch, model, checkbox, parent=None):
+    def __init__(self, history_mgr, model, checkbox, parent=None):
         QWidget.__init__(self, parent)
 
         #data stored here for convenience
-        self.branch = branch
         self.history_mgr = history_mgr
         self.model = model
         self.new_name = model.get_old_branch_name()
@@ -53,6 +52,7 @@ class ButtonLineEdit(QWidget):
         self._readmode()
 
         #initial load of data
+        branch = self.model.get_current_branch()
         self.current_name_label.setText(branch.name)
 
         #make it live
@@ -77,7 +77,7 @@ class ButtonLineEdit(QWidget):
 
     def go_edit(self):
         self._editmode()
-        name = self.branch.name
+        name = self.model.get_current_branch().name
         self.label.setText(u"<span>"
             "Change &#147;<i>%(name)s</i>&#148; into"
             "</span>" %
@@ -240,7 +240,7 @@ class RebaseMainClass(QObject):
                         SIGNAL("customContextMenuRequested(const QPoint&)"),
                         self.context_menu)
 
-        name = ButtonLineEdit(self.parent, branch, model, checkbox)
+        name = ButtonLineEdit(self.parent, model, checkbox)
         place = position * 7
 
         self._ui.viewLayout.addWidget(name, 0, place)
