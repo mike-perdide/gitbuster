@@ -351,6 +351,7 @@ class MainWindow(QMainWindow):
             # Reset history
             self.reset_history()
             # If the applied models were fake, we should try to rebuild them.
+            self.rebase_main_class.apply_finished()
 
     def show_progress_bar(self):
         """

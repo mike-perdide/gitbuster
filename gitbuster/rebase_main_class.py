@@ -141,6 +141,14 @@ class ButtonLineEdit(QWidget):
         if choosed_action == edit_action:
             self.go_edit()
 
+    def reset_displayed_name(self):
+        """
+            When the apply is finished, we may want to check that the model's
+            branch name is not new anymore.
+        """
+        branch = self.model.get_current_branch()
+        self.current_name_label.setText(branch.name)
+
 
 class RebaseMainClass(QObject):
 
@@ -475,3 +483,11 @@ class RebaseMainClass(QObject):
             # Applying with None will make the q_editable_model re-use the
             # previous parameters for log and force options.
             self.parent.apply_models([model,], None, None)
+
+    def apply_finished(self):
+        """
+            This method is called when the apply is finished.
+            Here we should rebuild the fake models.
+        """
+        for name_widget, view, model in self._checkboxes.values():
+            name_widget.reset_displayed_name()
