@@ -373,8 +373,7 @@ class RebaseMainClass(QObject):
 
     def commit_clicked(self, index):
         self._clicked_commit = index
-        branch_view = self.focused_branch_view()
-        model = branch_view.model()
+        model = index.model()
         row = index.row()
 
         labels = {
