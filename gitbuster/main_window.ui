@@ -367,6 +367,49 @@
            </item>
            <item row="8" column="0" colspan="2">
             <widget class="QPushButton" name="conflictsButton">
+             <property name="palette">
+              <palette>
+               <active>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>204</red>
+                   <green>33</green>
+                   <blue>36</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </active>
+               <inactive>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>204</red>
+                   <green>33</green>
+                   <blue>36</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </inactive>
+               <disabled>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>128</red>
+                   <green>128</green>
+                   <blue>128</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </disabled>
+              </palette>
+             </property>
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>See conflicts</string>
              </property>
