@@ -209,7 +209,7 @@ class QEditableGitModel(QGitModel):
         "See GitModel for more help."
         self.git_model.set_merge(merge_state)
 
-    def write(self, log, force_committed_date):
+    def write(self, log, force_committed_date, dont_populate=True):
         "See GitModel for more help."
         if log is None:
             log = self._previous_log_option
@@ -221,7 +221,7 @@ class QEditableGitModel(QGitModel):
         else:
             self._previous_force_option = force_committed_date
 
-        self.git_model.write(log, force_committed_date)
+        self.git_model.write(log, force_committed_date, dont_populate)
 
     def is_write_success(self):
         "See GitModel for more help."

@@ -61,7 +61,8 @@ class ProgressThread(QThread):
 
         finished_writing_models = 0
         for model in self._models:
-            model.write(self._log, self._force_committed_date)
+            model.write(self._log, self._force_committed_date,
+                        dont_populate=True)
 
             while not model.is_finished_writing():
                 # While the model writing isn't finished, update the  progress
