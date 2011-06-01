@@ -349,7 +349,7 @@ class MainWindow(QMainWindow):
         """
         self._applying = False
         self._ui.applyButton.setEnabled(True)
-        if self.progress_thread.is_write_success():
+        if True in self.progress_thread.get_write_success():
             # Reset history
             self.reset_history()
             # If the applied models were fake, we should try to rebuild them.
