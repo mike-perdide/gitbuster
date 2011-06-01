@@ -42,6 +42,10 @@ class QEditableGitModel(QGitModel):
         self._enabled_options = []
         self._all_models_dict = models_dict
 
+        # The following is used to store the write options
+        self._previous_log_option = True
+        self._previous_force_option = False
+
         if not fake_branch_name:
             # If this is not a fake model
             self.orig_q_git_model = QGitModel(self,
@@ -203,6 +207,16 @@ class QEditableGitModel(QGitModel):
 
     def write(self, log, force_committed_date):
         "See GitModel for more help."
+        if log is None:
+            log = self._previous_log_option
+        else:
+            self._previous_log_option = log
+
+        if force_committed_date is None:
+            force_committed_date = self._previous_force_option
+        else:
+            self._previous_force_option = force_committed_date
+
         self.git_model.write(log, force_committed_date)
 
     def is_write_success(self):

@@ -469,12 +469,9 @@ class RebaseMainClass(QObject):
         ret = dialog.exec_()
 
         if ret:
-            # The following declarations are temporary until we implement the
-            # way the ConfirmDialog will store it's info.
-            log_checked = True
-            script_checked = True
-
             solutions = dialog.get_solutions()
             model.set_conflict_solutions(solutions)
 
-            self.parent.apply_models([model,], log_checked, script_checked)
+            # Applying with None will make the q_editable_model re-use the
+            # previous parameters for log and force options.
+            self.parent.apply_models([model,], None, None)
