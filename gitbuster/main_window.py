@@ -302,7 +302,9 @@ class MainWindow(QMainWindow):
 
         modified_models = [model for model in self._models.values()
                            if isinstance(model, QEditableGitModel) and
-                           model.get_modified_count > 0]
+                           (model.get_modified_count > 0 or
+                            model.is_modified_name())]
+
         if modified_models:
             msgBox = ConfirmDialog(modified_models)
             ret = msgBox.exec_()

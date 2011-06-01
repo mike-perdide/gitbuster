@@ -25,10 +25,12 @@ class ConfirmDialog(QDialog):
             branch = model.get_current_branch()
             mod_count = model.get_modified_count()
             to_rewrite = model.get_to_rewrite_count()
+            is_name_modified = model.is_name_modified()
 
-            if mod_count:
-                count_label = QLabel(QString("%d modified, %d to rewrite." %
-                                             (mod_count, to_rewrite)))
+            if mod_count or is_name_modified:
+                count_label = QLabel(QString("%s, %d modified, %d to rewrite." %
+                                             ("New name" * is_name_modified,
+                                              mod_count, to_rewrite)))
                 count_label.setAlignment(Qt.AlignRight)
 
                 checkbox = QCheckBox(self)
