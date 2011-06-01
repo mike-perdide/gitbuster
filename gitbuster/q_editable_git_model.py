@@ -195,6 +195,14 @@ class QEditableGitModel(QGitModel):
         self.sender().set_as_the_new_column_end()
         self.sender().move_at_the_column_end()
 
+    def get_conflicting_index(self):
+        """
+            Returns the conflicting index.
+            Here the important information is the row rather than the column.
+        """
+        conflicting_row = self.git_model.get_conflicting_row()
+        return self.createIndex(conflicting_row, 0)
+
     # Beyond this point, abandon all hope of seeing anything more than
     # "proxying methods" (for instance, progress() calls git_model.progress())
     def is_name_modified(self):
