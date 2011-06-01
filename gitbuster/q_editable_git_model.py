@@ -203,6 +203,82 @@ class QEditableGitModel(QGitModel):
         conflicting_row = self.git_model.get_conflicting_row()
         return self.createIndex(conflicting_row, 0)
 
+    def mimeTypes(self):
+        types = QStringList()
+        types.append("application/vnd.text.list")
+        return types
+
+    def dropMimeData(self, mime_data, action, row, col_unused, parent_unused,
+                     filling_empty_model=False):
+        if action == Qt.IgnoreAction:
+            return True
+
+        if not mime_data.hasFormat("application/vnd.text.list"):
+            return False
+
+        if not filling_empty_model and row == self.rowCount():
+            # It's forbidden to insert before the first commit (last row of the
+            # model).
+            return False
+
+        if row != -1:
+            begin_row = row
+        else:
+            return False
+
+        encoded_data = mime_data.data("application/vnd.text.list")
+        stream = QDataStream(encoded_data, QIODevice.ReadOnly)
+        new_items = []
+        rows = 0
+
+        while not stream.atEnd():
+            text = stream.readQString()
+            item_branch, item_row_s = str(text).split(' ')
+
+            new_items.append([int(item_row_s),])
+            rows += 1
+
+        # Now new_items contains 1 element lists with the row of the inserted
+        # commit. We will complete these lists with the actual Commit object.
+        # item_branch contains the name of the branch.
+
+        for (branch, model) in self._all_models_dict.items():
+            if branch.name == item_branch:
+                item_model = model
+
+        # We're going to store the data to be inserted in a dictionnary before
+        # inserting the rows. This is to avoid problems when copying rows from
+        # a model to somewhere above in the same model. The insertion of rows
+        # causes a shift of all the rows, including the ones to be copied from.
+        data_to_be_inserted = {}
+        insert_row = begin_row
+        for item in new_items:
+            item_row = item[0]
+
+            for column, field in enumerate(self.get_columns()):
+                item_index = self.createIndex(item_row, column)
+                data = item_model.data(item_index, Qt.EditRole)
+                data_to_be_inserted[(insert_row, column)] = data
+
+            insert_row += 1
+
+        self.start_history_event()
+
+        self.insertRows(begin_row, rows, QModelIndex())
+        insert_row = begin_row
+
+        for item in new_items:
+            for column, field in enumerate(self.get_columns()):
+                index = self.createIndex(insert_row, column)
+                self.setData(index,
+                             data_to_be_inserted[(insert_row, column)])
+
+            insert_row += 1
+
+        self.reset()
+
+        return True
+
     # Beyond this point, abandon all hope of seeing anything more than
     # "proxying methods" (for instance, progress() calls git_model.progress())
     def is_name_modified(self):
@@ -306,79 +382,3 @@ class QEditableGitModel(QGitModel):
     def get_new_branch_name(self):
         "See GitModel for more help."
         return self.git_model.get_new_branch_name()
-
-    def mimeTypes(self):
-        types = QStringList()
-        types.append("application/vnd.text.list")
-        return types
-
-    def dropMimeData(self, mime_data, action, row, col_unused, parent_unused,
-                     filling_empty_model=False):
-        if action == Qt.IgnoreAction:
-            return True
-
-        if not mime_data.hasFormat("application/vnd.text.list"):
-            return False
-
-        if not filling_empty_model and row == self.rowCount():
-            # It's forbidden to insert before the first commit (last row of the
-            # model).
-            return False
-
-        if row != -1:
-            begin_row = row
-        else:
-            return False
-
-        encoded_data = mime_data.data("application/vnd.text.list")
-        stream = QDataStream(encoded_data, QIODevice.ReadOnly)
-        new_items = []
-        rows = 0
-
-        while not stream.atEnd():
-            text = stream.readQString()
-            item_branch, item_row_s = str(text).split(' ')
-
-            new_items.append([int(item_row_s),])
-            rows += 1
-
-        # Now new_items contains 1 element lists with the row of the inserted
-        # commit. We will complete these lists with the actual Commit object.
-        # item_branch contains the name of the branch.
-
-        for (branch, model) in self._all_models_dict.items():
-            if branch.name == item_branch:
-                item_model = model
-
-        # We're going to store the data to be inserted in a dictionnary before
-        # inserting the rows. This is to avoid problems when copying rows from
-        # a model to somewhere above in the same model. The insertion of rows
-        # causes a shift of all the rows, including the ones to be copied from.
-        data_to_be_inserted = {}
-        insert_row = begin_row
-        for item in new_items:
-            item_row = item[0]
-
-            for column, field in enumerate(self.get_columns()):
-                item_index = self.createIndex(item_row, column)
-                data = item_model.data(item_index, Qt.EditRole)
-                data_to_be_inserted[(insert_row, column)] = data
-
-            insert_row += 1
-
-        self.start_history_event()
-
-        self.insertRows(begin_row, rows, QModelIndex())
-        insert_row = begin_row
-
-        for item in new_items:
-            for column, field in enumerate(self.get_columns()):
-                index = self.createIndex(insert_row, column)
-                self.setData(index,
-                             data_to_be_inserted[(insert_row, column)])
-
-            insert_row += 1
-
-        self.reset()
-
-        return True
