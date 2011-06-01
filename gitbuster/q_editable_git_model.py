@@ -197,6 +197,10 @@ class QEditableGitModel(QGitModel):
 
     # Beyond this point, abandon all hope of seeing anything more than
     # "proxying methods" (for instance, progress() calls git_model.progress())
+    def is_name_modified(self):
+        "See GitModel for more help."
+        return self.git_model.is_name_modified()
+
     def progress(self):
         "See GitModel for more help."
         return self.git_model.progress()
