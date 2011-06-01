@@ -303,9 +303,9 @@ class QGitModel(QAbstractTableModel):
 
         elif field_name in TEXT_FIELDS:
             if "message" in filters:
-                match = str(filters["message"])
+                regexp = filters["message"]
                 commit_message = self.git_model.data(index)
-                if match and match in commit_message:
+                if regexp.isValid() and regexp.indexIn(commit_message) != -1:
                     return 1
 
         elif field_name == "hexsha":

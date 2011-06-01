@@ -5,7 +5,7 @@
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 #
 
-from PyQt4.QtCore import QDateTime, QObject, Qt, SIGNAL
+from PyQt4.QtCore import QDateTime, QObject, Qt, SIGNAL, QRegExp
 from PyQt4.QtGui import QApplication, QCheckBox, QSizePolicy, QSpacerItem
 
 from gitbuster.q_git_delegate import QGitDelegate
@@ -323,6 +323,8 @@ class FilterMainClass():
 
             if checkbox.checkState() == Qt.Checked:
                 _filter = self._filter_byname(checkbox_name)
+                if checkbox_name == "message":
+                    _filter = QRegExp(_filter)
                 model.filter_set(checkbox_name, _filter)
                 filters.add(checkbox_name)
             else:
