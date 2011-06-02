@@ -88,3 +88,20 @@ To launch gitbuster::
     $ export PYTHONPATH=$PYTHONPATH:<path_to_>/gitbuster
     $ cd gitbuster
     $ ./gitbuster
+
+----
+Bugs
+----
+There are bugs in gitbuster, especially in:
+
+- dealing with some unicode commit metadata
+- cherry-picking big commits (+10 modified files) may result in gitbuster being blocked
+
+If you find any bug, don't hesitate to report it and/or send patches:
+
+- on freenode, channel #gitbuster or directly to me (mike_perdide).
+- by email: mike dot perdide at gmail dot com
+- on github: https://github.com/mike-perdide/gitbuster/issues/new
+
+Please mention the version you're using, or the tip of the repository if you're using the development version, and the steps to reproduce.
+Your help will be greatly appreciated.
