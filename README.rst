@@ -57,7 +57,7 @@ Installing with pip::
 -------------------
 Manual Installation
 -------------------
-Download the tarball, then::
+Get the code::
 
     $ git clone --recursive git://github.com/mike-perdide/gitbuster.git
     $ cd gitbuster
