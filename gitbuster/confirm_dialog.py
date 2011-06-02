@@ -22,19 +22,20 @@ class ConfirmDialog(QDialog):
 
         row = 1
         for model in models:
-            branch = model.get_current_branch()
+            branch_name = model.get_new_branch_name() or \
+                          model.get_current_branch().name
             mod_count = model.get_modified_count()
             to_rewrite = model.get_to_rewrite_count()
             is_name_modified = model.is_name_modified()
 
             if mod_count or is_name_modified:
-                count_label = QLabel(QString("%s, %d modified, %d to rewrite." %
-                                             ("New name" * is_name_modified,
+                count_label = QLabel(QString("%s%d modified, %d to rewrite." %
+                                             ("New name, " * is_name_modified,
                                               mod_count, to_rewrite)))
                 count_label.setAlignment(Qt.AlignRight)
 
                 checkbox = QCheckBox(self)
-                checkbox.setText(QString(branch.name))
+                checkbox.setText(QString(branch_name))
                 self._ui.branchCountLayout.addWidget(checkbox, row, 0, 1, 2)
                 self._ui.branchCountLayout.addWidget(count_label, row, 1, 1, 2)
 
