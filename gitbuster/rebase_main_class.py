@@ -52,7 +52,7 @@ class ButtonLineEdit(QWidget):
         self._readmode()
 
         #initial load of data
-        branch = self.model.get_current_branch()
+        branch = self.model.get_current_branch() or self.model.get_remote_ref()
         self.current_name_label.setText(branch.name)
 
         #make it live
@@ -146,7 +146,7 @@ class ButtonLineEdit(QWidget):
             When the apply is finished, we may want to check that the model's
             branch name is not new anymore.
         """
-        branch = self.model.get_current_branch()
+        branch = self.model.get_current_branch() or self.model.get_remote_ref()
         self.current_name_label.setText(branch.name)
 
 
