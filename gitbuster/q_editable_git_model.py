@@ -163,15 +163,14 @@ class QEditableGitModel(QGitModel):
         column = index.column()
         field_name = self.git_model.get_columns()[column]
 
-        if field_name in NOT_EDITABLE_FIELDS or \
-           self.is_first_commit(index) or \
-           self.is_deleted(index):
-            return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
-                                Qt.ItemIsDragEnabled |
-                                Qt.NoItemFlags)
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index) |
-                            Qt.ItemIsDragEnabled |
-                            Qt.ItemIsEditable)
+        # Neither first commits nor deleted commits can be edited.
+        if field_name not in NOT_EDITABLE_FIELDS and \
+           not self.is_first_commit(index) and\
+           not self.is_deleted(index):
+            return Qt.ItemFlags(QGitModel.flags(self, index) |
+                                Qt.ItemIsEditable)
+
+        return QGitModel.flags(self, index)
 
     def get_git_model(self):
         "Returns the editable git_model."

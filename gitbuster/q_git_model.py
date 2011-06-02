@@ -343,10 +343,12 @@ class QGitModel(QAbstractTableModel):
         # XXX varies if editable
         if not index.isValid():
             return Qt.ItemIsEnabled
+        elif self.is_first_commit(index):
+            # The first commit can't be dragged and dropped
+            return QAbstractTableModel.flags(self, index)
 
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                            Qt.ItemIsDragEnabled |
-                            Qt.NoItemFlags)
+                            Qt.ItemIsDragEnabled)
 
     def mimeData(self, indexes):
         mime_data = QMimeData()
