@@ -38,6 +38,8 @@ class QGitModel(QAbstractTableModel):
             self.git_model = model
         self._filters = {}
         self._enabled_options = []
+        self._directory = directory
+        self._parent = parent
 
     def populate(self):
         """
