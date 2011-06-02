@@ -323,7 +323,7 @@ class FilterMainClass():
 
             if checkbox.checkState() == Qt.Checked:
                 _filter = self._filter_byname(checkbox_name)
-                if checkbox_name == "message":
+                if checkbox_name in ("message", "nameEmail"):
                     _filter = QRegExp(_filter)
                 model.filter_set(checkbox_name, _filter)
                 filters.add(checkbox_name)

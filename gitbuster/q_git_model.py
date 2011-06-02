@@ -298,9 +298,9 @@ class QGitModel(QAbstractTableModel):
 
         elif field_name in ACTOR_FIELDS:
             if "nameEmail" in filters:
-                match = filters["nameEmail"]
+                regexp = filters["nameEmail"]
                 value = self.git_model.data(index)
-                if match and (match in value):
+                if regexp.isValid() and regexp.indexIn(value) != -1:
                     return 1
 
         elif field_name in TEXT_FIELDS:
