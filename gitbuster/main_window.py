@@ -356,6 +356,7 @@ class MainWindow(QMainWindow):
                 # If the applied models were fake, rebuild them.
                 pass
             elif not success:
+                model.reset()
                 conflicting_index = model.get_conflicting_index()
                 self.rebase_main_class.commit_clicked(conflicting_index)
 
