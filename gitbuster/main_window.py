@@ -19,6 +19,8 @@ from gitbuster.filter_main_class import FilterMainClass
 from gitbuster.rebase_main_class import RebaseMainClass
 
 from git import Repo
+from subprocess import Popen, PIPE
+import os
 
 
 class MainWindow(QMainWindow):
@@ -411,3 +413,22 @@ class MainWindow(QMainWindow):
 
         if ret:
             self.close()
+
+    def closeEvent(self, event):
+        """
+            Catching the close event to do some cleanup
+        """
+        def run_command(command):
+            Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+
+        a_repo = Repo(self._directory)
+        os.chdir(self._directory)
+
+        if a_repo.active_branch.name == 'gitbuster_rebase':
+            if a_repo.is_dirty():
+                run_command("git reset --hard")
+
+            fallback_branch_name = [branch.name for branch in a_repo.branches
+                                    if branch.name != 'gitbuster_rebase'][0]
+            run_command("git checkout %s" % fallback_branch_name)
+            run_command("git branch -D gitbuster_rebase")
