@@ -458,12 +458,25 @@ class RebaseMainClass(QObject):
 
             # Applying with None will make the q_editable_model re-use the
             # previous parameters for log and force options.
+            print "applying with solutions"
             self.parent.apply_models([model,], None, None)
 
-    def apply_finished(self):
+    def apply_finished(self, rebuild_fakes):
         """
             This method is called when the apply is finished.
-            Here we should rebuild the fake models.
+            Some fake models may have been rebuild, we have to reset them on
+            the views.
         """
         for name_widget, view, model in self._checkboxes.values():
             name_widget.reset_displayed_name()
+
+            if model in rebuild_fakes:
+                view.setModel(model)
+                QObject.connect(view, SIGNAL("activated(const QModelIndex&)"),
+                                self.commit_clicked)
+                QObject.connect(view, SIGNAL("clicked(const QModelIndex&)"),
+                                self.commit_clicked)
+
+                QObject.connect(view,
+                            SIGNAL("customContextMenuRequested(const QPoint&)"),
+                            self.context_menu)

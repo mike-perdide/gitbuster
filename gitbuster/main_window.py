@@ -351,10 +351,15 @@ class MainWindow(QMainWindow):
         self._applying = False
         self._ui.applyButton.setEnabled(True)
 
+
+        rebuild_fakes = []
         for model, success in self.progress_thread.get_write_success().items():
             if success and model.is_fake_model():
                 # If the applied models were fake, rebuild them.
-                pass
+                model.populate()
+                rebuild_fakes.append(model)
+                QObject.connect(model, SIGNAL("newHistoryEvent"),
+                                self.new_history_event)
             elif not success:
                 model.reset()
                 conflicting_index = model.get_conflicting_index()
@@ -365,7 +370,7 @@ class MainWindow(QMainWindow):
         if True in self.progress_thread.get_write_success().values():
             # Reset history
             self.reset_history()
-            self.rebase_main_class.apply_finished()
+            self.rebase_main_class.apply_finished(rebuild_fakes)
 
     def show_progress_bar(self):
         """
