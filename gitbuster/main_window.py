@@ -63,7 +63,8 @@ class MainWindow(QMainWindow):
         """
         model = QEditableGitModel(self._models, directory=self._directory,
                                   fake_branch_name=new_name,
-                                  from_model_row=from_model_row)
+                                  from_model_row=from_model_row,
+                                  parent=self)
         self.add_new_model(model)
 
     def connect_slots(self):
