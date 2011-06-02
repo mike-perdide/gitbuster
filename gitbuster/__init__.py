@@ -23,7 +23,7 @@ def main():
     app = QApplication(sys.argv)
 
     if len(sys.argv) == 2 and is_top_git_directory(sys.argv[1]):
-        filepath = sys.argv[1]
+        filepath = os.path.abspath(sys.argv[1])
     else:
         filepath = select_git_directory()
 
