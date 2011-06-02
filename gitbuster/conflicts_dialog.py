@@ -159,6 +159,9 @@ class ConflictsDialog(QDialog):
             self._current_path = u_path
             self._ui.filepathLabel.setText(QString(u_path))
 
+            # Reset the conflictTextEdit
+            self._ui.conflictTextEdit.setEnabled(False)
+
             # Reset the solution radio buttons
             for radio in self._radio_choices:
                 self._ui.noneRadioButton.setChecked(True)
