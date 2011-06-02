@@ -359,6 +359,8 @@ class MainWindow(QMainWindow):
                 model.reset()
                 conflicting_index = model.get_conflicting_index()
                 self.rebase_main_class.commit_clicked(conflicting_index)
+            elif success:
+                model.populate()
 
         if True in self.progress_thread.get_write_success().values():
             # Reset history
