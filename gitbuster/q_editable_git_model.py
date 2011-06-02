@@ -59,6 +59,19 @@ class QEditableGitModel(QGitModel):
                 self.dropMimeData(copied_data, action, 0, 0, None,
                                   filling_empty_model=True)
 
+    def populate(self):
+        """
+            This populates the model.
+            We may want to build orig_q_git_model too.
+        """
+        if self.is_fake_model() and self.is_write_success():
+            # Here we rebuild the model
+            QEditableGitModel.__init__(self, models_dict=self._all_models_dict,
+                                       directory=self._directory,
+                                       parent=self._parent)
+
+        QGitModel.populate(self)
+
     def setData(self, index, value, role=Qt.EditRole):
         """
             Sets the data when the model is modified (qt model method).
