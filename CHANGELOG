@@ -1,3 +1,18 @@
+gitbuster v2.0 "Well, just 75 more to go." (03-06-11)
+=====================================================
+
+We changed the version number to something simpler.
+
+ * Bunch of bugfixes (#7, #31, #36, #38, #40, #43, #46)
+ * Better "new branch name" feature.
+ * Giving the choice to the user to force the committed date/author or let git update it.
+ * Finished the "reset directory" feature.
+ * Included gfbi_core in the gitbuster repository for simpler installation.
+ * Removing duplicates toggleModification and cancel buttons.
+ * The rebase tab is now the first tab.
+ * Made the conflicts button more visible.
+ * Fake models are correctly repopulated (and made legit).
+ * Added some tests.
 
 gitbuster v2.0.0 "Who were you gonna call anyway ?" (28-05-11)
 ==============================================================
