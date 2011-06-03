@@ -23,7 +23,7 @@ class TestsRebaseTab(TemplateTest):
         cls.window = MainWindow(directory=cls.TEST_dir)
         cls.window.show()
         cls.gui = cls.window._ui
-        cls.window._ui.mainTabWidget.setCurrentIndex(1)
+        cls.window._ui.mainTabWidget.setCurrentIndex(0)
 
     def test_all_checkboxes_are_displayed(self):
         error = "All the branches aren't displayed in the checkbox group."
