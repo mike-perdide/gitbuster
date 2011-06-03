@@ -1,7 +1,7 @@
 """
     This test script aims at testing QGitModel, without any modifications.
 """
-from PyQt4.QtCore import Qt, QModelIndex
+from PyQt4.QtCore import Qt, QModelIndex, QRegExp
 from gitbuster.q_git_model import QGitModel
 from gfbi_core.util import GfbiException
 
@@ -156,7 +156,7 @@ class TestsQGitModel(TemplateTest):
         dummy_model.set_current_branch(self.TEST_master_branch)
         dummy_model.populate()
         message = "rodney"
-        dummy_model.filter_set("message", message)
+        dummy_model.filter_set("message", QRegExp(message))
 
         error = "On the master branch model, wrong message filter score for %d:%d"
         message_column = dummy_model.get_columns().index('message')
@@ -181,11 +181,11 @@ class TestsQGitModel(TemplateTest):
         author_name_column = dummy_model.get_columns().index('author_name')
         author_email_column = dummy_model.get_columns().index('author_email')
         for row, commit in enumerate(self.TEST_wallace_branch_commits):
-            dummy_model.filter_set("nameEmail", author)
+            dummy_model.filter_set("nameEmail", QRegExp(author))
             index = dummy_model.createIndex(row, author_name_column)
             score = dummy_model.filter_score(index)
 
-            dummy_model.filter_set("nameEmail", author_email)
+            dummy_model.filter_set("nameEmail", QRegExp(author_email))
             index_email = dummy_model.createIndex(row, author_email_column)
             score_email = dummy_model.filter_score(index_email)
 
