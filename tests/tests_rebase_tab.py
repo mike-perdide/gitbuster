@@ -6,6 +6,7 @@ import os
 import sys
 
 from gitbuster.main_window import MainWindow
+from gitbuster.rebase_main_class import ButtonLineEdit
 from template_test import TemplateTest
 
 
@@ -64,7 +65,7 @@ class TestsRebaseTab(TemplateTest):
 
         newly_added = (after_the_check - before_the_check)
         name_widget = [widget for widget in newly_added
-                       if isinstance(wiget, ButtonLineEdit)][0]
+                       if isinstance(widget, ButtonLineEdit)][0]
         # Check the name of the new displayed branch
 
     def get_checked_checkboxes(self):
