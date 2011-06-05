@@ -15,11 +15,10 @@ class ButtonLineEdit(QWidget):
     and the text can be edited in place thanks to a lineedit
     """
 
-    def __init__(self, history_mgr, model, checkbox, parent=None):
+    def __init__(self, model, checkbox, parent=None):
         QWidget.__init__(self, parent)
 
         #data stored here for convenience
-        self.history_mgr = history_mgr
         self.model = model
         self.new_name = model.get_old_branch_name()
         self.checkbox = checkbox
@@ -109,7 +108,7 @@ class ButtonLineEdit(QWidget):
                                self.checkbox,
                                self.current_name_label,
                                old_branch_name)
-        self.history_mgr.add_history_action(action)
+        self.emit(SIGNAL("newHistAction"), action)
 
         # Displaying the new branch name
         if new_name != old_branch_name:
@@ -163,7 +162,7 @@ class BranchView(QWidget):
         self._table_view = QTableView(parent)
         self._table_view.setModel(model)
 
-        self._name_widget = ButtonLineEdit(parent.parent(), model, checkbox)
+        self._name_widget = ButtonLineEdit(model, checkbox)
         self._ui.layout.addWidget(self._name_widget, 0, 0)
         self._ui.layout.addWidget(self._table_view, 1, 0)
 
@@ -188,10 +187,22 @@ class BranchView(QWidget):
 
         signals = "activated(const QModelIndex&)", "clicked(const QModelIndex&)"
         for signal in signals:
-            connect(self._table_view, SIGNAL(signal), self.commit_clicked)
+            connect(self._table_view, SIGNAL(signal), self.fwd_commit_clicked)
 
-    def commit_clicked(self, index):
+        connect(self._name_widget, SIGNAL("newHistAction"),
+                self.fwd_new_hist_action)
+
+    def fwd_commit_clicked(self, index):
+        """
+            Simple signal forwarder to RebaseMainClass.
+        """
         self.emit(SIGNAL("activated(const QModelIndex&)"), index)
+
+    def fwd_new_hist_action(self, action):
+        """
+            Simple signal forwarder to RebaseMainClass.
+        """
+        self.emit(SIGNAL("newHistAction"), action)
 
     def context_menu(self, q_point):
         """
@@ -222,7 +233,8 @@ class BranchView(QWidget):
             self.remove_rows()
 
         elif choosed_action == copy_action:
-            self._parent.set_copy_data(table_view.model().mimeData(indexes))
+            self.emit(SIGNAL("newCopiedData"),
+                      table_view.model().mimeData(indexes))
 
         elif choosed_action == paste_after_action:
             drop_after = max(selected_rows) + 1
