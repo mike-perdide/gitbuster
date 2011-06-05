@@ -225,7 +225,9 @@ class MainWindow(QMainWindow):
         if self._applying:
             return
 
-        if self._history_state == len(self._history):
+        if self._history_state == len(self._history) - 1:
+            # If the current history state is the last one (as the first state
+            # is None), we have an offset
             return
 
         model, actions = self.reproduce_conditions(self._history_state + 1)
