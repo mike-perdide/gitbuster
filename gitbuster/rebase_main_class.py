@@ -219,7 +219,6 @@ class RebaseMainClass(QWidget):
 
             # Applying with None will make the q_editable_model re-use the
             # previous parameters for log and force options.
-            print "applying with solutions"
             self._parent.apply_models([model,], None, None)
 
     def apply_finished(self, rebuild_fakes):
