@@ -235,15 +235,7 @@ class BranchView(QWidget):
                                             drop_before, 0, self.parent)
 
         elif choosed_action == create_branch_action:
-            msgBox = BranchNameDialog(self)
-            ret = msgBox.exec_()
-
-            if ret:
-                new_name = msgBox.get_new_name()
-                from_model = table_view.model()
-                from_row = min(selected_rows)
-                self.parent.create_new_branch_from_model(new_name,
-                                                         from_model_row)
+            self.emit(SIGNAL("newBranchFromCommit"), indexes)
 
     def remove_rows(self):
         """
