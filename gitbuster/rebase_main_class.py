@@ -76,7 +76,7 @@ class RebaseMainClass(QObject):
         self._ui.branchCheckboxLayout.addWidget(checkbox, position/2,
                                                        position%2, 1, 1)
 
-        branch_view = BranchView(self.parent, model, checkbox, self._models)
+        branch_view = BranchView(self, model, checkbox, self._models)
         branch_view.setModel(model)
         self._ui.viewLayout.addWidget(branch_view, 0, self._number_of_models)
 
