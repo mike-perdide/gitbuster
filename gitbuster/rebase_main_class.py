@@ -11,7 +11,6 @@ from PyQt4.QtGui import QApplication, QCheckBox, QGridLayout, QKeySequence,\
      QWidget, QFont
 connect = QObject.connect
 
-from gitbuster.branch_name_dialog import BranchNameDialog
 from gitbuster.conflicts_dialog import ConflictsDialog
 from gitbuster.util import SetNameAction, DummyRemoveAction
 from gitbuster.branch_view import BranchView
@@ -83,6 +82,9 @@ class RebaseMainClass(QWidget):
         signals = "activated(const QModelIndex&)", "clicked(const QModelIndex&)"
         for signal in signals:
             connect(branch_view, SIGNAL(signal), self.commit_clicked)
+
+        connect(branch_view, SIGNAL("newBranchFromCommit"),
+                self._parent.create_new_branch_from_model)
 
         if hasattr(branch, 'path') and branch == self._parent.current_branch:
             checkbox.setCheckState(Qt.Checked)
