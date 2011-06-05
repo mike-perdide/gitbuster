@@ -6,7 +6,7 @@ import os
 import sys
 
 from gitbuster.main_window import MainWindow
-from gitbuster.rebase_main_class import ButtonLineEdit
+from gitbuster.branch_view import ButtonLineEdit
 from template_test import TemplateTest
 
 
@@ -42,7 +42,7 @@ class TestsRebaseTab(TemplateTest):
     def test_only_one_branch_is_displayed(self):
         error = "More than one branch is displayed."
         displayed_widgets = self.get_displayed_branch_widgets()
-        self.check(len(displayed_widgets), 2, error)
+        self.check(len(displayed_widgets), 1, error)
 
     def test_displayed_branch_data_is_correct(self):
         error = "The displayed content isn't correct"
@@ -60,12 +60,12 @@ class TestsRebaseTab(TemplateTest):
 
         after_the_check = self.get_displayed_branch_widgets()
 
-        self.check(len(after_the_check - before_the_check), 2,
+        self.check(len(after_the_check - before_the_check), 1,
                    error % (an_unchecked_checkbox.text()))
 
         newly_added = (after_the_check - before_the_check)
-        name_widget = [widget for widget in newly_added
-                       if isinstance(widget, ButtonLineEdit)][0]
+#        name_widget = [widget for widget in newly_added
+#                       if isinstance(widget, ButtonLineEdit)][0]
         # Check the name of the new displayed branch
 
     def get_checked_checkboxes(self):
