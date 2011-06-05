@@ -76,7 +76,7 @@ class RebaseMainClass(QWidget):
                                                        position%2, 1, 1)
 
         branch_view = BranchView(self, model, checkbox, self._models)
-        branch_view.setModel(model)
+        branch_view.set_model(model)
         self._ui.viewLayout.addWidget(branch_view, 0, self._number_of_models)
 
         signals = "activated(const QModelIndex&)", "clicked(const QModelIndex&)"
@@ -214,19 +214,10 @@ class RebaseMainClass(QWidget):
             the views.
         """
         for view, model in self._checkboxes.values():
-#            name_widget.reset_displayed_name()
             view.reset_displayed_name()
 
             if model in rebuild_fakes:
                 view.set_model(model)
-                QObject.connect(view, SIGNAL("activated(const QModelIndex&)"),
-                                self.commit_clicked)
-                QObject.connect(view, SIGNAL("clicked(const QModelIndex&)"),
-                                self.commit_clicked)
-
-                QObject.connect(view,
-                            SIGNAL("customContextMenuRequested(const QPoint&)"),
-                            self.context_menu)
 
     def get_copy_data(self):
         """
