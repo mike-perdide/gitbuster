@@ -84,7 +84,10 @@ class RebaseMainClass(QWidget):
             connect(branch_view, SIGNAL(signal), self.commit_clicked)
 
         connect(branch_view, SIGNAL("newBranchFromCommit"),
-                self._parent.create_new_branch_from_model)
+                self.fwd_new_branch_from_commit)
+        connect(branch_view, SIGNAL("newHistAction"), self.fwd_new_hist_action)
+
+        connect(branch_view, SIGNAL("newCopiedData"), self.set_copy_data)
 
         if hasattr(branch, 'path') and branch == self._parent.current_branch:
             checkbox.setCheckState(Qt.Checked)
@@ -95,6 +98,18 @@ class RebaseMainClass(QWidget):
 
         self._checkboxes[checkbox] = (branch_view, model)
         self._number_of_models += 1
+
+    def fwd_new_hist_action(self, action):
+        """
+            Simple signal forwarder to MainWindow.
+        """
+        self.emit(SIGNAL("newHistAction"), action)
+
+    def fwd_new_branch_from_commit(self, indexes):
+        """
+            Simple signal forwarder to MainWindow.
+        """
+        self.emit(SIGNAL("newBranchFromCommit"), indexes)
 
     def add_new_model(self, model):
         """

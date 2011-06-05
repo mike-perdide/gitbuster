@@ -117,6 +117,9 @@ class MainWindow(QMainWindow):
                 action.setShortcut(shortcut)
             QObject.connect(action, SIGNAL("triggered()"), slot)
 
+        self.connect(self.rebase_main_class, SIGNAL("newHistAction"),
+                     self.add_history_action)
+
     def new_remote_branch(self):
         """
             Create a new branch.
