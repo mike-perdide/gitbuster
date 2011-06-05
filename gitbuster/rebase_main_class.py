@@ -224,3 +224,15 @@ class RebaseMainClass(QObject):
                 QObject.connect(view,
                             SIGNAL("customContextMenuRequested(const QPoint&)"),
                             self.context_menu)
+
+    def get_copy_data(self):
+        """
+            Returns the copied data (mimeData of selected indexes).
+        """
+        return self._copy_data
+
+    def set_copy_data(self, data):
+        """
+            Sets the copied data with the given mimeData.
+        """
+        self._copy_data = data

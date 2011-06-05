@@ -204,13 +204,14 @@ class BranchView(QWidget):
 
         indexes = branch_view.selectedIndexes()
         selected_rows = set([index.row() for index in indexes])
+        copy_data = self._parent.get_copy_data()
 
         copy_action = menu.addAction("Copy")
         delete_action = menu.addAction("Delete")
         paste_after_action = menu.addAction("Paste after")
-        paste_after_action.setDisabled(self._copy_data == "")
+        paste_after_action.setDisabled(copy_data == "")
         paste_before_action = menu.addAction("Paste before")
-        paste_before_action.setDisabled(self._copy_data == "")
+        paste_before_action.setDisabled(copy_data == "")
         create_branch_action = menu.addAction("Create branch from this commit")
 
         choosed_action = menu.exec_(table_view.viewport().mapToGlobal(q_point))
@@ -219,17 +220,17 @@ class BranchView(QWidget):
             self.remove_rows()
 
         elif choosed_action == copy_action:
-            self._copy_data = branch_view.model().mimeData(indexes)
+            self._parent.set_copy_data(table_view.model().mimeData(indexes))
 
         elif choosed_action == paste_after_action:
             drop_after = max(selected_rows) + 1
-            branch_view.model().dropMimeData(self._copy_data, Qt.CopyAction,
-                                             drop_after, 0, self.parent)
+            table_view.model().dropMimeData(copy_data, Qt.CopyAction,
+                                            drop_after, 0, self.parent)
 
         elif choosed_action == paste_before_action:
             drop_before = min(selected_rows)
-            branch_view.model().dropMimeData(self._copy_data, Qt.CopyAction,
-                                             drop_before, 0, self.parent)
+            table_view.model().dropMimeData(copy_data, Qt.CopyAction,
+                                            drop_before, 0, self.parent)
 
         elif choosed_action == create_branch_action:
             msgBox = BranchNameDialog(self)
