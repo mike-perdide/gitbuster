@@ -291,6 +291,14 @@ class QEditableGitModel(QGitModel):
 
         return True
 
+    def name_to_display(self):
+        """
+            Returns the name that should be displayed for this model.
+            It can be the name of the current branch, the name of the remote
+            reference, or the new branch name.
+        """
+        return self.get_new_branch_name() or QGitModel.name_to_display(self)
+
     # Beyond this point, abandon all hope of seeing anything more than
     # "proxying methods" (for instance, progress() calls git_model.progress())
     def is_name_modified(self):
