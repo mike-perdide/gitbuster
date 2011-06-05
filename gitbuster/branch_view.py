@@ -166,12 +166,6 @@ class BranchView(QWidget):
         self._ui.layout.addWidget(self._name_widget, 0, 0)
         self._ui.layout.addWidget(self._table_view, 1, 0)
 
-        #name = ButtonLineEdit(self.parent, model, checkbox)
-        #place = position * 7
-
-        #self._ui.viewLayout.addWidget(name, 0, place)
-        #self._ui.viewLayout.addWidget(branch_view, 1, place)
-
         self.connect_signals()
 
     def connect_signals(self):
@@ -297,12 +291,15 @@ class BranchView(QWidget):
         """
             Sets the QTableView model and the label's name.
         """
-        # XXX
         table_view = self._table_view
+
+        table_view.setModel(model)
+
         show_fields = ("hexsha", "message")
         for column, field in enumerate(model.get_columns()):
             if not field in show_fields:
                 table_view.hideColumn(column)
+
         table_view.resizeColumnsToContents()
         table_view.horizontalHeader().setStretchLastSection(True)
         table_view.setSelectionMode(table_view.ExtendedSelection)
@@ -310,8 +307,6 @@ class BranchView(QWidget):
         table_view.setSelectionBehavior(table_view.SelectRows)
         table_view.setEditTriggers(table_view.NoEditTriggers)
         table_view.setContextMenuPolicy(Qt.CustomContextMenu)
-
-        table_view.setModel(model)
 
     def show_modifications(self):
         pass
