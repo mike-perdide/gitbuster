@@ -102,7 +102,7 @@ class RebaseMainClass(QWidget):
         """
         self.create_model_interface(model)
         checkbox = [checkbox for checkbox in self._checkboxes
-                    if self._checkboxes[checkbox][2] == model][0]
+                    if self._checkboxes[checkbox][1] == model][0]
         checkbox.setCheckState(Qt.Checked)
 
     def focused_branch_view(self):
