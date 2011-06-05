@@ -366,6 +366,17 @@ class QGitModel(QAbstractTableModel):
         mime_data.setData("application/vnd.text.list", encoded_data)
         return mime_data
 
+    def name_to_display(self):
+        """
+            Returns the name that should be displayed for this model.
+            It can be the name of the current branch or the name of the remote
+            reference.
+        """
+        if self.get_remote_ref():
+            return self.get_remote_ref().name
+        else:
+            return self.get_current_branch().name
+
     # Beyond this point, abandon all hope of seeing anything more than "proxying
     # methods" (for instance, progress() calls git_model.progress())
     def get_git_model(self):
