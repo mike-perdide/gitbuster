@@ -26,7 +26,6 @@ class RebaseMainClass(QObject):
         self._models = None
         self._clicked_commit = None
         self._copy_data = ""
-        self._oldtext = ""
 
         self._ui = self.parent._ui
 
