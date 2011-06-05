@@ -221,26 +221,26 @@ class BranchView(QWidget):
         paste_before_action.setDisabled(copy_data == "")
         create_branch_action = menu.addAction("Create branch from this commit")
 
-        choosed_action = menu.exec_(table_view.viewport().mapToGlobal(q_point))
+        chosen_action = menu.exec_(table_view.viewport().mapToGlobal(q_point))
 
-        if choosed_action == delete_action:
+        if chosen_action == delete_action:
             self.remove_rows()
 
-        elif choosed_action == copy_action:
+        elif chosen_action == copy_action:
             self.emit(SIGNAL("newCopiedData"),
                       table_view.model().mimeData(indexes))
 
-        elif choosed_action == paste_after_action:
+        elif chosen_action == paste_after_action:
             drop_after = max(selected_rows) + 1
             table_view.model().dropMimeData(copy_data, Qt.CopyAction,
                                             drop_after, 0, self.parent)
 
-        elif choosed_action == paste_before_action:
+        elif chosen_action == paste_before_action:
             drop_before = min(selected_rows)
             table_view.model().dropMimeData(copy_data, Qt.CopyAction,
                                             drop_before, 0, self.parent)
 
-        elif choosed_action == create_branch_action:
+        elif chosen_action == create_branch_action:
             self.emit(SIGNAL("newBranchFromCommit"), indexes)
 
     def remove_rows(self):
