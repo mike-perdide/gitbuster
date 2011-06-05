@@ -19,7 +19,7 @@ class ButtonLineEdit(QWidget):
         QWidget.__init__(self, parent)
 
         #data stored here for convenience
-        self.model = model
+        self._model = model
         self.new_name = model.get_old_branch_name()
         self.checkbox = checkbox
 
@@ -70,7 +70,7 @@ class ButtonLineEdit(QWidget):
 
     def go_edit(self):
         self._editmode()
-        name = self.model.get_current_branch().name
+        name = self._model.get_current_branch().name
         self.label.setText(u"<span>"
             "Change &#147;<i>%(name)s</i>&#148; into"
             "</span>" %
@@ -84,14 +84,14 @@ class ButtonLineEdit(QWidget):
     def go_read(self):
         old_name = self.new_name
         new_name = unicode(self.editor.text()).strip()
-        old_branch_name = self.model.get_old_branch_name()
+        old_branch_name = self._model.get_old_branch_name()
 
         if self.new_name == new_name:
             # The name hasn't changed.
             self._readmode()
             return
 
-        valid_name, error = self.model.is_valid_branch_name(new_name)
+        valid_name, error = self._model.is_valid_branch_name(new_name)
 
         if not valid_name:
             # The branch name isn't valid.
@@ -102,8 +102,8 @@ class ButtonLineEdit(QWidget):
         self.new_name = new_name
 
         # Setting the new branch name on the model and creating history events
-        self.model.start_history_event()
-        self.model.set_new_branch_name(new_name)
+        self._model.start_history_event()
+        self._model.set_new_branch_name(new_name)
         action = SetNameAction(old_name, new_name,
                                self.checkbox,
                                self.current_name_label,
@@ -139,8 +139,8 @@ class ButtonLineEdit(QWidget):
             When the apply is finished, we may want to check that the model's
             branch name is not new anymore.
         """
-        branch = self.model.get_current_branch() or self.model.get_remote_ref()
-        self.current_name_label.setText(branch.name)
+        branch_name = self._model.name_to_display()
+        self.current_name_label.setText(branch_name)
 
 
 class BranchView(QWidget):
