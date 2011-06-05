@@ -202,9 +202,9 @@ class BranchView(QWidget):
                 - paste before
         """
         menu = QMenu(self._parent)
-        table_view = self.sender()
+        table_view = self._table_view
 
-        indexes = branch_view.selectedIndexes()
+        indexes = table_view.selectedIndexes()
         selected_rows = set([index.row() for index in indexes])
         copy_data = self._parent.get_copy_data()
 
@@ -240,7 +240,7 @@ class BranchView(QWidget):
 
             if ret:
                 new_name = msgBox.get_new_name()
-                from_model = branch_view.model()
+                from_model = table_view.model()
                 from_row = min(selected_rows)
                 self.parent.create_new_branch_from_model(new_name,
                                                          from_model_row)
@@ -253,13 +253,13 @@ class BranchView(QWidget):
             We delete the rows starting with the last one, in order to use the
             correct indexes.
         """
-        branch_view = self.focused_branch_view()
-        if branch_view is None:
+        table_view = self._table_view
+        if table_view is None:
             return False
 
-        selected_indexes = [index for index in branch_view.selectedIndexes()
+        selected_indexes = [index for index in table_view.selectedIndexes()
                             if index.isValid()]
-        model = branch_view.model()
+        model = table_view.model()
 
         ordered_list = []
         deleted_dummies = []
@@ -277,8 +277,8 @@ class BranchView(QWidget):
         for dummy_row in deleted_dummies:
             # Special behaviour for inserted commits: hide them
             self.parent.add_history_action(DummyRemoveAction(dummy_row,
-                                                             branch_view))
-            branch_view.hideRow(dummy_row)
+                                                             table_view))
+            table_view.hideRow(dummy_row)
 
         for row in ordered_list:
             model.removeRows(row)
