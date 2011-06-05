@@ -17,17 +17,17 @@ from gitbuster.util import SetNameAction, DummyRemoveAction
 from gitbuster.branch_view import BranchView
 
 
-class RebaseMainClass(QObject):
+class RebaseMainClass(QWidget):
 
     def __init__(self, parent, directory, models):
-        QObject.__init__(self, parent)
+        QWidget.__init__(self, parent)
 
-        self.parent = parent
+        self._parent = parent
         self._models = None
         self._clicked_commit = None
         self._copy_data = ""
 
-        self._ui = self.parent._ui
+        self._ui = self._parent._ui
 
         self._checkboxes = {}
         self._number_of_models = 0
@@ -84,7 +84,7 @@ class RebaseMainClass(QObject):
         for signal in signals:
             connect(branch_view, SIGNAL(signal), self.commit_clicked)
 
-        if hasattr(branch, 'path') and branch == self.parent.current_branch:
+        if hasattr(branch, 'path') and branch == self._parent.current_branch:
             checkbox.setCheckState(Qt.Checked)
         else:
             branch_view.hide()
@@ -193,7 +193,7 @@ class RebaseMainClass(QObject):
         model = self._clicked_commit.model()
 
         unmerged_files = model.get_unmerged_files()
-        dialog = ConflictsDialog(unmerged_files, parent=self.parent)
+        dialog = ConflictsDialog(unmerged_files, parent=self._parent)
         ret = dialog.exec_()
 
         if ret:
@@ -202,7 +202,7 @@ class RebaseMainClass(QObject):
 
             # Applying with None will make the q_editable_model re-use the
             # previous parameters for log and force options.
-            self.parent.apply_models([model,], None, None)
+            self._parent.apply_models([model,], None, None)
 
     def apply_finished(self, rebuild_fakes):
         """
