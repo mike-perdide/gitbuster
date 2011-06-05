@@ -45,8 +45,7 @@ class ButtonLineEdit(QWidget):
         self._readmode()
 
         #initial load of data
-        branch = self.model.get_current_branch() or self.model.get_remote_ref()
-        self.current_name_label.setText(branch.name)
+        self.reset_displayed_name()
 
         #make it live
         QObject.connect(self.current_name_label,
