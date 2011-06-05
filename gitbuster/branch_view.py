@@ -6,6 +6,8 @@ from PyQt4.QtCore import QObject, Qt, SIGNAL
 connect = QObject.connect
 
 from gitbuster.branch_view_ui import Ui_BranchView
+from gitbuster.util import SetNameAction, DummyRemoveAction
+
 
 class ButtonLineEdit(QWidget):
     """
@@ -161,7 +163,7 @@ class BranchView(QWidget):
         self._table_view = QTableView(parent)
         self._table_view.setModel(model)
 
-        self._name_widget = ButtonLineEdit(parent, model, checkbox)
+        self._name_widget = ButtonLineEdit(parent.parent(), model, checkbox)
         self._ui.layout.addWidget(self._name_widget, 0, 0)
         self._ui.layout.addWidget(self._table_view, 1, 0)
 
