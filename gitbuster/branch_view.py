@@ -281,7 +281,7 @@ class BranchView(QWidget):
         """
         return self._model
 
-    def setModel(self, model):
+    def set_model(self, model):
         """
             Sets the QTableView model and the label's name.
         """
