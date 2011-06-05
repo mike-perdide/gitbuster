@@ -139,25 +139,29 @@ class MainWindow(QMainWindow):
             Reset the history (for instance when the apply is finished
             successfully.
         """
-        self._history = []
-        self._last_history_event = -1
+        # This first history event is None, the history event for a given state
+        # is given by self._history_state + 1
+        self._history = [None,]
+        # The first state is 0
+        self._history_state = 0
 
     def new_history_event(self):
         """
             When a history event occurs, we store the tab index, the displayed
             models and the model that was modified.
         """
-        while self._last_history_event < len(self._history) - 1:
+        while self._history_state < len(self._history) - 1:
             self._history.pop()
 
-        self._last_history_event += 1
+        self._history_state += 1
 
         model = self.sender()
         activated_index = self._ui.mainTabWidget.currentIndex()
         if activated_index == 0:
             opened_model_index = self._ui.currentBranchComboBox.currentIndex()
 
-            self._history.append([activated_index, opened_model_index, model, []])
+            self._history.append([activated_index, opened_model_index,
+                                  model, []])
 
         else:
             checkboxes = []
@@ -183,16 +187,18 @@ class MainWindow(QMainWindow):
         if self._applying:
             return
 
-        if self._last_history_event >= 0:
-            model, actions = self.reproduce_history_conditions()
-            model.undo_history()
+        if self._history_state == 0:
+            return
 
-            for action in actions:
-                action.undo()
+        model, actions = self.reproduce_conditions(self._history_state)
+        model.undo_history()
 
-            self._last_history_event -= 1
+        for action in actions:
+            action.undo()
 
-        if self._last_history_event == -1:
+        self._history_state -= 1
+
+        if self._history_state == 0:
             self.enable_modifications_buttons(False)
 
     def redo_history(self):
@@ -202,14 +208,16 @@ class MainWindow(QMainWindow):
         if self._applying:
             return
 
-        if self._last_history_event < len(self._history) - 1:
-            model, actions = self.reproduce_history_conditions()
-            model.redo_history()
+        if self._history_state == len(self._history):
+            return
 
-            for action in actions:
-                action.redo()
+        model, actions = self.reproduce_conditions(self._history_state + 1)
+        model.redo_history()
 
-            self._last_history_event += 1
+        for action in actions:
+            action.redo()
+
+        self._history_state += 1
 
         self.enable_modifications_buttons(True)
 
@@ -219,9 +227,9 @@ class MainWindow(QMainWindow):
             by the model history). For instance: setting the branch name in the
             name button.
         """
-        self._history[self._last_history_event][3].append(action)
+        self._history[self._history_state][3].append(action)
 
-    def reproduce_history_conditions(self):
+    def reproduce_conditions(self, history_state):
         """
             This method reproduces the settings of the application stored when
             the history event occured.
@@ -230,7 +238,7 @@ class MainWindow(QMainWindow):
                 The model that was modified.
         """
         tab_index, index_or_checkboxes, model, actions = \
-                                        self._history[self._last_history_event]
+                                        self._history[history_state]
 
         self._ui.mainTabWidget.setCurrentIndex(tab_index)
         if tab_index == 0:
