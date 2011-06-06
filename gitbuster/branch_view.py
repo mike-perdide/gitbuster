@@ -8,6 +8,22 @@ connect = QObject.connect
 from gitbuster.branch_view_ui import Ui_BranchView
 from gitbuster.util import SetNameAction, DummyRemoveAction
 
+def to_hide_subset(model, row):
+    columns = model.get_columns()
+    authored_date_col = columns.index('authored_date')
+    author_name_col = columns.index('author_name')
+    message_col = columns.index('message')
+    relevant_columns = [authored_date_col, author_name_col, message_col]
+
+    role = Qt.EditRole
+    this_row_data = (
+        model.data(model.createIndex(row, authored_date_col), role)[0],
+        model.data(model.createIndex(row, author_name_col), role).toString(),
+        model.data(model.createIndex(row, message_col), role).toString()
+    )
+
+    return this_row_data
+
 
 class ButtonLineEdit(QWidget):
     """
@@ -15,13 +31,14 @@ class ButtonLineEdit(QWidget):
     and the text can be edited in place thanks to a lineedit
     """
 
-    def __init__(self, model, checkbox, parent=None):
+    def __init__(self, model, checkbox, all_models, parent=None):
         QWidget.__init__(self, parent)
 
         #data stored here for convenience
         self._model = model
         self.new_name = model.get_old_branch_name()
         self.checkbox = checkbox
+        self._all_models = all_models
 
         #widgets. Maybe we should use designer here.
         name_label_font = QFont()
@@ -53,6 +70,8 @@ class ButtonLineEdit(QWidget):
                         self.context_menu)
         QObject.connect(self.editor, SIGNAL("returnPressed()"), self.go_read)
         QObject.connect(self.valid_button, SIGNAL("clicked()"), self.go_read)
+
+        self._hidden_from_model = None
 
     def _iter_widgets(self):
         """
@@ -128,10 +147,36 @@ class ButtonLineEdit(QWidget):
         menu = QMenu(self)
         edit_action = menu.addAction("edit")
 
-        choosed_action = menu.exec_(self.sender().mapToGlobal(q_point))
+        hide_menu = QMenu("Hide commit from", self)
+        hide_choices = {}
+        for model in self._all_models.values():
+            name = model.name_to_display()
+            if name != self._model.name_to_display():
+                hide_choice = hide_menu.addAction(name)
+                hide_choices[hide_choice] = model
+                hide_choice.setCheckable(True)
+                if model == self._hidden_from_model:
+                    hide_choice.setChecked(True)
 
-        if choosed_action == edit_action:
+        hide_action = menu.addMenu(hide_menu)
+
+        chosen_action = menu.exec_(self.sender().mapToGlobal(q_point))
+
+        if chosen_action == edit_action:
             self.go_edit()
+
+        elif chosen_action in hide_choices:
+            model = hide_choices[chosen_action]
+
+            if model == self._hidden_from_model:
+                self._hidden_from_model = None
+                self.emit(SIGNAL("unhideDataFromModel"))
+            else:
+                self._hidden_from_model = model
+                all_hide_data = []
+                for row in xrange(model.rowCount()):
+                    all_hide_data.append(to_hide_subset(model, row))
+                self.emit(SIGNAL("hideDataFromModel"), all_hide_data)
 
     def reset_displayed_name(self):
         """
@@ -161,9 +206,11 @@ class BranchView(QWidget):
         self._table_view = QTableView(parent)
         self._table_view.setModel(model)
 
-        self._name_widget = ButtonLineEdit(model, checkbox)
+        self._name_widget = ButtonLineEdit(model, checkbox, all_models, self)
         self._ui.layout.addWidget(self._name_widget, 0, 0)
         self._ui.layout.addWidget(self._table_view, 1, 0)
+
+        self._hidden_rows_from_models = []
 
         self.connect_signals()
 
@@ -185,6 +232,10 @@ class BranchView(QWidget):
         connect(self._name_widget, SIGNAL("newHistAction"),
                 self.fwd_new_hist_action)
 
+        connect(self._name_widget, SIGNAL("hideDataFromModel"), self.hide_data)
+        connect(self._name_widget, SIGNAL("unhideDataFromModel"),
+                                                              self.unhide_data)
+
     def fwd_commit_clicked(self, index):
         """
             Simple signal forwarder to RebaseMainClass.
@@ -196,6 +247,32 @@ class BranchView(QWidget):
             Simple signal forwarder to RebaseMainClass.
         """
         self.emit(SIGNAL("newHistAction"), action)
+
+    def unhide_data(self):
+        """
+            Unhide previously hidden data from another model.
+        """
+        for row in self._hidden_rows_from_models:
+            self._table_view.showRow(row)
+        self._hidden_rows_from_models = []
+
+    def hide_data(self, data):
+        """
+            Hide certain rows of the table view model based on the given data
+            list.
+
+            :param data:
+                The list of commits used to hide rows of the table view. The
+                list is build like:
+                    [ [authored_timestamp, author_name, commit_message],
+                      ... ]
+        """
+        self.unhide_data()
+
+        for row in xrange(self._model.rowCount()):
+            if to_hide_subset(self._model, row) in data:
+                self._table_view.hideRow(row)
+                self._hidden_rows_from_models.append(row)
 
     def context_menu(self, q_point):
         """
