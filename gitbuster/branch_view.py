@@ -258,6 +258,9 @@ class BranchView(QWidget):
         """
             Unhide previously hidden data from another model.
         """
+        # Un-forbid dropping on a reduced view of the model
+        self._table_view.setDragDropMode(self._table_view.DragDrop)
+
         for row in self._hidden_rows_from_models:
             self._table_view.showRow(row)
         self._hidden_rows_from_models = []
@@ -274,6 +277,9 @@ class BranchView(QWidget):
                       ... ]
         """
         self.unhide_data()
+
+        # Forbid dropping on a reduced view of the model
+        self._table_view.setDragDropMode(self._table_view.DragOnly)
 
         for row in xrange(self._model.rowCount()):
             if to_hide_subset(self._model, row) in data:
