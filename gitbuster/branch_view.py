@@ -224,7 +224,7 @@ class BranchView(QWidget):
         """
             Connect the right signals to the right slots.
         """
-        shortcut = QShortcut(QKeySequence(QKeySequence.Delete), self._parent)
+        shortcut = QShortcut(QKeySequence(QKeySequence.Delete), self)
         QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
 
         connect(self._table_view,
