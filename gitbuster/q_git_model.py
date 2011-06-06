@@ -377,6 +377,14 @@ class QGitModel(QAbstractTableModel):
         else:
             return self.get_current_branch().name
 
+    def should_be_written(self):
+        """
+            A QGitModel should never be written.
+            This method is here to avoid model.should_be_written to fail when
+            we don't know that the model is a QGitModel.
+        """
+        return False
+
     # Beyond this point, abandon all hope of seeing anything more than "proxying
     # methods" (for instance, progress() calls git_model.progress())
     def get_git_model(self):

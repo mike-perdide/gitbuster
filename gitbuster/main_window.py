@@ -335,14 +335,11 @@ class MainWindow(QMainWindow):
             # Can't apply if we're already applying
             return
 
+        to_write_models = [model for model in self._models.values()
+                           if model.should_be_written()]
 
-        modified_models = [model for model in self._models.values()
-                           if isinstance(model, QEditableGitModel) and
-                           (model.get_modified_count() > 0 or
-                            model.is_name_modified())]
-
-        if modified_models:
-            msgBox = ConfirmDialog(modified_models)
+        if to_write_models:
+            msgBox = ConfirmDialog(to_write_models)
             ret = msgBox.exec_()
 
             if ret and msgBox.checked_models():

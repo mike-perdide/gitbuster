@@ -299,6 +299,15 @@ class QEditableGitModel(QGitModel):
         """
         return self.get_new_branch_name() or QGitModel.name_to_display(self)
 
+    def should_be_written(self):
+        """
+            Returns True if the model is a fake model, or if there are
+            modifications in the commits, or if the name is modified.
+        """
+        return self.is_fake_model() or \
+               self.get_modified_count() > 0 or \
+               self.is_name_modified()
+
     # Beyond this point, abandon all hope of seeing anything more than
     # "proxying methods" (for instance, progress() calls git_model.progress())
     def is_name_modified(self):
