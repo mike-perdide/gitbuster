@@ -4,7 +4,7 @@
 #  * AA on Z
 #  * AU on Y
 #  * UA on X
-#  * UU on jimmy
+#  * UU on jimmy
 #  * DU on toto
 #  * UD on tata
 #  * DD on foo
