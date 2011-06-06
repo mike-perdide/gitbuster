@@ -11,3 +11,9 @@ install:	all
 
 publish:	all
 	pysetup run register sdist upload
+
+update-code:
+	#Violent.
+	git pull --rebase
+	git submodule init
+	git submodule update
