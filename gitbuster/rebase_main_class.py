@@ -171,9 +171,8 @@ class RebaseMainClass(QWidget):
             Hide all the fake models.
         """
         for checkbox, info in self._checkboxes.items():
-            name, branch_view, model = info
+            branch_view, model = info
             if model.is_fake_model():
-                name.hide()
                 branch_view.hide()
                 checkbox.setEnabled(False)
 
@@ -182,10 +181,9 @@ class RebaseMainClass(QWidget):
             Show all fake models.
         """
         for checkbox, info in self._checkboxes.items():
-            name, branch_view, model = info
+            branch_view, model = info
             if model.is_fake_model():
                 if checkbox.isChecked():
-                    name.show()
                     branch_view.show()
                 checkbox.setEnabled(True)
 
@@ -194,7 +192,7 @@ class RebaseMainClass(QWidget):
             When the toggleModifications button is pressed, change the displayed
             model.
         """
-        for label, branch_view, model in self._checkboxes.values():
+        for branch_view, model in self._checkboxes.values():
             if show_modifications:
                 branch_view.hide_modifications()
                 self.show_fake_models()
