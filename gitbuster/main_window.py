@@ -119,6 +119,8 @@ class MainWindow(QMainWindow):
 
         self.connect(self.rebase_main_class, SIGNAL("newHistAction"),
                      self.add_history_action)
+        self.connect(self.rebase_main_class, SIGNAL("newBranchFromCommit"),
+                     self.create_new_branch_from_model)
 
     def new_remote_branch(self):
         """
