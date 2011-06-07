@@ -48,11 +48,45 @@ class TestsConfirmDialog(TemplateTest):
         checkbox = msgBox._model_checkboxes[0][0]
         self.check(checkbox.text(), "rodrigo", error)
 
+        self.window.undo_history()
+
     def test_inserted_commits_appears_in_dialog(self):
-        pass
+        data_to_drop = self.wallace_model.mimeData(
+                                       [self.wallace_model.createIndex(1, 0),])
+        self.master_model.dropMimeData(data_to_drop, Qt.CopyAction, 0, 0, None)
+
+        to_write_models = [model for model in self.window._models.values()
+                           if model.should_be_written()]
+
+        msgBox = ConfirmDialog(to_write_models)
+
+        error = "Wrong number if displayed modified models."
+        self.check(len(msgBox._model_checkboxes), 1, error)
+
+        error = "The displayed model has the wrong name."
+        checkbox = msgBox._model_checkboxes[0][0]
+        self.check(checkbox.text(), "master", error)
+
+        self.window.undo_history()
 
     def test_remove_commit_appears_in_dialog(self):
-        pass
+        master_view = self.window.rebase_main_class.get_branch_view("master")
+
+        master_view.remove_rows([0,])
+
+        to_write_models = [model for model in self.window._models.values()
+                           if model.should_be_written()]
+
+        msgBox = ConfirmDialog(to_write_models)
+
+        error = "Wrong number if displayed modified models."
+        self.check(len(msgBox._model_checkboxes), 1, error)
+
+        error = "The displayed model has the wrong name."
+        checkbox = msgBox._model_checkboxes[0][0]
+        self.check(checkbox.text(), "master", error)
+
+        self.window.undo_history()
 
     def test_remote_branch_doesnt_appear_in_dialog(self):
         pass
@@ -62,6 +96,8 @@ class TestsConfirmDialog(TemplateTest):
 
     def all_tests(self):
         self.test_modified_name_appears_in_dialog()
+        self.test_inserted_commits_appears_in_dialog()
+        self.test_remove_commit_appears_in_dialog()
 
 if __name__ == "__main__":
     to_test = TestsConfirmDialog()
