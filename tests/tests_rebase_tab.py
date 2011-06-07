@@ -68,6 +68,57 @@ class TestsRebaseTab(TemplateTest):
 #                       if isinstance(widget, ButtonLineEdit)][0]
         # Check the name of the new displayed branch
 
+    def test_dropping_data(self):
+        for branch, model in self.window._models.items():
+            if branch.name == "master":
+                master_model = model
+            elif branch.name == "wallace_branch":
+                wallace_model = model
+
+        message_column = model.get_columns().index("message")
+
+
+        commit_message_to_be_dropped = wallace_model.data(
+                                        model.createIndex(1, message_column),
+                                        Qt.EditRole).toString()
+        before_drop = master_model.data(model.createIndex(0, message_column),
+                                        Qt.EditRole).toString()
+        color_before_drop = master_model.data(
+                                model.createIndex(0, message_column),
+                                Qt.BackgroundColorRole).toPyObject()
+
+        error = "Bad test conditions: the data has already been dropped."
+        assert commit_message_to_be_dropped != before_drop, error
+
+        data_to_drop = wallace_model.mimeData([wallace_model.createIndex(1, 0),])
+        master_model.dropMimeData(data_to_drop, Qt.CopyAction, 0, 0, None)
+
+        after_drop = master_model.data(model.createIndex(0, message_column),
+                                        Qt.EditRole).toString()
+
+        error = "The data wasn't dropped properly before the first row."
+        self.check(after_drop, commit_message_to_be_dropped, error)
+
+        color_after_drop = master_model.data(
+                            model.createIndex(0, message_column),
+                            Qt.BackgroundColorRole).toPyObject()
+        error = "The background color of the dropped commit isn't yellow."
+        self.check(color_after_drop, Qt.yellow, error)
+
+        self.window.undo_history()
+
+        after_undo = master_model.data(model.createIndex(0, message_column),
+                                        Qt.EditRole).toString()
+        error = "After an undo, the dropped data is still here."
+        self.check(after_undo, before_drop, error)
+
+        color_after_undo = master_model.data(
+                            model.createIndex(0, message_column),
+                            Qt.BackgroundColorRole).toPyObject()
+        error = "The background color hasn't change after the undo."
+        self.check(color_after_undo, color_before_drop, error)
+
+
     def get_checked_checkboxes(self):
         checkboxes = self.get_checkboxes()
         return set((checkbox for checkbox in checkboxes
