@@ -118,6 +118,25 @@ class TestsRebaseTab(TemplateTest):
         error = "The background color hasn't change after the undo."
         self.check(color_after_undo, color_before_drop, error)
 
+    def test_create_from_row(self):
+        shown_branches = len(self.get_displayed_branch_widgets())
+
+        for branch, model in self.window._models.items():
+            if branch.name == "master":
+                master_model = model
+            elif branch.name == "wallace_branch":
+                wallace_model = model
+
+        self.window.create_new_branch_from_model(
+                                (master_model.createIndex(0, 0),
+                                 master_model.createIndex(1, 0),
+                                 master_model.createIndex(2, 0)),
+                                "test_branch"
+        )
+
+        after_shown_branches = len(self.get_displayed_branch_widgets())
+        error = "After creating a branch from a row, wrong number of branch displayed "
+        self.check(after_shown_branches, shown_branches + 1, error)
 
     def get_checked_checkboxes(self):
         checkboxes = self.get_checkboxes()
@@ -152,6 +171,7 @@ class TestsRebaseTab(TemplateTest):
         self.test_only_one_branch_is_displayed()
         self.test_checking_one_checkbox_displays_branch()
         self.test_dropping_data()
+        self.test_create_from_row()
 
 if __name__ == "__main__":
     to_test = TestsRebaseTab()
