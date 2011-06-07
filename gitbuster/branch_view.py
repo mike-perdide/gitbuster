@@ -393,6 +393,7 @@ class BranchView(QWidget):
         table_view = self._table_view
 
         table_view.setModel(model)
+        self._model = model
 
         show_fields = ("hexsha", "message")
         for column, field in enumerate(model.get_columns()):
