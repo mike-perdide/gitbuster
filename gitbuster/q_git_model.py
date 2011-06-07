@@ -108,6 +108,7 @@ class QGitModel(QAbstractTableModel):
 
         if self.git_model.is_commit_pushed(commit):
             return QVariant(QColor(Qt.lightGray))
+        return QVariant()
 
     def _data_foreground(self, index, field_name):
         if "filters" in self._enabled_options and self.filter_score(index):
