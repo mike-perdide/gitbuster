@@ -1,5 +1,6 @@
 from tests_q_git_model import TestsQGitModel
 from tests_rebase_tab import TestsRebaseTab
+from tests_confirm_dialog import TestsConfirmDialog
 
 to_test = TestsQGitModel()
 to_test.setup_class()
@@ -20,5 +21,10 @@ to_test.test_filter_author()
 
 
 to_test = TestsRebaseTab()
+to_test.setup_class()
+to_test.all_tests()
+
+
+to_test = TestsConfirmDialog()
 to_test.setup_class()
 to_test.all_tests()
