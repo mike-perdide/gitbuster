@@ -61,27 +61,32 @@ class MainWindow(QMainWindow):
 
         self.connect_slots()
 
-    def create_new_branch_from_model(self, indexes):
+    def create_new_branch_from_model(self, indexes, name=False):
         """
             This method creates a new branch from a given set of indexes.
             The first row of the index set will be used.
         """
-        msgBox = BranchNameDialog(self)
-        ret = msgBox.exec_()
+        if not name:
+            msgBox = BranchNameDialog(self)
+            ret = msgBox.exec_()
 
-        if ret:
-            new_name = msgBox.get_new_name()
+            if ret:
+                new_name = msgBox.get_new_name()
+            else:
+                return
+        else:
+            new_name=name
 
-            from_model = indexes[0].model()
+        from_model = indexes[0].model()
 
-            selected_rows = set([index.row() for index in indexes])
-            from_row = min(selected_rows)
+        selected_rows = set([index.row() for index in indexes])
+        from_row = min(selected_rows)
 
-            model = QEditableGitModel(self._models, directory=self._directory,
-                                      fake_branch_name=new_name,
-                                      from_model_row=(from_model, from_row),
-                                      parent=self)
-            self.add_new_model(model)
+        model = QEditableGitModel(self._models, directory=self._directory,
+                                  fake_branch_name=new_name,
+                                  from_model_row=(from_model, from_row),
+                                  parent=self)
+        self.add_new_model(model)
 
     def connect_slots(self):
         """
