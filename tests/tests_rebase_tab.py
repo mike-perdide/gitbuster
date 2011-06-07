@@ -146,10 +146,14 @@ class TestsRebaseTab(TemplateTest):
 
         return displayed_widgets
 
+    def all_tests(self):
+        self.test_all_checkboxes_are_displayed()
+        self.test_only_one_checkbox_is_checked()
+        self.test_only_one_branch_is_displayed()
+        self.test_checking_one_checkbox_displays_branch()
+        self.test_dropping_data()
+
 if __name__ == "__main__":
     to_test = TestsRebaseTab()
     to_test.setup_class()
-    to_test.test_all_checkboxes_are_displayed()
-    to_test.test_only_one_checkbox_is_checked()
-    to_test.test_only_one_branch_is_displayed()
-    to_test.test_checking_one_checkbox_displays_branch()
+    to_test.all_tests()

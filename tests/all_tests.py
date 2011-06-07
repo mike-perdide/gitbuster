@@ -21,7 +21,4 @@ to_test.test_filter_author()
 
 to_test = TestsRebaseTab()
 to_test.setup_class()
-to_test.test_all_checkboxes_are_displayed()
-to_test.test_only_one_checkbox_is_checked()
-to_test.test_only_one_branch_is_displayed()
-to_test.test_checking_one_checkbox_displays_branch()
+to_test.all_tests()
