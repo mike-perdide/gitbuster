@@ -159,6 +159,13 @@ class MainWindow(QMainWindow):
         self.filter_main_class.add_new_model(model)
         self.rebase_main_class.add_new_model(model)
 
+    def remove_model(self, model):
+        """
+            This remove a previously displayed model.
+        """
+        self.filter_main_class.remove_model(model)
+        self.rebase_main_class.remove_model(model)
+
     def reset_history(self):
         """
             Reset the history (for instance when the apply is finished
@@ -390,10 +397,13 @@ class MainWindow(QMainWindow):
         for model, success in self.progress_thread.get_write_success().items():
             if success and model.is_fake_model():
                 # If the applied models were fake, rebuild them.
-                model.populate()
-                rebuild_fakes.append(model)
-                QObject.connect(model, SIGNAL("newHistoryEvent"),
-                                self.new_history_event)
+                model_name = model.name_to_display()
+                new_model = QEditableGitModel(self._models,
+                                              directory=self._directory,
+                                              parent=self)
+                self.remove_model(model)
+                self.add_new_model(new_model)
+
             elif not success:
                 model.reset()
                 conflicting_index = model.get_conflicting_index()
@@ -404,7 +414,6 @@ class MainWindow(QMainWindow):
         if True in self.progress_thread.get_write_success().values():
             # Reset history
             self.reset_history()
-            self.rebase_main_class.apply_finished(rebuild_fakes)
 
     def show_progress_bar(self):
         """

@@ -120,6 +120,18 @@ class RebaseMainClass(QWidget):
                     if self._checkboxes[checkbox][1] == model][0]
         checkbox.setCheckState(Qt.Checked)
 
+    def remove_model(self, model):
+        """
+            Remove a model from this tab.
+        """
+        checkbox = [checkbox for checkbox in self._checkboxes
+                    if self._checkboxes[checkbox][1] == model][0]
+
+        branch_view, model = self._checkboxes[checkbox]
+
+        checkbox.close()
+        branch_view.close()
+
     def focused_branch_view(self):
         """
             Returns the branch_view that has the focus.
@@ -218,18 +230,6 @@ class RebaseMainClass(QWidget):
             # Applying with None will make the q_editable_model re-use the
             # previous parameters for log and force options.
             self._parent.apply_models([model,], None, None)
-
-    def apply_finished(self, rebuild_fakes):
-        """
-            This method is called when the apply is finished.
-            Some fake models may have been rebuild, we have to reset them on
-            the views.
-        """
-        for view, model in self._checkboxes.values():
-            view.reset_displayed_name()
-
-            if model in rebuild_fakes:
-                view.set_model(model)
 
     def get_copy_data(self):
         """

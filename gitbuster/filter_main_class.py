@@ -126,6 +126,14 @@ class FilterMainClass():
         branch = model.get_current_branch() or model.get_remote_ref()
         self.gui.currentBranchComboBox.addItem("%s" % branch.name)
 
+    def remove_model(self, model):
+        """
+            Remove the model from this tab.
+        """
+        branch = model.get_current_branch() or model.get_remote_ref()
+        index = self.gui.currentBranchComboBox.findText(branch.name)
+        self.gui.currentBranchComboBox.removeItem(index)
+
     def connect_slots(self):
         """
             Connect the slots to the objects.
