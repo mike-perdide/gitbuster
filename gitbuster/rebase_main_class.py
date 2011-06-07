@@ -242,3 +242,12 @@ class RebaseMainClass(QWidget):
             Sets the copied data with the given mimeData.
         """
         self._copy_data = data
+
+    def get_branch_view(self, branch_name):
+        """
+            This is intended for test purposes. This method returns the branch
+            view widget related to the given branch name.
+        """
+        for branch_view, model in self._checkboxes.values():
+            if model.name_to_display() == branch_name:
+                return branch_view
