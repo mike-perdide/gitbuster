@@ -147,10 +147,10 @@ class QEditableGitModel(QGitModel):
         modifications = self.git_model.get_modifications()
         if conflicting_commit is not None and commit == conflicting_commit:
             return QVariant(QColor(Qt.red))
-        elif self.git_model.is_modified(index):
+        elif self.git_model.is_modified(index) or self.is_fake_model():
             return QVariant(QColor(Qt.yellow))
-        else:
-            return QGitModel._data_background(self, index, field_name)
+
+        return QGitModel._data_background(self, index, field_name)
 
     def flags(self, index):
         """
