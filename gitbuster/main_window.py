@@ -86,6 +86,7 @@ class MainWindow(QMainWindow):
                                   fake_branch_name=new_name,
                                   from_model_row=(from_model, from_row),
                                   parent=self)
+        model.populate()
         self.add_new_model(model)
 
     def connect_slots(self):

@@ -35,9 +35,17 @@ class QEditableGitModel(QGitModel):
                            fake_branch_name=fake_branch_name,
                            parent=parent)
 
+        if from_model_row:
+            from_model, from_row = from_model_row
+            git_model = from_model.get_orig_git_model()
+            from_commits = git_model.get_commits()[from_row:]
+        else:
+            from_commits = False
+
         # Overwrite the non editable git_model set in QGitModel.__init__
         self.git_model = EditableGitModel(directory=directory,
-                                          fake_branch_name=fake_branch_name)
+                                          fake_branch_name=fake_branch_name,
+                                          from_commits=from_commits)
 
         self._enabled_options = []
         self._all_models_dict = models_dict
@@ -51,13 +59,6 @@ class QEditableGitModel(QGitModel):
             self.orig_q_git_model = QGitModel(self,
                                         parent=parent,
                                         model=self.git_model.get_orig_model())
-        else:
-            from_model, from_row = from_model_row
-            action = Qt.CopyAction
-            for row in xrange(from_model.rowCount() - 1, from_row - 1, -1):
-                copied_data = from_model.mimeData((self.createIndex(row, 0),))
-                self.dropMimeData(copied_data, action, 0, 0, None,
-                                  filling_empty_model=True)
 
     def populate(self):
         """
