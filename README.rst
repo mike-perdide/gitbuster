@@ -105,3 +105,11 @@ If you find any bug, don't hesitate to report it and/or send patches:
 
 Please mention the version you're using, or the tip of the repository if you're using the development version, and the steps to reproduce.
 Your help will be greatly appreciated.
+
+-------
+Warning
+-------
+
+Cherry-picking and merging are two different workflows. Cherry-picking merge commits and merge subtrees is not implemented yet.
+Moreover, rewriting an history that contains merge commits will discard them and will flat out the commit tree (same behaviour as git rebase -i).
+This is more a lack of feature than a bug, but gitbuster will handle merge commits in a near future (I'm working on it, but if you have suggestions, I'd be happy to hear them).
