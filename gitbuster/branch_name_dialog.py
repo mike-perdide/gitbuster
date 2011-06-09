@@ -16,8 +16,8 @@ WHITE = QString("background-color: white")
 
 class BranchNameDialog(QDialog):
 
-    def __init__(self, models):
-        QDialog.__init__(self)
+    def __init__(self, parent):
+        QDialog.__init__(self, parent)
 
         self._ui = Ui_Dialog()
         self._ui.setupUi(self)
