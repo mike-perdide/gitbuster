@@ -11,7 +11,7 @@ Frontend for git cherry-pick/git rebase:
 
 - graphical resolution of merge conflicts by displaying:
     * the original content of the file
-    * the patch that was meant to be applied bu failed
+    * the patch that was meant to be applied but failed
     * the unmerged content of the file for you to edit if necessary
     * a set of resolution choices (delete the file, add the file, add the file with custom content)
 
