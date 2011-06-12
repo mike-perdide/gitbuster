@@ -19,12 +19,12 @@ def run(command):
 
 def get_commit_from_message(message):
     return [commit for commit in commits
-            if commit.message.strip() == message][0]
+            if commit.message.strip().startswith(message)][0]
 
 init_commit = get_commit_from_message("Initial commit")
-commit_A = get_commit_from_message("A")
-commit_B = get_commit_from_message("B")
-commit_C = get_commit_from_message("C")
+commit_A = get_commit_from_message("A (1')")
+commit_B = get_commit_from_message("B (2')")
+commit_C = get_commit_from_message("C (3')")
 
 commit_1 = get_commit_from_message("1")
 commit_2 = get_commit_from_message("2")
@@ -34,7 +34,7 @@ commit_T = get_commit_from_message("T")
 commit_U = get_commit_from_message("U")
 commit_V = get_commit_from_message("V")
 
-mergeABC = get_commit_from_message("Merge ABC")
+mergeABC = get_commit_from_message("Merge ABC (conflicts)")
 mergeABC123 = get_commit_from_message("Merge ABC123")
 
 commit_X = get_commit_from_message("X")
@@ -78,7 +78,7 @@ should_be_updated = all_should_be_updated(commit_X)
 print len(should_be_updated)
 
 def update_commit(commit):
-    print "Updating", commit.message.strip()
+    print "Updating", commit.message.strip().split('\n')[0]
     if len(commit.parents) != 1:
         # This is a merge
         for parent in commit.parents:
@@ -102,7 +102,7 @@ def ref_update(commit):
         run("git cherry-pick -n %s" % commit.hexsha)
     else:
         # This is a merge
-        run("git cherry-pick -n -p 0 %s" % commit.hexsha)
+        run("git cherry-pick -n -m 1 %s" % commit.hexsha)
 
     new_tree = run("git write-tree")
 
