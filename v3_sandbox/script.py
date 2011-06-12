@@ -87,21 +87,23 @@ def update_commit(commit):
                 # rewritten yet => skip for now
                 print "Not ready to update the merge commit yet."
                 return
-        merge_update(commit)
+        ref_update(commit)
     else:
-        simple_ref_update(commit)
+        ref_update(commit)
 
-def merge_update(commit):
-    print "Ready to update the merge."
-
-def simple_ref_update(commit):
+def ref_update(commit):
     _parent = commit.parents[0]
-    if _parent in updated_refs:
-        _parent_sha = updated_refs[_parent]
-    else:
-        _parent_sha = _parent.hexsha
+    _parent_sha = updated_refs[_parent]
+
     run("git checkout -f %s" % _parent_sha)
-    run("git cherry-pick -n %s" % commit.hexsha)
+
+    if len(commit.parents) == 1:
+        # This is not a merge
+        run("git cherry-pick -n %s" % commit.hexsha)
+    else:
+        # This is a merge
+        run("git cherry-pick -n -p 0 %s" % commit.hexsha)
+
     new_tree = run("git write-tree")
 
     parent_string = ""
@@ -117,7 +119,6 @@ def simple_ref_update(commit):
     new_sha = run("git commit-tree %s %s < tmp_message" % (new_tree, parent_string))
 
     updated_refs[commit] = new_sha
-    repo.git.checkout(new_sha)
 
     for c in children_commits_to_rewrite(commit):
         update_commit(c)
@@ -128,3 +129,4 @@ for commit in children_commits_to_rewrite(commit_X):
 
 #pprint([(commit, commit.message, updated_refs[commit])
 #        for commit in updated_refs])
+repo.git.checkout(updated_refs[mergeABC123])
