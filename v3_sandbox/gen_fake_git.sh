@@ -1,11 +1,11 @@
 # master
 #   *           Merge ABC123
 #   |\
-#   | *         Merge ABC
+#   | *         Merge ABC (conflicts)
 #   | |\
-#   | | *       A
-#   | | *       B
-#   | | *       C
+#   | | *       A (1')
+#   | | *       B (2')
+#   | | *       C (3')
 #   | * |       1
 #   | * |       2
 #   | * |       3
@@ -67,20 +67,27 @@ git commit -m "1"
 # Filling subtree ABC
 git checkout ABC
 
-echo "C" > C
-git add C
-git commit -m "C"
+echo "C" > 3
+git add 3
+git commit -m "C (3')"
 
-echo "B" > B
-git add B
-git commit -m "B"
+echo "B" > 2
+git add 2
+git commit -m "B (2')"
 
-echo "A" > A
-git add A
-git commit -m "A"
+echo "A" > 1
+git add 1
+git commit -m "A (1')"
 
 git checkout 123
-git merge ABC -m "Merge ABC"
+git merge ABC -m "Merge ABC (conflicts)"
+echo "C" > 3
+git add 3
+echo "2" > 2
+git add 2
+echo "A\n1" > 1
+git add 1
+git commit -a -m "$(cat .git/MERGE_MSG)"
 
 git checkout master
 git merge 123 -m "Merge ABC123"
