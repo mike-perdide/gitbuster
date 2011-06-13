@@ -40,13 +40,15 @@ class ModelGrapher:
         awaiting_closure = {}
         column = 0
         commit = None
+        message_column = self._model.get_columns().index("message")
         for coord in preprocessed:
             if coord:
                 if coord[0] < column:
                     awaiting_closure[column] = commit
                 column = coord[0]
                 commit = coord[1]
-                message = coord[1].message
+                row = self._model.row_of(commit)
+                message = self._model.data(Index(row, message_column))
                 display_string = "| " * (column) + "o"
 
                 new_awaiting_closure = {}
