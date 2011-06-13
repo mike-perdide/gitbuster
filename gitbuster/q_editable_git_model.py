@@ -285,14 +285,14 @@ class QEditableGitModel(QGitModel):
                              data_to_be_inserted[(insert_row, column)])
             # Set the parent
             self.setData(self.createIndex(insert_row, parents_index),
-                         new_parent)
+                         (new_parent,))
             new_parent = self.git_model.get_commits()[insert_row]
 
         if insert_row > 0:
             insert_row -= 1
             # There is one commit left which we should update the parent
             self.setData(self.createIndex(insert_row, parents_index),
-                         new_parent)
+                         (new_parent,))
 
         self.reset()
 
