@@ -9,7 +9,10 @@ class ModelGrapher:
         self._parents_index = model.get_columns().index("parents")
 
     def preprocess_commits(self, model):
-        head_commit = model.get_commits()[0]
+        row = 0
+        while model.is_deleted(Index(row, 0)):
+            row += 1
+        head_commit = model.get_commits()[row]
 
         preprocessed = []
         self.prep_commit(head_commit, preprocessed)
