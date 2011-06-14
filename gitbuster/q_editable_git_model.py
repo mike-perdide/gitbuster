@@ -102,6 +102,22 @@ class QEditableGitModel(QGitModel):
             position.
         """
 #        self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
+        parents_index = self.get_columns().index("parents")
+
+        # Setting the parent of the child commit
+        parents = self.data(self.createIndex(position, parents_index),
+                            Qt.EditRole)
+
+        to_update_row = position - 1
+        while to_update_row > 0 and \
+              self.is_deleted(self.createIndex(to_update_row, 0)):
+            print "row", to_update_row, "is deleted"
+            to_update_row -= 1
+
+        if to_update_row >= 0:
+            self.setData(self.createIndex(to_update_row, parents_index),
+                         parents)
+
         self.git_model.remove_rows(position, rows)
 #        self.endRemoveRows()
         self.reset()
