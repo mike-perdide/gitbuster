@@ -76,7 +76,6 @@ class RebaseMainClass(QWidget):
                                                        position%2, 1, 1)
 
         branch_view = BranchView(self, model, checkbox, self._models)
-        branch_view.set_model(model)
         self._ui.viewLayout.addWidget(branch_view, 0, self._number_of_models)
 
         signals = "activated(const QModelIndex&)", "clicked(const QModelIndex&)"
