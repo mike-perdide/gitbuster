@@ -12,7 +12,8 @@ from PyQt4.QtCore import QObject, Qt, SIGNAL
 connect = QObject.connect
 
 from gitbuster.branch_view_ui import Ui_BranchView
-from gitbuster.util import SetNameAction, DummyRemoveAction
+from gitbuster.util import SetNameAction, DummyRemoveAction, \
+                           custom_resize_columns_to_contents
 
 def to_hide_subset(model, row):
     columns = model.get_columns()
@@ -400,7 +401,7 @@ class BranchView(QWidget):
             if not field in show_fields:
                 table_view.hideColumn(column)
 
-        table_view.resizeColumnsToContents()
+        custom_resize_columns_to_contents(table_view)
         table_view.horizontalHeader().setStretchLastSection(True)
         table_view.setSelectionMode(table_view.ExtendedSelection)
         table_view.setDragDropMode(table_view.DragDrop)

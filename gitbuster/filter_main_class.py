@@ -10,7 +10,7 @@ from PyQt4.QtGui import QApplication, QCheckBox, QSizePolicy, QSpacerItem
 
 from gitbuster.q_git_delegate import QGitDelegate
 from gitbuster.q_git_model import NAMES
-from gitbuster.util import _connect_button
+from gitbuster.util import _connect_button, custom_resize_columns_to_contents
 
 from datetime import datetime
 
@@ -103,8 +103,8 @@ class FilterMainClass():
         self.gui.tableView.setModel(self._model)
         self.gui.tableView.verticalHeader().hide()
         self.gui.tableView.setItemDelegate(QGitDelegate(self.gui.tableView))
+        custom_resize_columns_to_contents(self.gui.tableView)
 
-        self.gui.tableView.resizeColumnsToContents()
         self.gui.tableView.horizontalHeader().setStretchLastSection(True)
 
         self.create_checkboxes()
@@ -204,10 +204,10 @@ class FilterMainClass():
         spacer_item = QSpacerItem(40, 20, QSizePolicy.Expanding,
                                  QSizePolicy.Minimum)
         self.gui.checkboxLayout.addItem(spacer_item, 0, count, 1, 1)
-        self.refresh_checkboxes()
-        self.refresh_display_options()
+        self.refresh_checkboxes(resize=False)
+        self.refresh_display_options(resize=False)
 
-    def refresh_checkboxes(self):
+    def refresh_checkboxes(self, resize=True):
         """
             When a "column checkbox" is checked or unchecked, we change the
             view's displayed columns model so that only the selected columns
@@ -222,10 +222,11 @@ class FilterMainClass():
             else:
                 self.gui.tableView.hideColumn(column_index)
 
-        self.gui.tableView.resizeColumnsToContents()
-        self.gui.tableView.horizontalHeader().setStretchLastSection(True)
+        if resize:
+            custom_resize_columns_to_contents(self.gui.tableView)
+            self.gui.tableView.horizontalHeader().setStretchLastSection(True)
 
-    def refresh_display_options(self):
+    def refresh_display_options(self, resize=True):
         """
             When a "display option" is checked or unchecked, we set the display
             options on the model.
@@ -237,8 +238,9 @@ class FilterMainClass():
             else:
                 model.disable_option(option_name)
 
-        self.gui.tableView.resizeColumnsToContents()
-        self.gui.tableView.horizontalHeader().setStretchLastSection(True)
+        if resize:
+            custom_resize_columns_to_contents(self.gui.tableView)
+            self.gui.tableView.horizontalHeader().setStretchLastSection(True)
 
     def reorder_pushed(self):
         """
