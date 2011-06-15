@@ -8,8 +8,8 @@
 from os.path import exists, join
 
 from PyQt4.QtCore import QDir, QObject, QSettings, QVariant, SIGNAL, QUrl,\
-        QStringList, QString
-from PyQt4.QtGui import QFileDialog
+        QStringList, QString, Qt
+from PyQt4.QtGui import QFileDialog, QFontMetrics
 
 
 def _connect_button(button, function):
@@ -75,6 +75,38 @@ def select_git_directory():
     settings.sync()
 
     return unicode(filepath)
+
+
+def custom_resize_columns_to_contents(view):
+
+    model = view.model()
+    font = view.font()
+
+    MAGIC_NUMBERS = {"hexsha": 1.4,
+                     "authored_date" : 1.1,
+                     "committed_date" : 1.1}
+
+    for column, field in enumerate(model.get_columns()):
+        # Use QFontMetrics to find out the proper size.
+        if "name" in field:
+            width_set = []
+            for row in xrange(30):
+                item = model.data(model.createIndex(row, column), Qt.DisplayRole)
+                metrics = QFontMetrics(font)
+                width = metrics.width(item.toString())
+                width_set.append(width)
+            width = max(width_set)
+        else:
+            item = model.data(model.createIndex(0, column), Qt.DisplayRole)
+            metrics = QFontMetrics(font)
+            width = metrics.width(item.toString())
+
+        if field in MAGIC_NUMBERS:
+            magic = MAGIC_NUMBERS[field]
+        else:
+            magic = 1.1
+
+        view.setColumnWidth(column, int(width * magic))
 
 
 class SetNameAction:
