@@ -6,6 +6,8 @@
 #
 
 from os.path import exists, join
+from pprint import pprint
+import time
 
 from PyQt4.QtCore import QDir, QObject, QSettings, QVariant, SIGNAL, QUrl,\
         QStringList, QString, Qt
@@ -144,3 +146,22 @@ class DummyRemoveAction:
 
     def redo(self):
         self._view.hideRow(self._row)
+
+
+class Timer:
+    records = {}
+
+    def __init__(self, record=None):
+        if record is None:
+            self.render_records()
+        self._record = record
+        self._start_time = time.time()
+
+    def stop(self):
+        if not self._record in self.records:
+            self.records[self._record] = []
+        self.records[self._record].append("%.4f" %
+                                          (time.time() - self._start_time))
+
+    def render_records(self):
+        pprint(self.records)
