@@ -211,13 +211,13 @@ class BranchView(QWidget):
         self._parent = parent
 
         self._table_view = QTableView(parent)
-        self._table_view.setModel(model)
 
         self._name_widget = ButtonLineEdit(model, checkbox, all_models, self)
         self._ui.layout.addWidget(self._name_widget, 0, 0)
         self._ui.layout.addWidget(self._table_view, 1, 0)
 
         self._hidden_rows_from_models = []
+        self.set_model(model)
 
         self.connect_signals()
 
