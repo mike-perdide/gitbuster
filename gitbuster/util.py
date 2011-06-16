@@ -106,7 +106,7 @@ def custom_resize_columns_to_contents(view):
         if field in MAGIC_NUMBERS:
             magic = MAGIC_NUMBERS[field]
         else:
-            magic = 1.1
+            magic = 1.2
 
         view.setColumnWidth(column, int(width * magic))
 
