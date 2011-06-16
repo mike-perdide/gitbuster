@@ -6,7 +6,7 @@
 #
 
 from PyQt4.QtCore import QObject, SIGNAL
-from PyQt4.QtGui import QApplication, QKeySequence, QMainWindow, QMessageBox
+from PyQt4.QtGui import QKeySequence, QMainWindow, QMessageBox
 from gitbuster.confirm_dialog import ConfirmDialog
 from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.progress_thread import ProgressThread
@@ -75,7 +75,7 @@ class MainWindow(QMainWindow):
             else:
                 return
         else:
-            new_name=name
+            new_name = name
 
         from_model = indexes[0].model()
 
@@ -183,7 +183,7 @@ class MainWindow(QMainWindow):
         """
         # This first history event is None, the history event for a given state
         # is given by self._history_state + 1
-        self._history = [None,]
+        self._history = [None, ]
         # The first state is 0
         self._history_state = 0
 
@@ -402,12 +402,9 @@ class MainWindow(QMainWindow):
         self._applying = False
         self._ui.applyButton.setEnabled(True)
 
-
-        rebuild_fakes = []
         for model, success in self.progress_thread.get_write_success().items():
             if success and model.is_fake_model():
                 # If the applied models were fake, rebuild them.
-                model_name = model.name_to_display()
                 new_model = QEditableGitModel(self._models,
                                               directory=self._directory,
                                               parent=self)

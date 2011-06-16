@@ -76,7 +76,7 @@ class RebaseMainClass(QWidget):
         checkbox.setText(QApplication.translate("MainWindow",
                                             branch.name,
                                             None, QApplication.UnicodeUTF8))
-        self._ui.branchCheckboxLayout.addWidget(checkbox, position/2,
+        self._ui.branchCheckboxLayout.addWidget(checkbox, position / 2,
                                                        position%2, 1, 1)
 
         branch_view = BranchView(self, model, checkbox, self._models)
@@ -161,13 +161,12 @@ class RebaseMainClass(QWidget):
         row = index.row()
 
         labels = {
-            'hexsha' :          self._ui.hexshaHolderLabel,
-            'authored_date' :   self._ui.authoredDateHolderLabel,
-            'committed_date' :  self._ui.commitDateHolderLabel,
-            'author_name' :     self._ui.authorHolderLabel,
-            'committer_name' :  self._ui.committerHolderLabel,
-            'message' :         self._ui.messageHolderTextEdit
-        }
+            'hexsha':           self._ui.hexshaHolderLabel,
+            'authored_date':    self._ui.authoredDateHolderLabel,
+            'committed_date':   self._ui.commitDateHolderLabel,
+            'author_name':      self._ui.authorHolderLabel,
+            'committer_name':   self._ui.committerHolderLabel,
+            'message':          self._ui.messageHolderTextEdit}
 
         for field in labels:
             column = model.get_columns().index(field)
