@@ -38,6 +38,9 @@ class RebaseMainClass(QWidget):
                         SIGNAL("clicked()"),
                         self.conflicts)
 
+        shortcut = QShortcut(QKeySequence(QKeySequence.Delete), self)
+        QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
+
     def reset_interface(self, models):
         """
             Resets the rebase tab (usually after a directory change).
@@ -130,6 +133,13 @@ class RebaseMainClass(QWidget):
 
         checkbox.close()
         branch_view.close()
+
+    def remove_rows(self):
+        """
+            This forwards the remove row command to the focused branch view.
+        """
+        if self.focused_branch_view():
+            self.focused_branch_view().remove_rows()
 
     def focused_branch_view(self):
         """
