@@ -20,6 +20,7 @@ class RebaseMainClass(QWidget):
 
     def __init__(self, parent, directory, models):
         QWidget.__init__(self, parent)
+        self.hide()
 
         self._parent = parent
         self._models = None
