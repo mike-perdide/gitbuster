@@ -9,7 +9,7 @@ from PyQt4.QtGui import QApplication, QMessageBox
 from gitbuster.main_window import MainWindow
 from gitbuster.util import is_top_git_directory, select_git_directory
 from gitbuster.conflicts_dialog import ConflictsDialog
-from gfbi_core.git_rebase_process import get_unmerged_files, apply_solutions
+from gfbi_core.util import get_unmerged_files, apply_solutions
 import signal
 import sys
 import os
@@ -34,8 +34,10 @@ def main():
     if os.path.exists(os.path.join(filepath, ".git/rebase-merge")):
         # Special conflict mode
         os.chdir(filepath)
-        orig_hexsha = open(".git/ORIG_HEAD").read().strip()
-        unmerged_files = get_unmerged_files(orig_hexsha)
+        orig_hexsha = open(".git/rebase-merge/head").read().strip()
+        conflict_hexsha = open(".git/rebase-merge/stopped-sha").read().strip()
+        unmerged_files = get_unmerged_files(conflict_hexsha, orig_hexsha,
+                                            filepath)
         conflicts_dialog = ConflictsDialog(unmerged_files)
         ret = conflicts_dialog.exec_()
         if ret:
