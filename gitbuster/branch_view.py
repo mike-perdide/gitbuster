@@ -322,12 +322,12 @@ class BranchView(QWidget):
         elif chosen_action == paste_after_action:
             drop_after = max(selected_rows) + 1
             table_view.model().dropMimeData(copy_data, Qt.CopyAction,
-                                            drop_after, 0, self.parent)
+                                            drop_after, 0, self.parent())
 
         elif chosen_action == paste_before_action:
             drop_before = min(selected_rows)
             table_view.model().dropMimeData(copy_data, Qt.CopyAction,
-                                            drop_before, 0, self.parent)
+                                            drop_before, 0, self.parent())
 
         elif chosen_action == create_branch_action:
             self.emit(SIGNAL("newBranchFromCommit"), indexes)
@@ -369,7 +369,7 @@ class BranchView(QWidget):
 
             for dummy_row in deleted_dummies:
                 # Special behaviour for inserted commits: hide them
-                self.parent.add_history_action(DummyRemoveAction(dummy_row,
+                self.parent().add_history_action(DummyRemoveAction(dummy_row,
                                                                  table_view))
                 table_view.hideRow(dummy_row)
 
