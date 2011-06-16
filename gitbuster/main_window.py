@@ -117,7 +117,8 @@ class MainWindow(QMainWindow):
             (gui.actionShow_modifications, None, self.show_modifications),
             (gui.actionHide_modifications, None, self.hide_modifications),
             (gui.actionNew_branch, None, self.new_remote_branch),
-            (gui.actionApply, None, self.apply))
+            (gui.actionApply, None, self.apply),
+            (gui.actionAbout_Gitbuster, None, self.about_box))
         for action, shortcut, slot in action_shortcuts:
             if shortcut:
                 action.setShortcut(shortcut)
@@ -127,6 +128,15 @@ class MainWindow(QMainWindow):
                      self.add_history_action)
         self.connect(self.rebase_main_class, SIGNAL("newBranchFromCommit"),
                      self.create_new_branch_from_model)
+
+    def about_box(self):
+        """
+            Displays an about box with information on Gitbuster.
+        """
+        title = "About Gitbuster"
+        text = "(c) 2010-2011 Julien Miotte <mike dot perdide at gmail dot " + \
+               "com>\nWritten in Python, using PyQt4 and GitPython."
+        QMessageBox.information(self, title, text, QMessageBox.Ok)
 
     def new_remote_branch(self):
         """

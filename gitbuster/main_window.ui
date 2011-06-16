@@ -1086,8 +1086,15 @@
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
    </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionAbout_Gitbuster"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuAbout"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -1177,6 +1184,11 @@
   <action name="actionNew_branch">
    <property name="text">
     <string>New remote branch</string>
+   </property>
+  </action>
+  <action name="actionAbout_Gitbuster">
+   <property name="text">
+    <string>About Gitbuster</string>
    </property>
   </action>
  </widget>
