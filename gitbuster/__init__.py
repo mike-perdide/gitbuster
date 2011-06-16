@@ -34,7 +34,8 @@ def main():
     if os.path.exists(os.path.join(filepath, ".git/rebase-merge")):
         # Special conflict mode
         os.chdir(filepath)
-        unmerged_files = get_unmerged_files()
+        orig_hexsha = open(".git/ORIG_HEAD").read().strip()
+        unmerged_files = get_unmerged_files(orig_hexsha)
         conflicts_dialog = ConflictsDialog(unmerged_files)
         ret = conflicts_dialog.exec_()
         if ret:
