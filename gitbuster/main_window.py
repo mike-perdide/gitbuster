@@ -89,6 +89,8 @@ class MainWindow(QMainWindow):
         model.populate()
         self.add_new_model(model)
 
+        self.enable_modifications_buttons(True)
+
     def connect_slots(self):
         """
             Connect the slots to the objects.
@@ -247,7 +249,9 @@ class MainWindow(QMainWindow):
 
         self._history_state -= 1
 
-        if self._history_state == 0:
+        we_have_fake_models = [model for model in self._models.values()
+                               if model.is_fake_model()]
+        if self._history_state == 0 and not we_have_fake_models:
             self.enable_modifications_buttons(False)
 
     def redo_history(self):
