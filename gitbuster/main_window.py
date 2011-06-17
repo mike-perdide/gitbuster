@@ -413,12 +413,19 @@ class MainWindow(QMainWindow):
         self._applying = False
         self._ui.applyButton.setEnabled(True)
 
+        a_repo = Repo(self._directory)
+
         for model, success in self.progress_thread.get_write_success().items():
             if success and model.is_fake_model():
                 # If the applied models were fake, rebuild them.
+                branch_name = model.name_to_display()
+                new_branch = [branch for branch in a_repo.branches
+                              if branch.name == branch_name][0]
                 new_model = QEditableGitModel(self._models,
                                               directory=self._directory,
                                               parent=self)
+                new_model.set_current_branch(new_branch)
+                new_model.populate()
                 self.remove_model(model)
                 self.add_new_model(new_model)
 
