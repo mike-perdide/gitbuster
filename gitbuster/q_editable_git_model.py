@@ -59,6 +59,8 @@ class QEditableGitModel(QGitModel):
             self.orig_q_git_model = QGitModel(self,
                                         parent=parent,
                                         model=self.git_model.get_orig_model())
+        else:
+            self.orig_q_git_model = None
 
     def populate(self):
         """
