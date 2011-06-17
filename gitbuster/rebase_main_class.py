@@ -215,11 +215,11 @@ class RebaseMainClass(QWidget):
         """
         for branch_view, model in self._checkboxes.values():
             if show_modifications:
-                branch_view.hide_modifications()
+                branch_view.show_modifications()
                 self.show_fake_models()
             else:
                 self.hide_fake_models()
-                branch_view.show_modifications()
+                branch_view.hide_modifications()
 
     def conflicts(self):
         """

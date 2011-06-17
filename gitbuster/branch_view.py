@@ -66,6 +66,7 @@ class ButtonLineEdit(QWidget):
         self.box.addWidget(self.valid_button, 1, 2, 1, 1)
 
         #initial state of the widget
+        self._read_only = False
         self._readmode()
 
         #initial load of data
@@ -153,6 +154,7 @@ class ButtonLineEdit(QWidget):
         """
         menu = QMenu(self)
         edit_action = menu.addAction("edit")
+        edit_action.setEnabled(not self._read_only)
 
         hide_menu = QMenu("Hide commit from", self)
         hide_choices = {}
@@ -192,6 +194,26 @@ class ButtonLineEdit(QWidget):
         """
         branch_name = self._model.name_to_display()
         self.current_name_label.setText(branch_name)
+
+    def hide_modifications(self):
+        """
+            Hide the modifications made to the name.
+        """
+        self._read_only = True
+        old_name = self._model.get_old_branch_name()
+        self.checkbox.setText(old_name)
+        self.current_name_label.setText(old_name)
+
+    def show_modifications(self):
+        """
+            Show the modifications made to the name.
+        """
+        self._read_only = False
+        new_name = self.new_name
+        old_name = self._model.get_old_branch_name()
+        if old_name != new_name:
+            self.checkbox.setText(new_name)
+            self.current_name_label.setText(new_name + " (new name)")
 
 
 class BranchView(QWidget):
@@ -407,8 +429,21 @@ class BranchView(QWidget):
         table_view.setContextMenuPolicy(Qt.CustomContextMenu)
 
     def show_modifications(self):
-        pass
-        #if hasattr(model, 'get_orig_q_git_model'):
+        """
+            Show modifications of the branch view and name.
+        """
+        self._table_view.setModel(self._model)
+        self._name_widget.show_modifications()
+
+    def hide_modifications(self):
+        """
+            Hide modifications of the branch view and name.
+        """
+        if hasattr(self._model, 'get_orig_q_git_model') and \
+           self._model.get_orig_q_git_model():
+            model = self._model.get_orig_q_git_model()
+            self._table_view.setModel(model)
+            self._name_widget.hide_modifications()
 
     def reset_displayed_name(self):
         self._name_widget.reset_displayed_name()
