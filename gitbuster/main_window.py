@@ -136,7 +136,15 @@ class MainWindow(QMainWindow):
         """
             This method is called when the refresh button is pressed.
         """
-        self.set_current_directory(self._directory, reset_all=True)
+        msgBox = QMessageBox(self)
+        msgBox.setText("You will lose all modifications.")
+        msgBox.setInformativeText("Do you still want to refresh ?")
+        msgBox.setStandardButtons(msgBox.Cancel | msgBox.Apply)
+        msgBox.setDefaultButton(msgBox.Cancel)
+        ret = (msgBox.exec_() == msgBox.Apply)
+
+        if ret:
+            self.set_current_directory(self._directory, reset_all=True)
 
     def about_box(self):
         """
