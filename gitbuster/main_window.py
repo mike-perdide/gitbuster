@@ -96,6 +96,7 @@ class MainWindow(QMainWindow):
         gui = self._ui
         # Bottom bar connections
         _connect_button(gui.applyButton, self.apply)
+        _connect_button(gui.refreshButton, self.refresh)
 
         # Catching progress bar signals.
         self.connect(gui.progressBar, SIGNAL("starting"),
@@ -128,6 +129,12 @@ class MainWindow(QMainWindow):
                      self.add_history_action)
         self.connect(self.rebase_main_class, SIGNAL("newBranchFromCommit"),
                      self.create_new_branch_from_model)
+
+    def refresh(self):
+        """
+            This method is called when the refresh button is pressed.
+        """
+        self.set_current_directory(self._directory, reset_all=True)
 
     def about_box(self):
         """
