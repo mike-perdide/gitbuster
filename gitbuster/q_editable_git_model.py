@@ -290,6 +290,7 @@ class QEditableGitModel(QGitModel):
         self.start_history_event()
 
         new_parent = self.git_model.get_commits()[begin_row]
+        children = self.get_children(begin_row)
 
         self.insertRows(begin_row, rows, QModelIndex())
 
@@ -306,15 +307,30 @@ class QEditableGitModel(QGitModel):
                          (new_parent,))
             new_parent = self.git_model.get_commits()[insert_row]
 
-        if insert_row > 0:
-            insert_row -= 1
-            # There is one commit left which we should update the parent
-            self.setData(self.createIndex(insert_row, parents_index),
+        for commit in children:
+            print commit.message
+            row = self.row_of(commit)
+            self.setData(self.createIndex(row, parents_index),
                          (new_parent,))
 
         self.reset()
 
         return True
+
+    def get_children(self, row):
+        """
+            Returns the commits that have the commit at the given position as
+            a parent.
+        """
+        parent_commit = self.git_model.get_commits()[row]
+        children = []
+
+        print "parent", parent_commit
+        for commit in self.git_model.get_commits():
+            if parent_commit in self.git_model.c_data(commit, "parents"):
+                children.append(commit)
+
+        return children
 
     def name_to_display(self):
         """
