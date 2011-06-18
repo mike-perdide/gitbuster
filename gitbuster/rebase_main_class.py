@@ -147,7 +147,7 @@ class RebaseMainClass(QWidget):
             Returns the branch_view that has the focus.
         """
         for branch_view, model in self._checkboxes.values():
-            if branch_view.hasFocus():
+            if branch_view.tableview_has_focus():
                 return branch_view
 
     def checkbox_clicked(self, value):

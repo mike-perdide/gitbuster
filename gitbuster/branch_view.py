@@ -447,3 +447,6 @@ class BranchView(QWidget):
 
     def reset_displayed_name(self):
         self._name_widget.reset_displayed_name()
+
+    def tableview_has_focus(self):
+        return self._table_view.hasFocus()
