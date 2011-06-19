@@ -8,7 +8,7 @@ class TemplateTest:
     @classmethod
     def setup_class(cls):
         cls.TEST_dir = "/tmp/tests_git"
-        cls.TEST_column_count = 10
+        cls.TEST_column_count = 11
         cls.TEST_wallace_author_name = "Author 'Wallace' Groom"
         cls.TEST_wallace_author_email = "author-wallace@groom.com"
         cls.TEST_master_author_name = "Author 'Master' Groom"
