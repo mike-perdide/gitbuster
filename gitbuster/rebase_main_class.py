@@ -260,3 +260,9 @@ class RebaseMainClass(QWidget):
         for branch_view, model in self._checkboxes.values():
             if model.name_to_display() == branch_name:
                 return branch_view
+
+    def add_history_action(self, action):
+        """
+            Forwards to the main window.
+        """
+        self.parent().add_history_action(action)
