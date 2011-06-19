@@ -77,7 +77,7 @@ class QEditableGitModel(QGitModel):
             column = index.column()
             field_name = self.git_model.get_columns()[column]
 
-            if field_name in TIME_FIELDS or field_name in ("parents", "tree"):
+            if field_name in TIME_FIELDS or field_name in ("parents", "tree", "children"):
                 new_value = value
             else:
                 new_value = unicode(value.toString())
