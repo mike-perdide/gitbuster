@@ -98,7 +98,7 @@ class QGitModel(QAbstractTableModel):
         value = self.git_model.data(index)
         if field_name == "message":
             return QVariant(value)
-        elif field_name in TIME_FIELDS or field_name in ("parents", "tree"):
+        elif field_name in TIME_FIELDS or field_name in ("parents", "tree", "children"):
             return value
         return self._data_display(index, field_name)
 
