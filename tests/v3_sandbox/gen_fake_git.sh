@@ -92,4 +92,11 @@ git commit -a -m "$(cat .git/MERGE_MSG)"
 git checkout master
 git merge 123 -m "Merge ABC123"
 
-pwd
+git branch -D 123
+git branch -D ABC
+
+git branch other_branch
+git checkout other_branch
+echo totallydifferent > differentfile
+git add differentfile
+git commit -m "different file added"
