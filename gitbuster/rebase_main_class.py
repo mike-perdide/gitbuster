@@ -39,7 +39,7 @@ class RebaseMainClass(QWidget):
                         SIGNAL("clicked()"),
                         self.conflicts)
 
-        shortcut = QShortcut(QKeySequence(QKeySequence.Delete), self)
+        shortcut = QShortcut(QKeySequence(QKeySequence.Delete), self._parent)
         QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
 
     def reset_interface(self, models):
