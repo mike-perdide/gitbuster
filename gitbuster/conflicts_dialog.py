@@ -163,15 +163,7 @@ class ConflictsDialog(QDialog):
             self._ui.conflictTextEdit.setEnabled(False)
 
             # Reset the solution radio buttons
-            for radio in self._radio_choices:
-                self._ui.noneRadioButton.setChecked(True)
-
-            # If the user already chose a solution, check the right radiobutton
-            if u_path in self._solutions:
-                pre_choice = self._solutions[u_path][0]
-                for radio, choice in self._radio_choices.items():
-                    if pre_choice == choice:
-                        radio.setChecked(True)
+            self._ui.noneRadioButton.setChecked(True)
 
             u_info = self._u_files[u_path]
             git_status = u_info["git_status"]
@@ -220,6 +212,20 @@ class ConflictsDialog(QDialog):
                 orig_content = u_info["orig_content"]
                 orig_text_edit_content = orig_content
                 self._ui.origTextEdit.setText(QString(orig_text_edit_content))
+
+            # If the user already chose a solution, check the right radiobutton
+            if u_path in self._solutions:
+                pre_choice = self._solutions[u_path][0]
+                for radio, choice in self._radio_choices.items():
+                    if pre_choice == choice:
+                        writable = radio == self._ui.addCustomRadioButton
+                        self._ui.conflictTextEdit.setEnabled(writable)
+                        radio.setChecked(True)
+
+                        if writable:
+                            text = self._solutions[u_path][1]
+                            self._ui.conflictTextEdit.setText(QString(text))
+
 
     def apply_solutions(self):
         """
