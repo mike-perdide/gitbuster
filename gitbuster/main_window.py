@@ -498,7 +498,13 @@ class MainWindow(QMainWindow):
         a_repo = Repo(self._directory)
         os.chdir(self._directory)
 
-        if a_repo.active_branch.name == 'gitbuster_rebase':
+        try:
+            active_branch_name = a_repo.active_branch.name
+            should_be_cleaned = a_repo.active_branch.name == 'gitbuster_rebase'
+        except TypeError:
+            should_be_cleaned = True
+
+        if should_be_cleaned:
             if a_repo.is_dirty():
                 run_command("git reset --hard")
 
