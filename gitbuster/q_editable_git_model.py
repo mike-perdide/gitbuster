@@ -352,21 +352,6 @@ class QEditableGitModel(QGitModel):
 
         return True
 
-    def get_children(self, row):
-        """
-            Returns the commits that have the commit at the given position as
-            a parent.
-        """
-        parent_commit = self.git_model.get_commits()[row]
-        children = []
-
-        print "parent", parent_commit
-        for commit in self.git_model.get_commits():
-            if parent_commit in self.git_model.c_data(commit, "parents"):
-                children.append(commit)
-
-        return children
-
     def name_to_display(self):
         """
             Returns the name that should be displayed for this model.
