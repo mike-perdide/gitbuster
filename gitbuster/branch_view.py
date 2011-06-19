@@ -14,6 +14,7 @@ connect = QObject.connect
 from gitbuster.branch_view_ui import Ui_BranchView
 from gitbuster.util import SetNameAction, DummyRemoveAction, \
                            custom_resize_columns_to_contents
+from gitbuster.q_git_model import NAMES
 
 def to_hide_subset(model, row):
     columns = model.get_columns()
@@ -80,6 +81,7 @@ class ButtonLineEdit(QWidget):
         QObject.connect(self.valid_button, SIGNAL("clicked()"), self.go_read)
 
         self._hidden_from_model = None
+        self._table_view_show_columns = []
 
     def _iter_widgets(self):
         """
@@ -156,6 +158,17 @@ class ButtonLineEdit(QWidget):
         edit_action = menu.addAction("Edit branch name")
         edit_action.setEnabled(not self._read_only)
 
+        show_hide_columns_menu = QMenu("Show/Hide columns", self)
+        column_choices = {}
+        for column in self._model.get_columns():
+            column_choice = show_hide_columns_menu.addAction(NAMES[column])
+            column_choices[column_choice] = column
+            column_choice.setCheckable(True)
+            if column in self._table_view_show_columns:
+                column_choice.setChecked(True)
+
+        show_hide_columns_action = menu.addMenu(show_hide_columns_menu)
+
         hide_menu = QMenu("Hide commit from", self)
         hide_choices = {}
         for model in self._all_models.values():
@@ -187,6 +200,17 @@ class ButtonLineEdit(QWidget):
                     all_hide_data.append(to_hide_subset(model, row))
                 self.emit(SIGNAL("hideDataFromModel"), all_hide_data)
 
+        elif chosen_action in column_choices:
+            column = column_choices[chosen_action]
+            if column in self._table_view_show_columns:
+                # If the user asks to hide the column
+                position = self._table_view_show_columns.index(column)
+                self._table_view_show_columns.pop(position)
+                self.emit(SIGNAL("hideColumn"), column)
+            else:
+                self._table_view_show_columns.append(column)
+                self.emit(SIGNAL("showColumn"), column)
+
     def reset_displayed_name(self):
         """
             When the apply is finished, we may want to check that the model's
@@ -214,6 +238,13 @@ class ButtonLineEdit(QWidget):
         if old_name != new_name:
             self.checkbox.setText(new_name)
             self.current_name_label.setText(new_name + " (new name)")
+
+    def inform_shown_columns(self, columns):
+        """
+            This informs the BranchName widget about the shown columns of the
+            table view.
+        """
+        self._table_view_show_columns = columns
 
 
 class BranchView(QWidget):
@@ -262,6 +293,9 @@ class BranchView(QWidget):
         connect(self._name_widget, SIGNAL("unhideDataFromModel"),
                                                               self.unhide_data)
 
+        connect(self._name_widget, SIGNAL("showColumn"), self.show_column)
+        connect(self._name_widget, SIGNAL("hideColumn"), self.hide_column)
+
     def fwd_commit_clicked(self, index):
         """
             Simple signal forwarder to RebaseMainClass.
@@ -305,6 +339,22 @@ class BranchView(QWidget):
             if to_hide_subset(self._model, row) in data:
                 self._table_view.hideRow(row)
                 self._hidden_rows_from_models.append(row)
+
+    def show_column(self, column):
+        """
+            Show the given column of the table view.
+        """
+        column_position = self._model.get_columns().index(column)
+        self._table_view.showColumn(column_position)
+        self.resize_table_view()
+
+    def hide_column(self, column):
+        """
+            Hide the given column of the table view.
+        """
+        column_position = self._model.get_columns().index(column)
+        self._table_view.hideColumn(column_position)
+        self.resize_table_view()
 
     def context_menu(self, q_point):
         """
@@ -415,18 +465,26 @@ class BranchView(QWidget):
         table_view.setModel(model)
         self._model = model
 
-        show_fields = ("hexsha", "message")
+        show_fields = ["hexsha", "message"]
+        self._name_widget.inform_shown_columns(show_fields)
         for column, field in enumerate(model.get_columns()):
             if not field in show_fields:
                 table_view.hideColumn(column)
 
-        custom_resize_columns_to_contents(table_view)
-        table_view.horizontalHeader().setStretchLastSection(True)
         table_view.setSelectionMode(table_view.ExtendedSelection)
         table_view.setDragDropMode(table_view.DragDrop)
         table_view.setSelectionBehavior(table_view.SelectRows)
         table_view.setEditTriggers(table_view.NoEditTriggers)
         table_view.setContextMenuPolicy(Qt.CustomContextMenu)
+
+        self.resize_table_view()
+
+    def resize_table_view(self):
+        """
+            Resize the table view to its contents.
+        """
+        custom_resize_columns_to_contents(self._table_view)
+        self._table_view.horizontalHeader().setStretchLastSection(True)
 
     def show_modifications(self):
         """
