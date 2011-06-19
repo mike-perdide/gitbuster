@@ -153,7 +153,7 @@ class ButtonLineEdit(QWidget):
                 - copy to new branch (not implemented yet)
         """
         menu = QMenu(self)
-        edit_action = menu.addAction("edit")
+        edit_action = menu.addAction("Edit branch name")
         edit_action.setEnabled(not self._read_only)
 
         hide_menu = QMenu("Hide commit from", self)
