@@ -103,25 +103,46 @@ class QEditableGitModel(QGitModel):
             Removes a given number of rows in the model, starting at the given
             position.
         """
-#        self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
         parents_index = self.get_columns().index("parents")
 
         # Setting the parent of the child commit
         parents = self.data(self.createIndex(position, parents_index),
                             Qt.EditRole)
 
-        to_update_row = position - 1
-        while to_update_row > 0 and \
-              self.is_deleted(self.createIndex(to_update_row, 0)):
-            print "row", to_update_row, "is deleted"
-            to_update_row -= 1
+        commit_to_delete = self.git_model.get_commits()[position]
+        # Storing the parents and children commits of the deleted commit.
+        parents = self.git_model.c_data(commit_to_delete, "parents")
+        children = self.git_model.c_data(commit_to_delete, "children")
+        # They will be propagated respectively to the children and the parents
+        # of the deleted commit.
 
-        if to_update_row >= 0:
-            self.setData(self.createIndex(to_update_row, parents_index),
-                         parents)
+        for child in children:
+            row_of_child = self.git_model.row_of(child)
+            new_parents = self.git_model.c_data(child, "parents")
+            parents_position = new_parents.index(commit_to_delete)
+
+            # Removing only the deleted commit from the parents
+            new_parents.pop(parents_position)
+            for parent in parents:
+                new_parents.insert(parents_position, parent)
+            self.setData(self.createIndex(row_of_child, parents_index),
+                         new_parents)
+
+        children_column = self.get_columns().index("children")
+        for parent in parents:
+            row_of_parent = self.git_model.row_of(parent)
+            new_children = self.git_model.c_data(parent, "children")
+            children_position = new_children.index(commit_to_delete)
+
+            # Removing only the deleted commit from the children
+            new_children.pop(children_position)
+            for child in children:
+                new_children.insert(children_position, child)
+            self.setData(self.createIndex(row_of_parent, children_column),
+                         new_children)
 
         self.git_model.remove_rows(position, rows)
-#        self.endRemoveRows()
+
         self.reset()
         return True
 
