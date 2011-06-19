@@ -388,7 +388,7 @@ class BranchView(QWidget):
 
             for dummy_row in deleted_dummies:
                 # Special behaviour for inserted commits: hide them
-                self.parent().add_history_action(DummyRemoveAction(dummy_row,
+                self._parent.add_history_action(DummyRemoveAction(dummy_row,
                                                                  table_view))
                 table_view.hideRow(dummy_row)
 
