@@ -493,7 +493,8 @@ class MainWindow(QMainWindow):
             Catching the close event to do some cleanup
         """
         def run_command(command):
-            Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+            handle = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
+            handle.wait()
 
         a_repo = Repo(self._directory)
         os.chdir(self._directory)
