@@ -310,29 +310,43 @@ class QEditableGitModel(QGitModel):
 
         self.start_history_event()
 
-        new_parent = self.git_model.get_commits()[begin_row]
-        children = self.get_children(begin_row)
+        parents_col = self.get_columns().index("parents")
+        children_col = self.get_columns().index("children")
 
-        self.insertRows(begin_row, rows, QModelIndex())
-
-        parents_index = self.get_columns().index("parents")
+        _row = begin_row
         for item in new_items:
-            insert_row -= 1
+            replaced_commit = self.git_model.get_commits()[_row]
+            new_parents = [replaced_commit,]
+            new_children = self.git_model.c_data(replaced_commit, "children")
+
+            self.insertRows(_row, 1, QModelIndex())
 
             for column, field in enumerate(self.get_columns()):
-                index = self.createIndex(insert_row, column)
-                self.setData(index,
-                             data_to_be_inserted[(insert_row, column)])
-            # Set the parent
-            self.setData(self.createIndex(insert_row, parents_index),
-                         (new_parent,))
-            new_parent = self.git_model.get_commits()[insert_row]
+                index = self.createIndex(_row, column)
+                self.setData(index, data_to_be_inserted[(_row, column)])
 
-        for commit in children:
-            print commit.message
-            row = self.row_of(commit)
-            self.setData(self.createIndex(row, parents_index),
-                         (new_parent,))
+            self.setData(self.createIndex(_row, children_col), new_children)
+            self.setData(self.createIndex(_row, parents_col), [replaced_commit,])
+
+            this_commit = self.git_model.get_commits()[_row]
+            # Updating parent's children and children parent's
+            for child in new_children:
+                row_of_child = self.git_model.row_of(child)
+                _parents = self.git_model.c_data(child, "parents")
+                parents_position = _parents.index(replaced_commit)
+
+                # Removing only the replaced commit from the parents
+                _parents.pop(parents_position)
+                _parents.insert(parents_position, this_commit)
+                self.setData(self.createIndex(row_of_child, parents_col),
+                             _parents)
+
+            for parent in new_parents:
+                row_of_parent = self.git_model.row_of(parent)
+                self.setData(self.createIndex(row_of_parent, children_col),
+                             [this_commit,])
+
+            _row += 1
 
         self.reset()
 
