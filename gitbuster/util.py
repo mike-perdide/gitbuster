@@ -175,6 +175,7 @@ class RunLongOperation(QThread):
         self._operation = operation
         self._args = args
         self._kwargs = kwargs
+        self._result = None
 
     def run(self):
         self._result = self._operation(*self._args, **self._kwargs)
