@@ -208,8 +208,6 @@ class LongOperationBox(QDialog):
         self._operation = operation
         self._progress_method = progress_method
 
-        self.show()
-
         self._thread = RunLongOperation(operation, args, kwargs)
         self.connect(self._thread, SIGNAL("finished()"), self.thread_finished)
         self._thread.start()
