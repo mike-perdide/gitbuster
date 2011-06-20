@@ -199,7 +199,7 @@ class LongOperationBox(QDialog):
 
     def __init__(self, text, operation, args=[], kwargs={},
                  progress_method = None, parent=None):
-        QDialog.__init__(self, None)
+        QDialog.__init__(self, parent)
 
         self._ui = Ui_LongOperationBox()
         self._ui.setupUi(self)
