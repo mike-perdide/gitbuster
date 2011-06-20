@@ -409,7 +409,10 @@ class MainWindow(QMainWindow):
             args = (log, force_committed_date)
             kwargs = {"dont_populate": True}
             result = run_long_operation("Applying %s" % model.name_to_display(),
-                                        write_wait, args, kwargs, parent=self)
+                                        write_wait, args, kwargs,
+                                        progress_method=model.progress,
+                                        parent=self)
+
             write_results[model] = result
 
         self.apply_finished(write_results)
