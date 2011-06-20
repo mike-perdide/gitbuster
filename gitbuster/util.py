@@ -10,8 +10,10 @@ from pprint import pprint
 import time
 
 from PyQt4.QtCore import QDir, QObject, QSettings, QVariant, SIGNAL, QUrl,\
-        QStringList, QString, Qt
-from PyQt4.QtGui import QFileDialog, QFontMetrics
+        QStringList, QString, Qt, QThread
+from PyQt4.QtGui import QFileDialog, QFontMetrics, QDialog
+
+from gitbuster.long_operation_box_ui import Ui_LongOperationBox
 
 
 def _connect_button(button, function):
@@ -165,3 +167,59 @@ class Timer:
 
     def render_records(self):
         pprint(self.records)
+
+class RunLongOperation(QThread):
+
+    def __init__(self, operation, args, kwargs):
+        QThread.__init__(self)
+        self._operation = operation
+        self._args = args
+        self._kwargs = kwargs
+
+    def run(self):
+        self._result = self._operation(*self._args, **self._kwargs)
+
+    def result(self):
+        return self._result
+
+class LongOperationBox(QDialog):
+
+    def __init__(self, text, operation, args=[], kwargs={},
+                 progress_method = None, parent=None):
+        QDialog.__init__(self, None)
+
+        self._ui = Ui_LongOperationBox()
+        self._ui.setupUi(self)
+        self._ui.label.setText(text)
+
+        self._operation = operation
+        self._progress_method = progress_method
+
+        self.show()
+
+        self._thread = RunLongOperation(operation, args, kwargs)
+        self.connect(self._thread, SIGNAL("finished()"), self.thread_finished)
+        self._thread.start()
+
+        if self._progress_method:
+            self._progress_thread = RunLongOperation(self._progress_method)
+            self.connect(self._thread, SIGNAL("update"), self.update)
+            self._progress_thread.start()
+
+    def thread_finished(self):
+        self.accept()
+
+    def update(self, value):
+        pass
+
+    def result(self):
+        return self._thread.result()
+
+def run_long_operation(text, operation, args=[], kwargs={},
+                       progress_method=None, parent=None):
+        long_box = LongOperationBox(text,
+                                    operation, args=args, kwargs=kwargs,
+                                    progress_method=progress_method,
+                                    parent=parent)
+        long_box.exec_()
+        return long_box.result()
