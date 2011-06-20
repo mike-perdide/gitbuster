@@ -9,10 +9,10 @@ from PyQt4.QtCore import QObject, SIGNAL
 from PyQt4.QtGui import QKeySequence, QMainWindow, QMessageBox
 from gitbuster.confirm_dialog import ConfirmDialog
 from gitbuster.main_window_ui import Ui_MainWindow
-from gitbuster.progress_thread import ProgressThread
 from gitbuster.q_editable_git_model import QEditableGitModel
 from gitbuster.q_git_model import QGitModel
-from gitbuster.util import _connect_button, select_git_directory
+from gitbuster.util import _connect_button, select_git_directory, \
+                        run_long_operation
 from gitbuster.remote_branch_dialog import RemoteBranchDialog
 
 from gitbuster.filter_main_class import FilterMainClass
@@ -22,6 +22,7 @@ from gitbuster.branch_name_dialog import BranchNameDialog
 from git import Repo
 from subprocess import Popen, PIPE
 import os
+import time
 
 
 class MainWindow(QMainWindow):
@@ -57,7 +58,6 @@ class MainWindow(QMainWindow):
         self.reset_history()
 
         self._applying = False
-        self._ui.progressBar.hide()
 
         self.connect_slots()
 
@@ -99,14 +99,6 @@ class MainWindow(QMainWindow):
         # Bottom bar connections
         _connect_button(gui.applyButton, self.apply)
         _connect_button(gui.refreshButton, self.refresh)
-
-        # Catching progress bar signals.
-        self.connect(gui.progressBar, SIGNAL("starting"),
-                                                    self.show_progress_bar)
-        self.connect(gui.progressBar, SIGNAL("update(int)"),
-                                                    self.update_progress_bar)
-        self.connect(gui.progressBar, SIGNAL("stopping"),
-                                                    self.hide_progress_bar)
 
         # Connecting actions
         self.connect(gui.actionChange_repository,
@@ -395,26 +387,40 @@ class MainWindow(QMainWindow):
         """
             Applies the given models.
         """
-        if not self._applying:
-            self.progress_thread = ProgressThread(self._ui.progressBar,
-                                                  models, log,
-                                                  force_committed_date)
+        if self._applying:
+            return
 
-            QObject.connect(self.progress_thread, SIGNAL("started()"),
-                            self.apply_started)
-            QObject.connect(self.progress_thread, SIGNAL("finished()"),
-                            self.apply_finished)
+        write_results = {}
 
-            self.progress_thread.start()
+        self.apply_started()
+        for model in models:
+            def write_wait(log, force_committed_date, dont_populate=True):
+                """
+                    This is like write(), except we wait for the write to
+                    finish.
+                """
+                model.write(log, force_committed_date, dont_populate)
+
+                while not(model.is_finished_writing()):
+                    time.sleep(1)
+
+                return model.is_write_success()
+
+            args = (log, force_committed_date)
+            kwargs = {"dont_populate": True}
+            result = run_long_operation("Applying %s" % model.name_to_display(),
+                                        write_wait, args, kwargs, parent=self)
+            write_results[model] = result
+
+        self.apply_finished(write_results)
 
     def apply_started(self):
         """
             This method is called when the progress thread is started.
         """
         self._applying = True
-        self._ui.applyButton.setDisabled(True)
 
-    def apply_finished(self):
+    def apply_finished(self, write_results):
         """
             This method is called when the progress thread is finished.
         """
@@ -423,7 +429,7 @@ class MainWindow(QMainWindow):
 
         a_repo = Repo(self._directory)
 
-        for model, success in self.progress_thread.get_write_success().items():
+        for model, success in write_results.items():
             if success and model.is_fake_model():
                 # If the applied models were fake, rebuild them.
                 branch_name = model.name_to_display()
@@ -444,32 +450,9 @@ class MainWindow(QMainWindow):
             elif success:
                 model.populate()
 
-        if True in self.progress_thread.get_write_success().values():
+        if True in write_results.values():
             # Reset history
             self.reset_history()
-
-    def show_progress_bar(self):
-        """
-            Shows the progress bar representing the progress of the writing
-            process.
-        """
-        self._ui.progressBar.show()
-
-    def update_progress_bar(self, value):
-        """
-            Updates the progress bar with a value.
-
-            :param value:
-                Progression of the write process, between 0 and 100
-        """
-        self._ui.progressBar.setValue(value)
-
-    def hide_progress_bar(self):
-        """
-            Hide the progress bar representing the progress of the writing
-            process.
-        """
-        self._ui.progressBar.hide()
 
     def quit(self):
         """
