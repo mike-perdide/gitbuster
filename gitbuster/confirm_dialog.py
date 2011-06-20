@@ -8,6 +8,7 @@
 from PyQt4.QtCore import QString, Qt
 from PyQt4.QtGui import QCheckBox, QDialog, QLabel
 from gitbuster.confirm_dialog_ui import Ui_Dialog
+from gitbuster.util import run_long_operation
 
 
 class ConfirmDialog(QDialog):
@@ -25,7 +26,9 @@ class ConfirmDialog(QDialog):
             branch_name = model.get_new_branch_name() or \
                           model.get_current_branch().name
             mod_count = model.get_modified_count()
-            to_rewrite = model.get_to_rewrite_count()
+            to_rewrite = run_long_operation("Calculating dependencies",
+                                            model.get_to_rewrite_count,
+                                            parent=self)
             is_name_modified = model.is_name_modified()
 
             display_string = ""
