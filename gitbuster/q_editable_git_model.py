@@ -105,10 +105,6 @@ class QEditableGitModel(QGitModel):
         """
         parents_index = self.get_columns().index("parents")
 
-        # Setting the parent of the child commit
-        parents = self.data(self.createIndex(position, parents_index),
-                            Qt.EditRole)
-
         commit_to_delete = self.git_model.get_commits()[position]
         # Storing the parents and children commits of the deleted commit.
         parents = self.git_model.c_data(commit_to_delete, "parents")
