@@ -183,6 +183,18 @@ class RunLongOperation(QThread):
     def result(self):
         return self._result
 
+class ProgressOperation(QThread):
+
+    def __init__(self, operation):
+        QThread.__init__(self)
+        self._operation = operation
+
+    def run(self):
+        while True:
+            progress = self._operation()
+            self.emit(SIGNAL("update"), progress)
+            time.sleep(0.5)
+
 class LongOperationBox(QDialog):
 
     def __init__(self, text, operation, args=[], kwargs={},
@@ -202,16 +214,20 @@ class LongOperationBox(QDialog):
         self.connect(self._thread, SIGNAL("finished()"), self.thread_finished)
         self._thread.start()
 
+        self._progress_thread = None
         if self._progress_method:
-            self._progress_thread = RunLongOperation(self._progress_method)
-            self.connect(self._thread, SIGNAL("update"), self.update)
+            self._progress_thread = ProgressOperation(self._progress_method)
+            self.connect(self._progress_thread, SIGNAL("update"), self.update)
             self._progress_thread.start()
+            self._ui.progressBar.setValue(0)
 
     def thread_finished(self):
+        if self._progress_thread:
+            self._progress_thread.terminate()
         self.accept()
 
     def update(self, value):
-        pass
+        self._ui.progressBar.setValue(int(value * 100))
 
     def result(self):
         return self._thread.result()
