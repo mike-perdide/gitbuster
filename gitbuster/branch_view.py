@@ -33,6 +33,45 @@ def to_hide_subset(model, row):
     return this_row_data
 
 
+def remove_selected_rows(table_view, history_mngr, rows=False):
+    if table_view is None:
+        return False
+
+    model = table_view.model()
+
+    if not rows:
+        selected_indexes = [index for index in table_view.selectedIndexes()
+                            if index.isValid()]
+
+        ordered_list = []
+        deleted_dummies = []
+        for index in selected_indexes:
+            if index.row() not in ordered_list and \
+               not model.is_deleted(index) and \
+               not model.is_first_commit(index):
+                # Don't delete deleted or first commits.
+                ordered_list.insert(0, index.row())
+            if model.is_inserted_commit(index):
+                deleted_dummies.append(index.row())
+
+        if ordered_list:
+            model.start_history_event()
+
+        for dummy_row in deleted_dummies:
+            # Special behaviour for inserted commits: hide them
+            history_mngr.add_history_action(DummyRemoveAction(dummy_row,
+                                                              table_view))
+            table_view.hideRow(dummy_row)
+
+    else:
+        ordered_list = rows
+        ordered_list.sort()
+        ordered_list.reverse()
+
+    for row in ordered_list:
+        model.removeRows(row)
+
+
 class ButtonLineEdit(QWidget):
     """
     This widget provides a button that displays a changeable text,
@@ -412,43 +451,7 @@ class BranchView(QWidget):
             :param rows:
                 This is intended for tests. It's a list of index rows.
         """
-        table_view = self._table_view
-        if table_view is None:
-            return False
-
-        model = table_view.model()
-
-        if not rows:
-            selected_indexes = [index for index in table_view.selectedIndexes()
-                                if index.isValid()]
-
-            ordered_list = []
-            deleted_dummies = []
-            for index in selected_indexes:
-                if index.row() not in ordered_list and \
-                   not model.is_deleted(index) and \
-                   not model.is_first_commit(index):
-                    # Don't delete deleted or first commits.
-                    ordered_list.insert(0, index.row())
-                if model.is_inserted_commit(index):
-                    deleted_dummies.append(index.row())
-
-            if ordered_list:
-                model.start_history_event()
-
-            for dummy_row in deleted_dummies:
-                # Special behaviour for inserted commits: hide them
-                self._parent.add_history_action(DummyRemoveAction(dummy_row,
-                                                                 table_view))
-                table_view.hideRow(dummy_row)
-
-        else:
-            ordered_list = rows
-            ordered_list.sort()
-            ordered_list.reverse()
-
-        for row in ordered_list:
-            model.removeRows(row)
+        remove_selected_rows(self._table_view, self._parent, rows)
 
     def model(self):
         """
