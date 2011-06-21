@@ -59,10 +59,10 @@ _SIMPLE_FILTERS = frozenset(["nameEmail", "message", "localOnly"])
 class FilterMainClass():
 
     def __init__(self, parent, directory, models):
-        self.parent = parent
+        self._parent = parent
         self._models = None
 
-        self.gui = self.parent._ui
+        self.gui = self._parent._ui
         self._filters_values = {
             "afterWeekday": self.gui.afterWeekdayFilterComboBox.currentIndex,
             "beforeWeekday": self.gui.beforeWeekdayFilterComboBox.currentIndex,
@@ -96,7 +96,7 @@ class FilterMainClass():
         """
             Resets the filter tab (usually after a directory change).
         """
-        current_branch = self.parent.current_branch
+        current_branch = self._parent.current_branch
 
         self._models = models
         self._model = self._models[current_branch]
@@ -184,7 +184,7 @@ class FilterMainClass():
                                                     QApplication.UnicodeUTF8))
             if checkbox_name in PRE_CHOICE:
                 checkbox.setCheckState(Qt.Checked)
-            self.parent.connect(checkbox, SIGNAL("stateChanged(int)"),
+            self._parent.connect(checkbox, SIGNAL("stateChanged(int)"),
                                 self.refresh_checkboxes)
             count += 1
 
@@ -197,7 +197,7 @@ class FilterMainClass():
                                         QApplication.UnicodeUTF8))
             if checkbox_name in PRE_CHOICE:
                 checkbox.setCheckState(Qt.Checked)
-            self.parent.connect(checkbox, SIGNAL("stateChanged(int)"),
+            self._parent.connect(checkbox, SIGNAL("stateChanged(int)"),
                          self.refresh_display_options)
             count += 1
 
@@ -303,7 +303,7 @@ class FilterMainClass():
         for branch, model in self._models.items():
             if new_branch_name == branch.name:
                 self._model = model
-                if self.parent._modifications_shown:
+                if self._parent._modifications_shown:
                     self.gui.tableView.setModel(model)
                 else:
                     orig_model = model.get_orig_q_git_model()
