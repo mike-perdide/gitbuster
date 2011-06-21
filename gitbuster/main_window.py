@@ -6,7 +6,7 @@
 #
 
 from PyQt4.QtCore import QObject, SIGNAL
-from PyQt4.QtGui import QKeySequence, QMainWindow, QMessageBox
+from PyQt4.QtGui import QKeySequence, QMainWindow, QMessageBox, QShortcut
 from gitbuster.confirm_dialog import ConfirmDialog
 from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.q_editable_git_model import QEditableGitModel
@@ -123,6 +123,18 @@ class MainWindow(QMainWindow):
                      self.add_history_action)
         self.connect(self.rebase_main_class, SIGNAL("newBranchFromCommit"),
                      self.create_new_branch_from_model)
+
+        shortcut = QShortcut(QKeySequence(QKeySequence.Delete), self)
+        QObject.connect(shortcut, SIGNAL("activated()"), self.remove_rows)
+
+    def remove_rows(self):
+        """
+            Finds out which tab is activated, and forwards the command.
+        """
+        if self._ui.mainTabWidget.currentIndex() == 0:
+            self.rebase_main_class.remove_rows()
+        else:
+            self.filter_main_class.remove_rows()
 
     def refresh(self):
         """
