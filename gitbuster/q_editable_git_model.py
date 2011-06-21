@@ -114,7 +114,7 @@ class QEditableGitModel(QGitModel):
 
         for child in children:
             row_of_child = self.git_model.row_of(child)
-            new_parents = self.git_model.c_data(child, "parents")
+            new_parents = list(self.git_model.c_data(child, "parents"))
             parents_position = new_parents.index(commit_to_delete)
 
             # Removing only the deleted commit from the parents
@@ -127,7 +127,7 @@ class QEditableGitModel(QGitModel):
         children_column = self.get_columns().index("children")
         for parent in parents:
             row_of_parent = self.git_model.row_of(parent)
-            new_children = self.git_model.c_data(parent, "children")
+            new_children = list(self.git_model.c_data(parent, "children"))
             children_position = new_children.index(commit_to_delete)
 
             # Removing only the deleted commit from the children
@@ -319,7 +319,8 @@ class QEditableGitModel(QGitModel):
             replaced_commit = self.git_model.get_commits()[replaced_index.row()]
 
             new_parents = [replaced_commit,]
-            new_children = self.git_model.c_data(replaced_commit, "children")
+            new_children = list(self.git_model.c_data(replaced_commit,
+                                                      "children"))
 
             self.insertRows(_row, 1, QModelIndex())
 
@@ -334,7 +335,7 @@ class QEditableGitModel(QGitModel):
             # Updating parent's children and children parent's
             for child in new_children:
                 row_of_child = self.git_model.row_of(child)
-                _parents = self.git_model.c_data(child, "parents")
+                _parents = list(self.git_model.c_data(child, "parents"))
                 parents_position = _parents.index(replaced_commit)
 
                 # Removing only the replaced commit from the parents
