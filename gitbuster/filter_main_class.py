@@ -11,6 +11,7 @@ from PyQt4.QtGui import QApplication, QCheckBox, QSizePolicy, QSpacerItem
 from gitbuster.q_git_delegate import QGitDelegate
 from gitbuster.q_git_model import NAMES
 from gitbuster.util import _connect_button, custom_resize_columns_to_contents
+from gitbuster.branch_view import remove_selected_rows
 
 from datetime import datetime
 
@@ -422,3 +423,10 @@ class FilterMainClass():
             if hasattr(self._model, 'get_orig_q_git_model'):
                 orig_model = self._model.get_orig_q_git_model()
                 self.gui.tableView.setModel(orig_model)
+
+    def remove_rows(self):
+        """
+            When the "Del" key is pressed, remove the selected rows of the table
+            view.
+        """
+        remove_selected_rows(self.gui.tableView, self._parent)
