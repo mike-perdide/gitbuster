@@ -311,7 +311,13 @@ class QEditableGitModel(QGitModel):
 
         _row = begin_row
         for item in new_items:
-            replaced_commit = self.git_model.get_commits()[_row]
+            replaced_row = _row
+            replaced_index = self.createIndex(replaced_row, 0)
+            while self.is_deleted(replaced_index):
+                replaced_row += 1
+                replaced_index = self.createIndex(replaced_row, 0)
+            replaced_commit = self.git_model.get_commits()[replaced_index.row()]
+
             new_parents = [replaced_commit,]
             new_children = self.git_model.c_data(replaced_commit, "children")
 
