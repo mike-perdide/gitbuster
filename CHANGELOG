@@ -1,3 +1,28 @@
+
+gitbuster v2.1 "Scared the socks off some poor librarian." (22-06-11)
+=====================================================================
+
+New version, mainly sees the apparition of a better handling of non linear histories, now we don't
+have to worry about merge commits anymore.
+
+ * Fixing issues #13, #32, #39, #42, #50, #51, #54, #59
+ * New about box.
+ * New refresh feature.
+ * Better look for the conflicts dialog (mono font).
+ * New LongOperationBox to make the user wait for every operation.
+ * Better handling of non linear histories, by tracking parents/children.
+ * <Del> can now be used in the filter tab.
+ * We can show all the columns in the rebase tab.
+ * More tests (also, tests on the user interface).
+ * Better cleaning of the repository after gitbuster operations.
+ * We check that the repository hasn't changed to avoid data loss.
+ * Better rebuilding of our fale models after write success.
+ * New BranchView widget to contain views and branch names.
+ * Fixing the unclickable QMenu bug.
+ * Hiding the rebase class widget, causing QMenu to be unclickable.
+ * Faster interface, mainly be replacing resizeToContents().
+ * New feature: hide commits presents in another branch.
+
 gitbuster v2.0 "Well, just 75 more to go." (03-06-11)
 =====================================================
 
