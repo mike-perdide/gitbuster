@@ -103,6 +103,9 @@ class QGitDelegate(QItemDelegate):
             self._selected_indexes = None
 
             for selected_index in selected_indexes:
+                if model.is_first_commit(selected_index):
+                    continue
+
                 if selected_index.column() == edited_column:
                     self.setModelData(editor, model, selected_index,
                                       ignore_history=True)
