@@ -113,5 +113,5 @@ Warning
 As of v2.1, gitbuster now handles merge commits correctly instead of deleting them as "git rebase -i" would.
 You can modifiy metadata of an old commit without worrying that it would mess up your history tree.
 However, you should be careful when reordering commits in a non flat history, as gitbuster doesn't display correctly the branched histories.
-The rule of thumb is that inserting a commit in a branch will take the commit above in the tableView as reference: the inserted commit inserted will take its place, and the reference commit will become the inserted commit's parent.
+The rule of thumb is that inserting a commit in a branch will take the commit below in the tableView as reference: the inserted commit inserted will take its place, and the reference commit will become the inserted commit's parent.
 All commits that had the reference commit has parent will now have the inserted commit as parent.
