@@ -225,7 +225,8 @@ class LongOperationBox(QDialog):
         self.accept()
 
     def update(self, value):
-        self._ui.progressBar.setValue(int(value * 100))
+        if value:
+            self._ui.progressBar.setValue(int(value * 100))
 
     def result(self):
         return self._thread.result()
