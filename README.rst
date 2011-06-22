@@ -110,6 +110,8 @@ Your help will be greatly appreciated.
 Warning
 -------
 
-Cherry-picking and merging are two different workflows. Cherry-picking merge commits and merge subtrees is not implemented yet.
-Moreover, rewriting an history that contains merge commits will discard them and will flat out the commit tree (same behaviour as git rebase -i).
-This is more a lack of feature than a bug, but gitbuster will handle merge commits in a near future (I'm working on it, but if you have suggestions, I'd be happy to hear them).
+As of v2.1, gitbuster now handles merge commits correctly instead of deleting them as "git rebase -i" would.
+You can modifiy metadata of an old commit without worrying that it would mess up your history tree.
+However, you should be careful when reordering commits in a non flat history, as gitbuster doesn't display correctly the branched histories.
+The rule of thumb is that inserting a commit in a branch will take the commit above in the tableView as reference: the inserted commit inserted will take its place, and the reference commit will become the inserted commit's parent.
+All commits that had the reference commit has parent will now have the inserted commit as parent.
