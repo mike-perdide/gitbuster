@@ -210,13 +210,11 @@ class LongOperationBox(QDialog):
 
         self._thread = RunLongOperation(operation, args, kwargs)
         self.connect(self._thread, SIGNAL("finished()"), self.thread_finished)
-        self._thread.start()
 
         self._progress_thread = None
         if self._progress_method:
             self._progress_thread = ProgressOperation(self._progress_method)
             self.connect(self._progress_thread, SIGNAL("update"), self.update)
-            self._progress_thread.start()
             self._ui.progressBar.setValue(0)
 
     def thread_finished(self):
@@ -230,6 +228,12 @@ class LongOperationBox(QDialog):
 
     def result(self):
         return self._thread.result()
+
+    def exec_(self):
+        self._thread.start()
+        if self._progress_thread:
+            self._progress_thread.start()
+        QDialog.exec_(self)
 
 def run_long_operation(text, operation, args=[], kwargs={},
                        progress_method=None, parent=None):
