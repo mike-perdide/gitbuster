@@ -138,6 +138,22 @@ class TestsRebaseTab(TemplateTest):
         error = "After creating a branch from a row, wrong number of branch displayed "
         self.check(after_shown_branches, shown_branches + 1, error)
 
+        # Check number of rows
+        # Check application
+        test_model = [model for model in self.window._models.values()
+                      if model.name_to_display() == "test_branch"][0]
+        self.window.apply_models((test_model,), True, True)
+
+        a_repo = Repo(self.TEST_dir)
+        error = "Branch from commit wasn't created"
+        assert [branch for branch in a_repo.branches
+                if branch.name == "test_branch"], error
+
+        error = "Branch %s was deleted!"
+        for name in ("master", "wallace_branch"):
+            assert [branch for branch in a_repo.branches
+                    if branch.name == name], error % name
+
     def get_checked_checkboxes(self):
         checkboxes = self.get_checkboxes()
         return set((checkbox for checkbox in checkboxes
