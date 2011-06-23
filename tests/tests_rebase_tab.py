@@ -4,6 +4,7 @@ from PyQt4.QtCore import Qt
 from subprocess import Popen, PIPE
 import os
 import sys
+from git import Repo
 
 from gitbuster.main_window import MainWindow
 from gitbuster.branch_view import ButtonLineEdit
