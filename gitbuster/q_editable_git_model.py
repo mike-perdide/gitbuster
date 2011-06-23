@@ -368,9 +368,10 @@ class QEditableGitModel(QGitModel):
             Returns True if the model is a fake model, or if there are
             modifications in the commits, or if the name is modified.
         """
-        return self.is_fake_model() or \
-               self.get_modified_count() > 0 or \
-               self.is_name_modified()
+        return (self.is_fake_model() or
+                self.get_modified_count() > 0 or
+                self.get_deleted_count() > 0 or
+                self.is_name_modified())
 
     # Beyond this point, abandon all hope of seeing anything more than
     # "proxying methods" (for instance, progress() calls git_model.progress())
