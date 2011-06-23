@@ -76,10 +76,12 @@ class TestsConfirmDialog(TemplateTest):
 
         to_write_models = [model for model in self.window._models.values()
                            if model.should_be_written()]
+        error = "Wrong number of modified models."
+        self.check(len(to_write_models), 1, error)
 
         msgBox = ConfirmDialog(to_write_models)
 
-        error = "Wrong number if displayed modified models."
+        error = "Wrong number of displayed modified models."
         self.check(len(msgBox._model_checkboxes), 1, error)
 
         error = "The displayed model has the wrong name."
