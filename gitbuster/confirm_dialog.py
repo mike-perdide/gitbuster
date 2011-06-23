@@ -26,7 +26,7 @@ class ConfirmDialog(QDialog):
             branch_name = model.get_new_branch_name() or \
                           model.get_current_branch().name
             mod_count = model.get_modified_count()
-            mod_count = model.get_deleted_count()
+            del_count = model.get_deleted_count()
             to_rewrite = run_long_operation("Calculating dependencies",
                                             model.get_to_rewrite_count,
                                             parent=self)
