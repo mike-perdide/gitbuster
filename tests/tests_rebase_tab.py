@@ -173,7 +173,7 @@ class TestsRebaseTab(TemplateTest):
         commits = list(a_repo.iter_commits(rev=master_branch))
 
         error = "The commit wasn't deleted."
-        self.check(commits[0].message, orig_message, error)
+        self.check(commits[0].message.strip(), orig_message.strip(), error)
 
     def get_checked_checkboxes(self):
         checkboxes = self.get_checkboxes()
