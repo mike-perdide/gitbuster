@@ -475,3 +475,7 @@ class QEditableGitModel(QGitModel):
     def get_new_branch_name(self):
         "See GitModel for more help."
         return self.git_model.get_new_branch_name()
+
+    def write_errors(self):
+        "See GitModel for more help."
+        return self.git_model.write_errors()
