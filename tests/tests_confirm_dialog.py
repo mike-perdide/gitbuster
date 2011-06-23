@@ -51,6 +51,7 @@ class TestsConfirmDialog(TemplateTest):
         self.window.undo_history()
 
     def test_inserted_commits_appears_in_dialog(self):
+        self.master_model.start_history_event()
         data_to_drop = self.wallace_model.mimeData(
                                        [self.wallace_model.createIndex(1, 0),])
         self.master_model.dropMimeData(data_to_drop, Qt.CopyAction, 0, 0, None)
@@ -70,6 +71,7 @@ class TestsConfirmDialog(TemplateTest):
         self.window.undo_history()
 
     def test_remove_commit_appears_in_dialog(self):
+        self.master_model.start_history_event()
         master_view = self.window.rebase_main_class.get_branch_view("master")
 
         master_view.remove_rows([0,])
