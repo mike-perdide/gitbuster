@@ -461,9 +461,13 @@ class MainWindow(QMainWindow):
                 self.add_new_model(new_model)
 
             elif not success:
-                model.reset()
-                conflicting_index = model.get_conflicting_index()
-                self.rebase_main_class.commit_clicked(conflicting_index)
+                if model.write_errors():
+                    for error in model.write_errors():
+                        print error
+                else:
+                    model.reset()
+                    conflicting_index = model.get_conflicting_index()
+                    self.rebase_main_class.commit_clicked(conflicting_index)
             elif success:
                 model.populate()
 
