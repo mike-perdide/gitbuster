@@ -155,6 +155,26 @@ class TestsRebaseTab(TemplateTest):
             assert [branch for branch in a_repo.branches
                     if branch.name == name], error % name
 
+    def test_remove_row(self):
+        master_model = [model for model in self.window._models.values()
+                        if model.name_to_display() == 'master'][0]
+        master_model.start_history_event()
+        master_view = self.window.rebase_main_class.get_branch_view("master")
+
+        a_repo = Repo(self.TEST_dir)
+        master_branch = a_repo.branches["master"]
+        commits = list(a_repo.iter_commits(rev=master_branch))
+        orig_message = commits[1].message
+
+        master_view.remove_rows([0,])
+
+        self.window.apply_models((master_model,), True, True)
+
+        commits = list(a_repo.iter_commits(rev=master_branch))
+
+        error = "The commit wasn't deleted."
+        self.check(commits[0].message, orig_message, error)
+
     def get_checked_checkboxes(self):
         checkboxes = self.get_checkboxes()
         return set((checkbox for checkbox in checkboxes
@@ -189,6 +209,7 @@ class TestsRebaseTab(TemplateTest):
         self.test_checking_one_checkbox_displays_branch()
         self.test_dropping_data()
         self.test_create_from_row()
+        self.test_remove_row()
 
 if __name__ == "__main__":
     to_test = TestsRebaseTab()
