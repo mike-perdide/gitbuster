@@ -7,6 +7,8 @@
 
 from PyQt4.QtCore import QObject, SIGNAL
 from PyQt4.QtGui import QKeySequence, QMainWindow, QMessageBox, QShortcut
+
+from gitbuster import __version__
 from gitbuster.confirm_dialog import ConfirmDialog
 from gitbuster.main_window_ui import Ui_MainWindow
 from gitbuster.q_editable_git_model import QEditableGitModel
@@ -154,7 +156,7 @@ class MainWindow(QMainWindow):
         """
             Displays an about box with information on Gitbuster.
         """
-        title = "About Gitbuster"
+        title = "About Gitbuster v%s" % __version__
         text = "(c) 2010-2011 Julien Miotte <mike dot perdide at gmail dot " + \
                "com>\nWritten in Python, using PyQt4 and GitPython."
         QMessageBox.information(self, title, text, QMessageBox.Ok)
