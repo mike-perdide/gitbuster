@@ -155,6 +155,10 @@ class TestsRebaseTab(TemplateTest):
             assert [branch for branch in a_repo.branches
                     if branch.name == name], error % name
 
+        after_write_branches = len(self.get_displayed_branch_widgets())
+        error = "After writing a branch from a row, wrong number of branch displayed "
+        self.check(after_write_branches, shown_branches + 1, error)
+
     def test_remove_row(self):
         master_model = [model for model in self.window._models.values()
                         if model.name_to_display() == 'master'][0]
