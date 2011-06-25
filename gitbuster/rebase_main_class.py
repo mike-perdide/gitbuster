@@ -93,6 +93,7 @@ class RebaseMainClass(QWidget):
 
         if hasattr(branch, 'path') and branch == self._parent.current_branch:
             checkbox.setCheckState(Qt.Checked)
+            branch_view.show()
         else:
             branch_view.hide()
 
