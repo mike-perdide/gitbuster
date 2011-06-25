@@ -390,6 +390,8 @@ class MainWindow(QMainWindow):
             # Can't apply if we're already applying
             return
 
+        self._applying = True
+
         to_write_models = [model for model in self._models.values()
                            if model.should_be_written()]
 
@@ -403,6 +405,8 @@ class MainWindow(QMainWindow):
 
                 self.apply_models(msgBox.checked_models(), log,
                                   force_committed_date)
+        else:
+            self._applying = False
 
     def apply_models(self, models, log, force_committed_date):
         """
