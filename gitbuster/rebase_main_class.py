@@ -51,12 +51,14 @@ class RebaseMainClass(QWidget):
         for item in [checkbox_layout.itemAt(id)
                      for id in xrange(checkbox_layout.count())]:
             item.widget().hide()
+            item.widget().close()
             checkbox_layout.removeItem(item)
 
         view_layout = self._ui.viewLayout
         for item in [view_layout.itemAt(id)
                      for id in xrange(view_layout.count())]:
             item.widget().hide()
+            item.widget().close()
             view_layout.removeItem(item)
 
         for model in self._models.values():
