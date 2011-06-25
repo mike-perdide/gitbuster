@@ -53,7 +53,7 @@ class RebaseMainClass(QWidget):
             item.widget().hide()
             checkbox_layout.removeItem(item)
 
-        view_layout = self._ui.branchCheckboxLayout
+        view_layout = self._ui.viewLayout
         for item in [view_layout.itemAt(id)
                      for id in xrange(view_layout.count())]:
             item.widget().hide()
