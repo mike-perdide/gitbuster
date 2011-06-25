@@ -138,16 +138,23 @@ class MainWindow(QMainWindow):
         else:
             self.filter_main_class.remove_rows()
 
-    def refresh(self):
+    def refresh(self, force=False):
         """
             This method is called when the refresh button is pressed.
+
+            :param force:
+                This allows test scripts not to have to deal with the
+                QMessageBox.
         """
-        msgBox = QMessageBox(self)
-        msgBox.setText("You will lose all modifications.")
-        msgBox.setInformativeText("Do you still want to refresh ?")
-        msgBox.setStandardButtons(msgBox.Cancel | msgBox.Apply)
-        msgBox.setDefaultButton(msgBox.Cancel)
-        ret = (msgBox.exec_() == msgBox.Apply)
+        if not force:
+            msgBox = QMessageBox(self)
+            msgBox.setText("You will lose all modifications.")
+            msgBox.setInformativeText("Do you still want to refresh ?")
+            msgBox.setStandardButtons(msgBox.Cancel | msgBox.Apply)
+            msgBox.setDefaultButton(msgBox.Cancel)
+            ret = (msgBox.exec_() == msgBox.Apply)
+        else:
+            ret = True
 
         if ret:
             self.set_current_directory(self._directory, reset_all=True)
