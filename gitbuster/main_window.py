@@ -392,8 +392,13 @@ class MainWindow(QMainWindow):
 
         self._applying = True
 
-        to_write_models = [model for model in self._models.values()
-                           if model.should_be_written()]
+        def get_to_write_models():
+            return [model for model in self._models.values()
+                    if model.should_be_written()]
+
+        to_write_models = run_long_operation("Counting modifications",
+                                             get_to_write_models,
+                                             parent=self)
 
         if to_write_models:
             msgBox = ConfirmDialog(to_write_models)
