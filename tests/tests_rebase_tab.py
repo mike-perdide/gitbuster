@@ -27,6 +27,9 @@ class TestsRebaseTab(TemplateTest):
         cls.window._ui.mainTabWidget.setCurrentIndex(0)
 
     def test_all_checkboxes_are_displayed(self):
+        self.run_command("./fake_git_gen_2.sh")
+        self.window.refresh(force=True)
+
         error = "All the branches aren't displayed in the checkbox group."
         checkboxes = self.get_checkboxes()
         checkboxes_names = set((unicode(checkbox.text())
@@ -36,11 +39,17 @@ class TestsRebaseTab(TemplateTest):
         self.check(checkboxes_names, TEST_names, error)
 
     def test_only_one_checkbox_is_checked(self):
+        self.run_command("./fake_git_gen_2.sh")
+        self.window.refresh(force=True)
+
         error = "More than one checkbox is checked."
         checked_checkboxes = self.get_checked_checkboxes()
         self.check(len(checked_checkboxes), 1, error)
 
     def test_only_one_branch_is_displayed(self):
+        self.run_command("./fake_git_gen_2.sh")
+        self.window.refresh(force=True)
+
         error = "More than one branch is displayed."
         displayed_widgets = self.get_displayed_branch_widgets()
         self.check(len(displayed_widgets), 1, error)
@@ -50,6 +59,9 @@ class TestsRebaseTab(TemplateTest):
 
 
     def test_checking_one_checkbox_displays_branch(self):
+        self.run_command("./fake_git_gen_2.sh")
+        self.window.refresh(force=True)
+
         error = "Checking the %s checkbox didn't display the right widgets."
 
         unchecked_checkboxes = self.get_unchecked_checkboxes()
@@ -70,6 +82,9 @@ class TestsRebaseTab(TemplateTest):
         # Check the name of the new displayed branch
 
     def test_dropping_data(self):
+        self.run_command("./fake_git_gen_2.sh")
+        self.window.refresh(force=True)
+
         for branch, model in self.window._models.items():
             if branch.name == "master":
                 master_model = model
@@ -120,6 +135,9 @@ class TestsRebaseTab(TemplateTest):
         self.check(color_after_undo, color_before_drop, error)
 
     def test_create_from_row(self):
+        self.run_command("./fake_git_gen_2.sh")
+        self.window.refresh(force=True)
+
         shown_branches = len(self.get_displayed_branch_widgets())
 
         for branch, model in self.window._models.items():
@@ -160,6 +178,9 @@ class TestsRebaseTab(TemplateTest):
         self.check(after_write_branches, shown_branches + 1, error)
 
     def test_remove_row(self):
+        self.run_command("./fake_git_gen_2.sh")
+        self.window.refresh(force=True)
+
         master_model = [model for model in self.window._models.values()
                         if model.name_to_display() == 'master'][0]
         master_model.start_history_event()
