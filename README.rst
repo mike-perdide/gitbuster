@@ -54,6 +54,8 @@ Installing with pip::
 
     $ pip install gitbuster
 
+Note: here we're talking about the Python package installer (http://guide.python-distribute.org/pip.html).
+
 -------------------
 Manual Installation
 -------------------
