@@ -1,5 +1,6 @@
 import time
 from subprocess import Popen, PIPE
+from os.path import dirname, join
 
 from gitbuster.q_git_model import QGitModel
 
@@ -93,3 +94,7 @@ class TemplateTest:
         assert tested_value == correct_value, err + \
                 " '%s' instead of '%s'." % \
                 (repr(tested_value), repr(correct_value))
+
+    @classmethod
+    def gen_fake_2(cls):
+        cls.run_command("%s" % join(dirname(__file__), "fake_git_gen_2.sh"))
