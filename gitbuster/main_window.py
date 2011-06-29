@@ -417,9 +417,6 @@ class MainWindow(QMainWindow):
         """
             Applies the given models.
         """
-        if self._applying:
-            return
-
         write_results = {}
 
         self.apply_started()
