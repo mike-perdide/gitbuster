@@ -91,4 +91,5 @@ class TemplateTest:
     @classmethod
     def check(cls, tested_value, correct_value, err):
         assert tested_value == correct_value, err + \
-                " '%s' instead of '%s'." % (tested_value, correct_value)
+                " '%s' instead of '%s'." % \
+                (repr(tested_value), repr(correct_value))
