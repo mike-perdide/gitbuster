@@ -16,7 +16,7 @@ class TestsRebaseTab(TemplateTest):
     @classmethod
     def setup_class(cls):
         TemplateTest.setup_class()
-        cls.run_command("./fake_git_gen_2.sh")
+        cls.gen_fake_2()
         os.chdir(cls.TEST_dir)
         cls.set_test_values()
 
@@ -82,7 +82,7 @@ class TestsRebaseTab(TemplateTest):
         # Check the name of the new displayed branch
 
     def test_dropping_data(self):
-        self.run_command("./fake_git_gen_2.sh")
+        self.gen_fake_2()
         self.window.refresh(force=True)
 
         for branch, model in self.window._models.items():
@@ -135,7 +135,7 @@ class TestsRebaseTab(TemplateTest):
         self.check(color_after_undo, color_before_drop, error)
 
     def test_create_from_row(self):
-        self.run_command("./fake_git_gen_2.sh")
+        self.gen_fake_2()
         self.window.refresh(force=True)
 
         shown_branches = len(self.get_displayed_branch_widgets())
@@ -178,7 +178,7 @@ class TestsRebaseTab(TemplateTest):
         self.check(after_write_branches, shown_branches + 1, error)
 
     def test_remove_row(self):
-        self.run_command("./fake_git_gen_2.sh")
+        self.gen_fake_2()
         self.window.refresh(force=True)
 
         master_model = [model for model in self.window._models.values()
