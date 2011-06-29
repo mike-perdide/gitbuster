@@ -200,6 +200,41 @@ class TestsRebaseTab(TemplateTest):
         error = "The commit wasn't deleted."
         self.check(commits[0].message.strip(), orig_message.strip(), error)
 
+    def test_insert_remove(self):
+        self.gen_fake_2()
+        self.window.refresh(force=True)
+
+        master_view = self.window.rebase_main_class.get_branch_view("master")
+
+        master_model = [model for model in self.window._models.values()
+                        if model.name_to_display() == "master"][0]
+        wallace_model = [model for model in self.window._models.values()
+                         if model.name_to_display() == "wallace_branch"][0]
+
+        master_model.start_history_event()
+
+        master_view.remove_rows([3,])
+        data_to_drop = wallace_model.mimeData(
+                                        [wallace_model.createIndex(1, 0),])
+        master_model.dropMimeData(data_to_drop, Qt.CopyAction, 1, 0, None)
+
+        a_repo = Repo(self.TEST_dir)
+        commits = list(a_repo.iter_commits())
+        master_branch = a_repo.branches["master"]
+        commits = list(a_repo.iter_commits(rev=master_branch))
+        orig_message = commits[1].message
+
+        wallace_branch = a_repo.branches["wallace_branch"]
+        commits = list(a_repo.iter_commits(rev=wallace_branch))
+        inserted_message = commits[1].message
+
+        self.window.apply_models((master_model,), True, True)
+
+        commits = list(a_repo.iter_commits(rev=master_branch))
+        new_message = commits[1].message
+
+        self.check(new_message, inserted_message, "Insertion failed")
+
     def get_checked_checkboxes(self):
         checkboxes = self.get_checkboxes()
         return set((checkbox for checkbox in checkboxes
@@ -235,6 +270,7 @@ class TestsRebaseTab(TemplateTest):
         self.test_dropping_data()
         self.test_create_from_row()
         self.test_remove_row()
+        self.test_insert_remove()
 
 if __name__ == "__main__":
     to_test = TestsRebaseTab()
