@@ -1,7 +1,7 @@
-from gitbuster.q_git_model import QGitModel
-from subprocess import Popen, PIPE
 import time
+from subprocess import Popen, PIPE
 
+from gitbuster.q_git_model import QGitModel
 
 class TemplateTest:
 
