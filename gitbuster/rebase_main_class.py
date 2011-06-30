@@ -132,8 +132,15 @@ class RebaseMainClass(QWidget):
 
         branch_view, model = self._checkboxes[checkbox]
 
-        checkbox.close()
-        branch_view.close()
+        view_layout = self._ui.viewLayout
+
+        for item in [view_layout.itemAt(id)
+                     for id in xrange(view_layout.count())
+                     if view_layout.itemAt(id).widget() == branch_view]:
+            print "Hiding", item.widget()
+            item.widget().hide()
+            item.widget().close()
+            view_layout.removeItem(item)
 
     def remove_rows(self):
         """
