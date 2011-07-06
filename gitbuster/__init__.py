@@ -4,7 +4,7 @@
 # This module is part of gitbuster and is released under the GPLv3
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 
-__version__ = "2.1b6"
+__version__ = "2.1b7"
 from PyQt4.QtGui import QApplication, QMessageBox
 from gitbuster.main_window import MainWindow
 from gitbuster.util import is_top_git_directory, select_git_directory
