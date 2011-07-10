@@ -4,10 +4,11 @@ from PyQt4.QtCore import Qt
 from subprocess import Popen, PIPE
 import os
 import sys
-from git import Repo
 
 from gitbuster.main_window import MainWindow
 from gitbuster.branch_view import ButtonLineEdit
+from gfbi_core.gfbi_repo import Repo
+
 from template_test import TemplateTest
 
 
@@ -194,18 +195,29 @@ class TestsRebaseTab(TemplateTest):
         master_view = self.window.rebase_main_class.get_branch_view("master")
 
         a_repo = Repo(self.TEST_dir)
-        master_branch = a_repo.branches["master"]
-        commits = list(a_repo.iter_commits(rev=master_branch))
+        master_branch = a_repo.get_branch_from_ref("refs/heads/master")
+        commits = list(a_repo.all_commits(rev=master_branch))
         orig_message = commits[1].message
 
         master_view.remove_rows([0,])
-
         self.window.apply_models((master_model,), True, True)
 
-        commits = list(a_repo.iter_commits(rev=master_branch))
+        post_test_repo = Repo(self.TEST_dir)
+        master_branch = post_test_repo.get_branch_from_ref("refs/heads/master")
+        commits = list(post_test_repo.all_commits(rev=master_branch))
 
         error = "The commit wasn't deleted."
-        self.check(commits[0].message.strip(), orig_message.strip(), error)
+        self.check(commits[0].message, orig_message, error)
+
+        # Checking that the deleted commit isn't displayed anymore.
+        master_model = [model for model in self.window._models.values()
+                        if model.name_to_display() == 'master'][0]
+        message_col = master_model.get_columns().index("message")
+        first_message = str(master_model.data(master_model.createIndex(0,
+                                                                   message_col),
+                                          Qt.EditRole).toString())
+        error = "The commit was deleted but is still displayed."
+        self.check(first_message, orig_message, error)
 
     def test_insert_remove(self):
         print "Test insert remove"
@@ -227,18 +239,16 @@ class TestsRebaseTab(TemplateTest):
         master_model.dropMimeData(data_to_drop, Qt.CopyAction, 1, 0, None)
 
         a_repo = Repo(self.TEST_dir)
-        commits = list(a_repo.iter_commits())
-        master_branch = a_repo.branches["master"]
-        commits = list(a_repo.iter_commits(rev=master_branch))
+        commits = list(a_repo.all_commits(rev="refs/heads/master"))
         orig_message = commits[1].message
 
-        wallace_branch = a_repo.branches["wallace_branch"]
-        commits = list(a_repo.iter_commits(rev=wallace_branch))
+        commits = list(a_repo.all_commits(rev="refs/heads/wallace_branch"))
         inserted_message = commits[1].message
 
         self.window.apply_models((master_model,), True, True)
 
-        commits = list(a_repo.iter_commits(rev=master_branch))
+        post_test_repo = Repo(self.TEST_dir)
+        commits = list(post_test_repo.all_commits(rev="refs/heads/master"))
         new_message = commits[1].message
 
         self.check(new_message, inserted_message, "Insertion failed")

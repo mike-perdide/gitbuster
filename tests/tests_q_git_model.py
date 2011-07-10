@@ -30,7 +30,7 @@ class TestsQGitModel(TemplateTest):
     def test_default_branch(self):
         error = "The default branch should be the current branch of the repository."
         dummy_model = QGitModel(self.TEST_dir)
-        default_branch_name = dummy_model.get_current_branch().name
+        default_branch_name = dummy_model.get_active_branch().name
         self.check(self.TEST_current_branch_name, default_branch_name, error)
 
     def test_row_count(self):
