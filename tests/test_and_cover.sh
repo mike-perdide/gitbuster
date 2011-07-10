@@ -5,3 +5,4 @@ OMIT_UI_FILES="$GITBUSTER_DIR/*_ui.py"
 
 coverage run --source=$GITBUSTER_DIR,$GFBI_CORE_DIR --omit=$OMIT_UI_FILES all_tests.py
 coverage report --omit=$OMIT_UI_FILES
+coverage html --omit=$OMIT_UI_FILES
