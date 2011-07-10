@@ -9,7 +9,7 @@ from PyQt4.QtCore import QString, QObject, SIGNAL
 from gitbuster.remote_branch_dialog_ui import Ui_Form
 from gitbuster.util import select_git_directory
 
-from git import Repo
+from gfbi_core.gfbi_repo import Repo
 
 connect = QObject.connect
 

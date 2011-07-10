@@ -5,17 +5,19 @@
 # License: http://www.gnu.org/licenses/gpl-3.0.txt
 
 __version__ = "2.1b7"
-from PyQt4.QtGui import QApplication, QMessageBox
-from gitbuster.main_window import MainWindow
-from gitbuster.util import is_top_git_directory, select_git_directory
-from gitbuster.conflicts_dialog import ConflictsDialog
-from gfbi_core.util import get_unmerged_files, apply_solutions
+
 import signal
 import sys
 import os
 import warnings
-import git
-from git import Repo
+
+from PyQt4.QtGui import QApplication, QMessageBox
+
+from gitbuster.main_window import MainWindow
+from gitbuster.util import is_top_git_directory, select_git_directory
+from gitbuster.conflicts_dialog import ConflictsDialog
+from gfbi_core.gfbi_repo import Repo
+from gfbi_core.merge_conflict_tools import get_unmerged_files, apply_solutions
 
 
 def main():

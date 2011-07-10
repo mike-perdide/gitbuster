@@ -91,7 +91,7 @@ class RebaseMainClass(QWidget):
 
         connect(branch_view, SIGNAL("newCopiedData"), self.set_copy_data)
 
-        if hasattr(branch, 'path') and branch == self._parent.current_branch:
+        if branch == self._parent.current_branch:
             checkbox.setCheckState(Qt.Checked)
             branch_view.show()
         else:

@@ -21,7 +21,8 @@ from gitbuster.filter_main_class import FilterMainClass
 from gitbuster.rebase_main_class import RebaseMainClass
 from gitbuster.branch_name_dialog import BranchNameDialog
 
-from git import Repo
+from gfbi_core.gfbi_repo import Repo
+
 from subprocess import Popen, PIPE
 import os
 import time
