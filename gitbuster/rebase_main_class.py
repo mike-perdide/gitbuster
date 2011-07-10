@@ -137,7 +137,6 @@ class RebaseMainClass(QWidget):
         for item in [view_layout.itemAt(id)
                      for id in xrange(view_layout.count())
                      if view_layout.itemAt(id).widget() == branch_view]:
-            print "Hiding", item.widget()
             item.widget().hide()
             item.widget().close()
             view_layout.removeItem(item)
