@@ -437,3 +437,7 @@ class QGitModel(QAbstractTableModel):
     def is_first_commit(self, index):
         "See GitModel for more help."
         return self.git_model.is_first_commit(index)
+
+    def get_active_branch(self):
+        "See GitModel for more help."
+        return self.git_model.get_active_branch()
