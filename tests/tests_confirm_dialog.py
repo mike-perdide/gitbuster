@@ -50,6 +50,7 @@ class TestsConfirmDialog(TemplateTest):
         self.check(checkbox.text(), "rodrigo", error)
 
         self.window.undo_history()
+        msgBox.close()
 
     def test_inserted_commits_appear_in_dialog(self):
         print "Test inserted commits appear in dialog"
@@ -71,6 +72,7 @@ class TestsConfirmDialog(TemplateTest):
         self.check(checkbox.text(), "master", error)
 
         self.window.undo_history()
+        msgBox.close()
 
     def test_removed_commits_appear_in_dialog(self):
         print "Test removed commits appear in dialog"
@@ -94,6 +96,7 @@ class TestsConfirmDialog(TemplateTest):
         self.check(checkbox.text(), "master", error)
 
         self.window.undo_history()
+        msgBox.close()
 
     def test_remote_branch_doesnt_appear_in_dialog(self):
         pass
@@ -106,7 +109,13 @@ class TestsConfirmDialog(TemplateTest):
         self.test_inserted_commits_appear_in_dialog()
         self.test_removed_commits_appear_in_dialog()
 
+    @classmethod
+    def teardown_class(cls):
+        cls.window.close()
+
+
 if __name__ == "__main__":
     to_test = TestsConfirmDialog()
     to_test.setup_class()
     to_test.all_tests()
+    to_test.teardown_class()

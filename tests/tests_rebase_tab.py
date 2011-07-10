@@ -280,7 +280,13 @@ class TestsRebaseTab(TemplateTest):
         self.test_remove_row()
         self.test_insert_remove()
 
+    @classmethod
+    def teardown_class(cls):
+        cls.window.close()
+
+
 if __name__ == "__main__":
     to_test = TestsRebaseTab()
     to_test.setup_class()
     to_test.all_tests()
+    to_test.teardown_class()
