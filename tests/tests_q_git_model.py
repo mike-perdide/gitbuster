@@ -14,7 +14,7 @@ class TestsQGitModel(TemplateTest):
     @classmethod
     def setup_class(cls):
         TemplateTest.setup_class()
-        cls.run_command("./fake_git_gen.sh")
+        cls.gen_fake()
         os.chdir(cls.TEST_dir)
         cls.set_test_values()
 

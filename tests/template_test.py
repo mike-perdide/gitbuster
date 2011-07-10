@@ -101,3 +101,7 @@ class TemplateTest:
     @classmethod
     def gen_fake_2(cls):
         cls.run_command("%s" % join(dirname(__file__), "fake_git_gen_2.sh"))
+
+    @classmethod
+    def gen_fake(cls):
+        cls.run_command("%s" % join(dirname(__file__), "fake_git_gen.sh"))
