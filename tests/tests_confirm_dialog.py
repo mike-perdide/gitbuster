@@ -33,6 +33,7 @@ class TestsConfirmDialog(TemplateTest):
                 cls.wallace_model = model
 
     def test_modified_name_appears_in_dialog(self):
+        print "Test modified name appears in dialog"
         self.master_model.start_history_event()
         self.master_model.set_new_branch_name("rodrigo")
 
@@ -51,6 +52,7 @@ class TestsConfirmDialog(TemplateTest):
         self.window.undo_history()
 
     def test_inserted_commits_appears_in_dialog(self):
+        print "Test inserted commits appear in dialog"
         self.master_model.start_history_event()
         data_to_drop = self.wallace_model.mimeData(
                                        [self.wallace_model.createIndex(1, 0),])
@@ -71,6 +73,7 @@ class TestsConfirmDialog(TemplateTest):
         self.window.undo_history()
 
     def test_remove_commit_appears_in_dialog(self):
+        print "Test removed commits appear in dialog"
         self.master_model.start_history_event()
         master_view = self.window.rebase_main_class.get_branch_view("master")
 

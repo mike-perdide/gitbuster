@@ -27,6 +27,7 @@ class TestsRebaseTab(TemplateTest):
         cls.window._ui.mainTabWidget.setCurrentIndex(0)
 
     def test_all_checkboxes_are_displayed(self):
+        print "Test all checkboxes are displayed"
         self.run_command("./fake_git_gen_2.sh")
         self.window.refresh(force=True)
 
@@ -39,6 +40,7 @@ class TestsRebaseTab(TemplateTest):
         self.check(checkboxes_names, TEST_names, error)
 
     def test_only_one_checkbox_is_checked(self):
+        print "Test only one checkbox is checked"
         self.run_command("./fake_git_gen_2.sh")
         self.window.refresh(force=True)
 
@@ -47,6 +49,7 @@ class TestsRebaseTab(TemplateTest):
         self.check(len(checked_checkboxes), 1, error)
 
     def test_only_one_branch_is_displayed(self):
+        print "Test only one branch is displayed"
         self.run_command("./fake_git_gen_2.sh")
         self.window.refresh(force=True)
 
@@ -59,6 +62,7 @@ class TestsRebaseTab(TemplateTest):
 
 
     def test_checking_one_checkbox_displays_branch(self):
+        print "Test checking one checkbox displays the branch"
         self.run_command("./fake_git_gen_2.sh")
         self.window.refresh(force=True)
 
@@ -82,6 +86,7 @@ class TestsRebaseTab(TemplateTest):
         # Check the name of the new displayed branch
 
     def test_dropping_data(self):
+        print "Test dropping data"
         self.gen_fake_2()
         self.window.refresh(force=True)
 
@@ -135,6 +140,7 @@ class TestsRebaseTab(TemplateTest):
         self.check(color_after_undo, color_before_drop, error)
 
     def test_create_from_row(self):
+        print "Test create from row"
         self.gen_fake_2()
         self.window.refresh(force=True)
 
@@ -178,6 +184,7 @@ class TestsRebaseTab(TemplateTest):
         self.check(after_write_branches, shown_branches + 1, error)
 
     def test_remove_row(self):
+        print "Test remove row"
         self.gen_fake_2()
         self.window.refresh(force=True)
 
@@ -201,6 +208,7 @@ class TestsRebaseTab(TemplateTest):
         self.check(commits[0].message.strip(), orig_message.strip(), error)
 
     def test_insert_remove(self):
+        print "Test insert remove"
         self.gen_fake_2()
         self.window.refresh(force=True)
 
