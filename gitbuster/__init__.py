@@ -10,6 +10,7 @@ import signal
 import sys
 import os
 import warnings
+from subprocess import Popen, PIPE
 
 from PyQt4.QtGui import QApplication, QMessageBox
 
@@ -33,9 +34,9 @@ def main():
         sys.exit(1)
 
     test_repo = Repo(filepath)
+    os.chdir(filepath)
     if os.path.exists(os.path.join(filepath, ".git/rebase-merge")):
         # Special conflict mode
-        os.chdir(filepath)
         orig_hexsha = open(".git/rebase-merge/head").read().strip()
         conflict_hexsha = open(".git/rebase-merge/stopped-sha").read().strip()
         unmerged_files = get_unmerged_files(conflict_hexsha, orig_hexsha,
@@ -63,7 +64,7 @@ def main():
         if warning_choice == 1:
             sys.exit(2)
         elif warning_choice == 2:
-            test_repo.git.stash()
+            Popen("git stash", shell=True, stdout=PIPE, stderr=PIPE)
 
     window = MainWindow(directory=filepath, debug=True)
     window.show()
