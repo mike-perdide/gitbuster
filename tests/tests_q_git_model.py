@@ -58,7 +58,7 @@ class TestsQGitModel(TemplateTest):
         for row, commit in enumerate(self.TEST_wallace_branch_commits):
             index = model.createIndex(row, message_column)
 
-            self.check(str(model.data(index, Qt.DisplayRole).toString()),
+            self.check(str(model.data(index, Qt.EditRole).toString()),
                        commit[1], error)
 
         model = self.TEST_master_branch_model
