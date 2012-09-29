@@ -13,8 +13,6 @@ from gfbi_core.util import get_unmerged_files, apply_solutions
 import signal
 import sys
 import os
-import warnings
-import git
 from git import Repo
 
 
@@ -56,7 +54,7 @@ def main():
                                              warning_text,
                                              "Yes",
                                              button1Text="No",
-                                             button2Text ="Stash")
+                                             button2Text="Stash")
 
         if warning_choice == 1:
             sys.exit(2)
