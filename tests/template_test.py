@@ -47,7 +47,7 @@ class TemplateTest:
         commits_storage_list = []
         for line in stdout:
             short_hexsha = line.split(" ")[0]
-            message = " ".join(line.split(" ")[1:]).strip()
+            message = " ".join(line.split(" ")[1:]).rstrip()
 
             commits_storage_list.append((short_hexsha, message))
 
