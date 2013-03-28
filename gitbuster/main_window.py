@@ -410,8 +410,8 @@ class MainWindow(QMainWindow):
 
                 self.apply_models(msgBox.checked_models(), log,
                                   force_committed_date)
-        else:
-            self._applying = False
+
+        self._applying = False
 
     def apply_models(self, models, log, force_committed_date):
         """
